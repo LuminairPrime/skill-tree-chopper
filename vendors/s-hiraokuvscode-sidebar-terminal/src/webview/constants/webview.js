@@ -1,0 +1,180 @@
+"use strict";
+/**
+ * WebView用定数定義
+ *
+ * @see https://github.com/s-hiraoku/vscode-sidebar-terminal/issues/226
+ * マジックナンバーをSystemConstantsから参照するように変更しました。
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SPLIT_RESIZE_CONSTANTS = exports.GRID_LAYOUT_CONSTANTS = exports.SESSION_RESTORE_CONSTANTS = exports.HEADER_MANAGER_CONSTANTS = exports.DEPENDENCY_CONTAINER_CONSTANTS = exports.NOTIFICATION_DURATION_CONSTANTS = exports.COMMAND_REGISTRY_CONSTANTS = exports.SPLIT_LAYOUT_CONSTANTS = exports.PANEL_LOCATION_CONSTANTS = exports.RENDERING_CONSTANTS = exports.RESIZE_COORDINATOR_CONSTANTS = exports.WEBVIEW_TIMING = exports.SPLIT_CONSTANTS = exports.WEBVIEW_TERMINAL_CONSTANTS = void 0;
+const SystemConstants_1 = require("../../constants/SystemConstants");
+exports.WEBVIEW_TERMINAL_CONSTANTS = {
+    TERMINAL_REMOVE_DELAY: SystemConstants_1.TERMINAL_CONSTANTS.TERMINAL_REMOVE_DELAY_MS,
+    COMMANDS: {
+        READY: 'ready',
+        INIT: 'init',
+        INPUT: 'input',
+        OUTPUT: 'output',
+        RESIZE: 'resize',
+        EXIT: 'exit',
+        SPLIT: 'split',
+        TERMINAL_CREATED: 'terminalCreated',
+        TERMINAL_REMOVED: 'terminalRemoved',
+        FOCUS_TERMINAL: 'focusTerminal',
+    },
+};
+exports.SPLIT_CONSTANTS = {
+    MAX_SPLIT_COUNT: SystemConstants_1.TERMINAL_CONSTANTS.MAX_TERMINAL_COUNT,
+    MAX_TERMINALS: SystemConstants_1.TERMINAL_CONSTANTS.MAX_TERMINAL_COUNT,
+    MIN_TERMINAL_HEIGHT: SystemConstants_1.TERMINAL_CONSTANTS.MIN_TERMINAL_HEIGHT_PX,
+    BUFFER_FLUSH_INTERVAL: SystemConstants_1.PERFORMANCE_CONSTANTS.OUTPUT_BUFFER_FLUSH_INTERVAL_MS,
+    CLI_AGENT_FLUSH_INTERVAL: SystemConstants_1.PERFORMANCE_CONSTANTS.CLI_AGENT_FAST_FLUSH_INTERVAL_MS,
+    MAX_BUFFER_SIZE: SystemConstants_1.PERFORMANCE_CONSTANTS.MAX_BUFFER_CHUNK_COUNT,
+    RESIZE_DEBOUNCE_DELAY: SystemConstants_1.TIMING_CONSTANTS.RESIZE_DEBOUNCE_DELAY_MS,
+};
+/**
+ * WebView タイミング定数
+ * setTimeout/setIntervalで使用されるマジックナンバーを集約
+ */
+exports.WEBVIEW_TIMING = {
+    /** Terminal focus delay after creation (ms) */
+    FOCUS_DELAY_MS: 20,
+    /** Session save delay after terminal operations (ms) */
+    SESSION_SAVE_DELAY_MS: 200,
+    /** Split layout transition delay (ms) */
+    SPLIT_LAYOUT_DELAY_MS: 150,
+    /** Parent container resize debounce (ms) */
+    PARENT_RESIZE_DEBOUNCE_MS: 50,
+    /** Panel location refit delay (ms) */
+    PANEL_REFIT_DELAY_MS: 150,
+    /** Split mode state update delay (ms) */
+    SPLIT_STATE_DELAY_MS: 50,
+    /** Terminal refit after removal delay (ms) */
+    REFIT_AFTER_REMOVAL_MS: 50,
+    /** Animation duration for UI transitions */
+    ANIMATION_DURATION_MS: SystemConstants_1.UI_CONSTANTS.ANIMATION_DURATION_NORMAL_MS,
+};
+/**
+ * ResizeCoordinator 定数
+ */
+exports.RESIZE_COORDINATOR_CONSTANTS = {
+    /** Parent container resize debounce delay (ms) */
+    PARENT_RESIZE_DEBOUNCE_MS: 50,
+    /** Window resize debounce delay (ms) */
+    WINDOW_RESIZE_DEBOUNCE_MS: 100,
+    /** Body resize debounce delay (ms) */
+    BODY_RESIZE_DEBOUNCE_MS: 100,
+};
+/**
+ * Rendering Optimizer 定数
+ */
+exports.RENDERING_CONSTANTS = {
+    /** Trackpad smooth scroll duration (ms) - 0 for instant */
+    TRACKPAD_SMOOTH_SCROLL_MS: 0,
+    /** Mouse wheel smooth scroll duration (ms) */
+    MOUSE_SCROLL_DURATION_MS: 125,
+    /** Default resize debounce (ms) */
+    DEFAULT_RESIZE_DEBOUNCE_MS: SystemConstants_1.TIMING_CONSTANTS.RESIZE_DEBOUNCE_DELAY_MS,
+    /** Minimum terminal dimension (px) */
+    MIN_DIMENSION_PX: 50,
+};
+/**
+ * Panel Location 定数
+ */
+exports.PANEL_LOCATION_CONSTANTS = {
+    /** Aspect ratio threshold for panel detection (width/height) */
+    ASPECT_RATIO_THRESHOLD: 1.2,
+    /** Compact viewport area threshold for landscape-first panel detection */
+    COMPACT_VIEWPORT_AREA_THRESHOLD: 1000000,
+    /** Maximum retry attempts for terminals-wrapper class sync */
+    CLASS_SYNC_MAX_ATTEMPTS: 20,
+    /** Retry interval for terminals-wrapper class sync (ms) */
+    CLASS_SYNC_RETRY_INTERVAL_MS: 50,
+};
+/**
+ * Split Layout 定数
+ */
+exports.SPLIT_LAYOUT_CONSTANTS = {
+    /** Resizer width/height (px) */
+    RESIZER_SIZE_PX: 4,
+    /** Wrapper padding (px) */
+    WRAPPER_PADDING_PX: 4,
+    /** Wrapper gap (px) */
+    WRAPPER_GAP_PX: 4,
+};
+/**
+ * Command Registry 定数
+ */
+exports.COMMAND_REGISTRY_CONSTANTS = {
+    /** Slow command detection threshold (ms) - commands taking longer trigger warnings */
+    SLOW_COMMAND_THRESHOLD_MS: 100,
+};
+/**
+ * Notification Duration 定数
+ * 通知の表示時間を一元管理
+ */
+exports.NOTIFICATION_DURATION_CONSTANTS = {
+    /** Default notification duration when not specified (ms) */
+    DEFAULT_DURATION_MS: 4000,
+    /** CLI agent detected notification duration (ms) */
+    CLI_AGENT_DETECTED_MS: 6000,
+    /** CLI agent session ended notification duration (ms) */
+    CLI_AGENT_ENDED_MS: 3000,
+    /** Alt+Click disabled warning duration (ms) */
+    ALT_CLICK_DISABLED_MS: 4000,
+    /** Alt+Click setting error duration (ms) */
+    ALT_CLICK_SETTING_ERROR_MS: 6000,
+    /** Terminal interaction issue warning duration (ms) */
+    TERMINAL_INTERACTION_ISSUE_MS: 5000,
+};
+/**
+ * Dependency Container 定数
+ * メモリ使用量推定に使用する定数
+ */
+exports.DEPENDENCY_CONTAINER_CONSTANTS = {
+    /** Base memory overhead per registered service (bytes) */
+    SERVICE_MEMORY_OVERHEAD_BYTES: 200,
+    /** Memory overhead per item in initialization order tracking (bytes) */
+    ORDER_TRACKING_OVERHEAD_BYTES: 50,
+    /** Memory overhead per resolved instance (bytes) */
+    INSTANCE_OVERHEAD_BYTES: 100,
+};
+/**
+ * Header Manager 定数
+ * ターミナルカウントバッジの色変更しきい値
+ */
+exports.HEADER_MANAGER_CONSTANTS = {
+    /** Terminal count threshold for orange color (moderate usage) */
+    TERMINAL_COUNT_ORANGE_THRESHOLD: 3,
+    /** Terminal count threshold for warning color (high usage) */
+    TERMINAL_COUNT_WARNING_THRESHOLD: 5,
+};
+/**
+ * Session Restore Manager 定数
+ * セッション復元に関するタイミング設定
+ */
+exports.SESSION_RESTORE_CONSTANTS = {
+    /** Wait delay after terminal creation before proceeding with restoration (ms) */
+    TERMINAL_CREATION_WAIT_MS: 100,
+};
+/**
+ * Grid Layout 定数
+ * 6-10ターミナル時の2段グリッドレイアウト設定
+ */
+exports.GRID_LAYOUT_CONSTANTS = {
+    /** Minimum number of terminals to activate grid layout */
+    MIN_TERMINALS_FOR_GRID: 6,
+};
+/**
+ * Split Resize Manager 定数
+ * ドラッグリサイズ機能に関する設定
+ */
+exports.SPLIT_RESIZE_CONSTANTS = {
+    /** Minimum terminal size during resize (px) */
+    MIN_RESIZE_SIZE_PX: 50,
+    /** Throttle interval for pointermove events (~60fps) */
+    RESIZE_THROTTLE_MS: 16,
+    /** Debounce delay before notifying PTY of resize completion (ms) */
+    PTY_NOTIFY_DEBOUNCE_MS: 100,
+};
+//# sourceMappingURL=webview.js.map

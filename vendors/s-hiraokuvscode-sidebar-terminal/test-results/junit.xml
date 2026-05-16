@@ -1,0 +1,12 @@
+<testsuites id="" name="" tests="1" failures="0" skipped="1" errors="0" time="4.726005999999999">
+<testsuite name="tests/webview/keyboard-input.spec.ts" timestamp="2026-02-12T14:56:44.754Z" hostname="chromium" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="WebView Keyboard Input › should keep input responsive after IME-like focus loss and return @P0 @ime @regression" classname="tests/webview/keyboard-input.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>

@@ -1,0 +1,163 @@
+{
+  "config": {
+    "configFile": "/Volumes/SSD/ghq/github.com/s-hiraoku/vscode-sidebar-terminal/playwright.config.ts",
+    "rootDir": "/Volumes/SSD/ghq/github.com/s-hiraoku/vscode-sidebar-terminal/src/test/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/Volumes/SSD/ghq/github.com/s-hiraoku/vscode-sidebar-terminal/src/test/e2e/config/global-setup.ts",
+    "globalTeardown": "/Volumes/SSD/ghq/github.com/s-hiraoku/vscode-sidebar-terminal/src/test/e2e/config/global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Volumes/SSD/ghq/github.com/s-hiraoku/vscode-sidebar-terminal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Volumes/SSD/ghq/github.com/s-hiraoku/vscode-sidebar-terminal/src/test/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/junit.xml"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 5,
+    "webServer": {
+      "command": "npx http-server src/test/e2e/fixtures -p 3333 -c-1 --silent -o /standalone-webview.html",
+      "url": "http://localhost:3333/standalone-webview.html",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "tests/webview/keyboard-input.spec.ts",
+      "file": "tests/webview/keyboard-input.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "WebView Keyboard Input",
+          "file": "tests/webview/keyboard-input.spec.ts",
+          "line": 19,
+          "column": 15,
+          "specs": [
+            {
+              "title": "should keep input responsive after IME-like focus loss and return @P0 @ime @regression",
+              "ok": true,
+              "tags": [
+                "P0",
+                "ime",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "/Volumes/SSD/ghq/github.com/s-hiraoku/vscode-sidebar-terminal/src/test/e2e/tests/webview/keyboard-input.spec.ts",
+                        "line": 19,
+                        "column": 15
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-12T14:56:44.756Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "location": {
+                            "file": "/Volumes/SSD/ghq/github.com/s-hiraoku/vscode-sidebar-terminal/src/test/e2e/tests/webview/keyboard-input.spec.ts",
+                            "line": 19,
+                            "column": 15
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cbe2383da84690b13a40-edb4b05fb11e418ae4d8",
+              "file": "tests/webview/keyboard-input.spec.ts",
+              "line": 260,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-02-12T14:56:40.050Z",
+    "duration": 4726.005999999999,
+    "expected": 0,
+    "skipped": 1,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,439 @@
+/**
+ * Display Modes CSS
+ *
+ * 🎯 SIMPLE DESIGN PRINCIPLE:
+ * - All containers use width: 100% and flex: 1
+ * - xterm.js inline styles are overridden with !important
+ * - No complex nested selectors
+ * - Panel location only changes flex-direction
+ */
+
+/* ========================================
+   ROOT CONTAINERS - Always 100% width
+   ======================================== */
+
+#terminal-body {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#terminals-wrapper {
+  display: flex !important;
+  flex-direction: column !important; /* Default: sidebar (vertical stack) */
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  gap: 4px;
+  overflow: hidden !important;
+}
+
+/* Panel mode: horizontal layout */
+#terminals-wrapper.terminal-split-horizontal {
+  flex-direction: row !important;
+}
+
+/* ========================================
+   TERMINAL CONTAINERS - Always 100% width
+   ======================================== */
+
+.terminal-split-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Terminal area inside split wrapper - wraps the actual terminal container */
+[data-terminal-area-id] {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.terminal-container,
+[data-terminal-container] {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  position: relative !important;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease-in-out;
+  box-sizing: border-box !important;
+}
+
+/* Active border highlight is handled via inline styles in TerminalBorderService */
+
+.terminal-content {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  /* 🔧 VS Code standard terminal padding applied here
+     This ensures FitAddon calculates dimensions correctly
+     (padding is included in clientWidth for the parent) */
+  padding: 0 4px !important;
+  box-sizing: border-box !important;
+}
+
+/* ========================================
+   XTERM.JS OVERRIDES - Force 100% width
+
+   🔧 CRITICAL: xterm.js sets inline styles with
+   fixed pixel values. We MUST override them.
+
+   VS Code Terminal Padding Reference:
+   - Horizontal padding: 10px (left) + 14px (right for scrollbar)
+   - Vertical padding: varies by platform
+   ======================================== */
+
+.xterm {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  position: relative !important;
+  /* 🔧 FIX: Remove padding to allow FitAddon to calculate correct dimensions
+     FitAddon uses parentElement.clientWidth which doesn't account for padding
+     Padding should be applied via terminal margins or container padding instead */
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.xterm-viewport {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+.xterm-screen {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  /* 🔧 FIX: Inherit terminal background to eliminate visible gap between canvas and container */
+  background-color: inherit !important;
+}
+
+/* Canvas elements inside xterm
+   🔧 CRITICAL: DO NOT apply max-width to canvas elements!
+   xterm.js requires precise pixel dimensions for cursor rendering.
+   The canvas elements include:
+   - xterm-text-layer: text rendering
+   - xterm-cursor-layer: cursor rendering (MUST NOT be constrained)
+   - xterm-link-layer: link underlining
+   - xterm-selection-layer: selection highlighting
+
+   Applying max-width: 100% breaks cursor and decoration rendering,
+   especially on macOS. Let xterm.js control canvas dimensions completely.
+   The container (.xterm-screen) already has width: 100% which handles expansion.
+*/
+/* .xterm .xterm-screen canvas - REMOVED: was breaking cursor layer */
+
+/* xterm-rows contains the actual rendered text spans */
+.xterm-rows {
+  width: 100% !important;
+}
+
+/* 🔧 CRITICAL FIX: xterm-helpers contains measurement elements
+   This element may get fixed width that prevents expansion
+*/
+.xterm-helpers {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* 🔧 xterm-screen child div elements (NOT canvas elements)
+   Some div layers inside xterm-screen may have fixed dimensions.
+   Note: Canvas elements are NOT affected by this rule and should NEVER
+   have max-width constraints applied (see comment above).
+   The :not(canvas) ensures we only target div children.
+*/
+.xterm-screen > div:not(canvas) {
+  max-width: 100% !important;
+}
+
+/* ========================================
+   DISPLAY MODE CLASSES
+   ======================================== */
+
+.terminal-container.hidden-mode,
+.terminal-container--hidden {
+  display: none !important;
+}
+
+.terminal-container--fullscreen {
+  flex: 1 1 auto !important;
+}
+
+.terminal-container--split {
+  flex: 1 1 0 !important;
+}
+
+/* ========================================
+   SPLIT RESIZER
+   ======================================== */
+
+.split-resizer {
+  background: var(--vscode-widget-border, #454545);
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+/* Vertical split (sidebar) - horizontal resizer */
+#terminals-wrapper:not(.terminal-split-horizontal) .split-resizer {
+  height: 4px;
+  width: 100%;
+  cursor: row-resize;
+}
+
+/* Horizontal split (panel) - vertical resizer */
+#terminals-wrapper.terminal-split-horizontal .split-resizer {
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+/* Hover and active dragging state */
+.split-resizer:hover,
+.split-resizer.dragging {
+  background: var(--vscode-sash-hoverBorder, #007acc);
+}
+
+/* Hide column resizers in grid mode (only row resize is supported) */
+#terminals-wrapper.terminal-grid-layout .split-resizer {
+  display: none !important;
+}
+
+/* ========================================
+   GRID LAYOUT (6-10 terminals in panel split mode)
+   2-row grid with equal column distribution per row
+   ======================================== */
+
+#terminals-wrapper.terminal-grid-layout {
+  display: grid !important;
+
+  /* 3 rows: content | resizer | content */
+  grid-template-rows: 1fr auto 1fr !important;
+  gap: 4px !important;
+  flex-direction: unset !important;
+}
+
+/* Grid row resizer - sits between the two grid rows */
+.grid-row-resizer {
+  grid-column: 1 / -1;
+  height: 4px;
+  background: var(--vscode-widget-border, #454545);
+  cursor: row-resize;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+  z-index: 1;
+}
+
+.grid-row-resizer:hover,
+.grid-row-resizer.dragging {
+  background: var(--vscode-sash-hoverBorder, #007acc);
+}
+
+/* ========================================
+   RESIZING STATE - Body level overrides
+   Prevents text selection and enforces cursor
+   ======================================== */
+
+body.resizing-split {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+body.resizing-split * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* Cursor override during horizontal resize */
+body.resizing-horizontal {
+  cursor: col-resize !important;
+}
+
+body.resizing-horizontal * {
+  cursor: col-resize !important;
+}
+
+/* Cursor override during vertical resize */
+body.resizing-vertical {
+  cursor: row-resize !important;
+}
+
+body.resizing-vertical * {
+  cursor: row-resize !important;
+}
+
+/* ========================================
+   UI COMPONENTS
+   ======================================== */
+
+.split-mode-toggle-button {
+  background: transparent;
+  border: none;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 16px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.split-mode-toggle-button:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.split-mode-toggle-button.active {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.split-mode-toggle-button:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 2px;
+}
+
+.terminal-tab-close {
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.terminal-tab-close:hover {
+  transform: scale(1.1);
+}
+
+.terminal-tab-close:active {
+  transform: scale(0.95);
+}
+
+.terminal-tab-close:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+@media (prefers-contrast: high) {
+  .split-mode-toggle-button.active {
+    border: 2px solid var(--vscode-contrastActiveBorder, var(--vscode-focusBorder));
+  }
+
+  .terminal-tab-close:hover {
+    border: 1px solid var(--vscode-contrastActiveBorder, var(--vscode-focusBorder));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-container,
+  .terminal-tab-close {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ========================================
+   VS CODE STYLE SCROLLBAR
+   Matches VS Code's integrated terminal scrollbar
+   ======================================== */
+
+.xterm-viewport::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+.xterm-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb {
+  background-color: var(--vscode-scrollbarSlider-background, rgba(121, 121, 121, 0.4));
+  border-radius: 7px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb:hover {
+  background-color: var(--vscode-scrollbarSlider-hoverBackground, rgba(100, 100, 100, 0.7));
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb:active {
+  background-color: var(--vscode-scrollbarSlider-activeBackground, rgba(191, 191, 191, 0.4));
+}
+
+.xterm-viewport::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ========================================
+   VS CODE STYLE CURSOR
+   Smooth cursor animation like VS Code terminal
+   ======================================== */
+
+/* Blinking cursor animation */
+@keyframes terminal-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ========================================
+   VS CODE STYLE SELECTION
+   Semi-transparent selection like VS Code
+   ======================================== */
+
+.xterm .xterm-selection div {
+  background-color: var(--vscode-terminal-selectionBackground, rgba(38, 79, 120, 0.5)) !important;
+}
+
+/* Inactive selection (when terminal not focused) */
+.xterm:not(:focus-within) .xterm-selection div {
+  background-color: var(
+    --vscode-terminal-inactiveSelectionBackground,
+    rgba(38, 79, 120, 0.3)
+  ) !important;
+}

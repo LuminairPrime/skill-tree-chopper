@@ -1,0 +1,299 @@
+/**
+ * Unified Theme Type Definitions
+ * Centralized theme types to eliminate duplication across the codebase
+ */
+
+/**
+ * Basic theme colors interface for UI elements
+ */
+export interface ThemeColors {
+  background: string;
+  foreground: string;
+  border: string;
+}
+
+/**
+ * Complete terminal theme configuration
+ * Used by xterm.js and terminal rendering
+ */
+export interface TerminalTheme {
+  background: string;
+  foreground: string;
+  cursor: string;
+  cursorAccent?: string;
+  selectionBackground: string;
+  black: string;
+  red: string;
+  green: string;
+  yellow: string;
+  blue: string;
+  magenta: string;
+  cyan: string;
+  white: string;
+  brightBlack: string;
+  brightRed: string;
+  brightGreen: string;
+  brightYellow: string;
+  brightBlue: string;
+  brightMagenta: string;
+  brightCyan: string;
+  brightWhite: string;
+}
+
+/**
+ * Terminal theme data (alias for backward compatibility)
+ * @deprecated Use TerminalTheme instead
+ */
+export type TerminalThemeData = TerminalTheme;
+
+/**
+ * Theme constants for dark theme
+ * Based on VS Code's default dark terminal colors
+ * @see https://github.com/microsoft/vscode/blob/main/src/vs/workbench/contrib/terminal/common/terminalColorRegistry.ts
+ */
+export const DARK_THEME: TerminalTheme = {
+  background: '#1e1e1e', // VS Code editor background (more visible than pure black)
+  foreground: '#cccccc',
+  cursor: '#aeafad',
+  cursorAccent: '#000000',
+  selectionBackground: 'rgba(38, 79, 120, 0.5)', // VS Code selection with transparency
+  black: '#000000',
+  red: '#cd3131',
+  green: '#0dbc79',
+  yellow: '#e5e510',
+  blue: '#2472c8',
+  magenta: '#bc3fbc',
+  cyan: '#11a8cd',
+  white: '#e5e5e5',
+  brightBlack: '#666666',
+  brightRed: '#f14c4c',
+  brightGreen: '#23d18b',
+  brightYellow: '#f5f543',
+  brightBlue: '#3b8eea',
+  brightMagenta: '#d670d6',
+  brightCyan: '#29b8db',
+  brightWhite: '#e5e5e5',
+};
+
+/**
+ * Theme constants for light theme
+ * Based on VS Code's default light terminal colors
+ * @see https://github.com/microsoft/vscode/blob/main/src/vs/workbench/contrib/terminal/common/terminalColorRegistry.ts
+ */
+export const LIGHT_THEME: TerminalTheme = {
+  background: '#ffffff', // VS Code light editor background
+  foreground: '#333333',
+  cursor: '#000000',
+  cursorAccent: '#ffffff',
+  selectionBackground: 'rgba(173, 214, 255, 0.5)', // VS Code selection with transparency
+  black: '#000000',
+  red: '#cd3131',
+  green: '#00bc00',
+  yellow: '#949800',
+  blue: '#0451a5',
+  magenta: '#bc05bc',
+  cyan: '#0598bc',
+  white: '#555555',
+  brightBlack: '#666666',
+  brightRed: '#cd3131',
+  brightGreen: '#14ce14',
+  brightYellow: '#b5ba00',
+  brightBlue: '#0451a5',
+  brightMagenta: '#bc05bc',
+  brightCyan: '#0598bc',
+  brightWhite: '#a5a5a5',
+};
+
+/**
+ * UI color constants
+ */
+export const THEME_UI_COLORS = {
+  ACTIVE_BORDER_COLOR: '#007acc',
+  INACTIVE_BORDER_COLOR: '#464647',
+  SEPARATOR_COLOR: '#464647',
+} as const;
+
+function getCssThemeValue(style: CSSStyleDeclaration, property: string, fallback = ''): string {
+  return style.getPropertyValue(property).trim() || fallback;
+}
+
+function getThemeBase(themeType: 'light' | 'dark'): TerminalTheme {
+  return themeType === 'light' ? LIGHT_THEME : DARK_THEME;
+}
+
+export function getVSCodeThemeColors(themeType: 'light' | 'dark'): TerminalTheme {
+  const baseTheme = getThemeBase(themeType);
+
+  if (typeof document === 'undefined' || typeof getComputedStyle === 'undefined') {
+    return baseTheme;
+  }
+
+  try {
+    const style = getComputedStyle(document.documentElement);
+
+    return {
+      background: getCssThemeValue(
+        style,
+        '--vscode-terminal-background',
+        getCssThemeValue(style, '--vscode-editor-background', baseTheme.background)
+      ),
+      foreground: getCssThemeValue(
+        style,
+        '--vscode-terminal-foreground',
+        getCssThemeValue(style, '--vscode-editor-foreground', baseTheme.foreground)
+      ),
+      cursor: getCssThemeValue(style, '--vscode-terminalCursor-foreground', baseTheme.cursor),
+      cursorAccent: baseTheme.cursorAccent,
+      selectionBackground: getCssThemeValue(
+        style,
+        '--vscode-terminal-selectionBackground',
+        baseTheme.selectionBackground
+      ),
+      black: getCssThemeValue(style, '--vscode-terminal-ansiBlack', baseTheme.black),
+      red: getCssThemeValue(style, '--vscode-terminal-ansiRed', baseTheme.red),
+      green: getCssThemeValue(style, '--vscode-terminal-ansiGreen', baseTheme.green),
+      yellow: getCssThemeValue(style, '--vscode-terminal-ansiYellow', baseTheme.yellow),
+      blue: getCssThemeValue(style, '--vscode-terminal-ansiBlue', baseTheme.blue),
+      magenta: getCssThemeValue(style, '--vscode-terminal-ansiMagenta', baseTheme.magenta),
+      cyan: getCssThemeValue(style, '--vscode-terminal-ansiCyan', baseTheme.cyan),
+      white: getCssThemeValue(style, '--vscode-terminal-ansiWhite', baseTheme.white),
+      brightBlack: getCssThemeValue(
+        style,
+        '--vscode-terminal-ansiBrightBlack',
+        baseTheme.brightBlack
+      ),
+      brightRed: getCssThemeValue(style, '--vscode-terminal-ansiBrightRed', baseTheme.brightRed),
+      brightGreen: getCssThemeValue(
+        style,
+        '--vscode-terminal-ansiBrightGreen',
+        baseTheme.brightGreen
+      ),
+      brightYellow: getCssThemeValue(
+        style,
+        '--vscode-terminal-ansiBrightYellow',
+        baseTheme.brightYellow
+      ),
+      brightBlue: getCssThemeValue(style, '--vscode-terminal-ansiBrightBlue', baseTheme.brightBlue),
+      brightMagenta: getCssThemeValue(
+        style,
+        '--vscode-terminal-ansiBrightMagenta',
+        baseTheme.brightMagenta
+      ),
+      brightCyan: getCssThemeValue(style, '--vscode-terminal-ansiBrightCyan', baseTheme.brightCyan),
+      brightWhite: getCssThemeValue(
+        style,
+        '--vscode-terminal-ansiBrightWhite',
+        baseTheme.brightWhite
+      ),
+    };
+  } catch {
+    return baseTheme;
+  }
+}
+
+/**
+ * Parse a color string to RGB values
+ */
+function parseColorToRGB(color: string): { r: number; g: number; b: number } | null {
+  if (!color) return null;
+
+  // Handle hex colors
+  if (color.startsWith('#')) {
+    const hex = color.slice(1);
+    if (hex.length === 3) {
+      const r = hex.charAt(0);
+      const g = hex.charAt(1);
+      const b = hex.charAt(2);
+      return {
+        r: parseInt(r + r, 16),
+        g: parseInt(g + g, 16),
+        b: parseInt(b + b, 16),
+      };
+    } else if (hex.length === 6) {
+      return {
+        r: parseInt(hex.slice(0, 2), 16),
+        g: parseInt(hex.slice(2, 4), 16),
+        b: parseInt(hex.slice(4, 6), 16),
+      };
+    }
+  }
+
+  // Handle rgb/rgba colors
+  const rgbMatch = color.match(/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (rgbMatch && rgbMatch[1] && rgbMatch[2] && rgbMatch[3]) {
+    return {
+      r: parseInt(rgbMatch[1], 10),
+      g: parseInt(rgbMatch[2], 10),
+      b: parseInt(rgbMatch[3], 10),
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Calculate relative luminance of a color (0 = black, 1 = white)
+ */
+function getLuminance(r: number, g: number, b: number): number {
+  // Convert to sRGB
+  const toSrgb = (c: number): number => {
+    const srgb = c / 255;
+    return srgb <= 0.03928 ? srgb / 12.92 : Math.pow((srgb + 0.055) / 1.055, 2.4);
+  };
+  // Calculate luminance
+  return 0.2126 * toSrgb(r) + 0.7152 * toSrgb(g) + 0.0722 * toSrgb(b);
+}
+
+/**
+ * Detect if a color is light or dark based on luminance
+ */
+function isLightColor(color: string): boolean {
+  const rgb = parseColorToRGB(color);
+  if (!rgb) return false;
+  const luminance = getLuminance(rgb.r, rgb.g, rgb.b);
+  // Threshold of 0.5 to determine light vs dark
+  return luminance > 0.5;
+}
+
+/**
+ * Get terminal theme based on VS Code theme detection
+ */
+export function detectVSCodeTheme(settings?: { theme?: string }): TerminalTheme {
+  // Settings-based theme selection
+  if (settings?.theme === 'light') {
+    return getVSCodeThemeColors('light');
+  } else if (settings?.theme === 'dark') {
+    return getVSCodeThemeColors('dark');
+  }
+
+  // Try CSS variable detection first (most reliable in WebView)
+  if (typeof document !== 'undefined' && typeof getComputedStyle !== 'undefined') {
+    try {
+      const style = getComputedStyle(document.documentElement);
+      const bgColor =
+        style.getPropertyValue('--vscode-terminal-background').trim() ||
+        style.getPropertyValue('--vscode-editor-background').trim();
+
+      if (bgColor && isLightColor(bgColor)) {
+        return getVSCodeThemeColors('light');
+      } else if (bgColor) {
+        return getVSCodeThemeColors('dark');
+      }
+    } catch {
+      // Fall through to body class detection
+    }
+  }
+
+  // VS Code body class detection as fallback
+  if (typeof document !== 'undefined') {
+    const body = document.body;
+    const classList = body.classList;
+
+    if (classList.contains('vscode-light')) {
+      return getVSCodeThemeColors('light');
+    }
+  }
+
+  // Default to dark theme
+  return getVSCodeThemeColors('dark');
+}

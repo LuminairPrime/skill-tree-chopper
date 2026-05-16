@@ -1,0 +1,321 @@
+"use strict";
+/**
+ * Optimizes terminal rendering through debounced resizing, dimension validation,
+ * WebGL auto-fallback, and device-specific smooth scrolling.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RenderingOptimizer = void 0;
+const ManagerLogger_1 = require("../utils/ManagerLogger");
+const DOMUtils_1 = require("../utils/DOMUtils");
+const webview_1 = require("../constants/webview");
+/**
+ * Optimizes terminal rendering performance
+ */
+class RenderingOptimizer {
+    constructor(options = {}) {
+        this.resizeObserver = null;
+        this.resizeTimer = null;
+        this.webglAddon = null;
+        this.currentDevice = {
+            isTrackpad: true,
+            smoothScrollDuration: webview_1.RENDERING_CONSTANTS.TRACKPAD_SMOOTH_SCROLL_MS,
+        };
+        this.container = null;
+        this.options = {
+            enableWebGL: options.enableWebGL ?? true,
+            resizeDebounceMs: options.resizeDebounceMs ?? webview_1.RENDERING_CONSTANTS.DEFAULT_RESIZE_DEBOUNCE_MS,
+            minWidth: options.minWidth ?? webview_1.RENDERING_CONSTANTS.MIN_DIMENSION_PX,
+            minHeight: options.minHeight ?? webview_1.RENDERING_CONSTANTS.MIN_DIMENSION_PX,
+        };
+    }
+    setupOptimizedResize(terminal, fitAddon, container, terminalId) {
+        this.disposeResizeObserver();
+        this.container = container;
+        this.resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                this.handleResize(entry, terminal, fitAddon, terminalId);
+            }
+        });
+        this.resizeObserver.observe(container);
+        ManagerLogger_1.terminalLogger.info(`✅ ResizeObserver setup for terminal: ${terminalId}`);
+    }
+    handleResize(entry, terminal, fitAddon, terminalId) {
+        if (this.resizeTimer !== null) {
+            window.clearTimeout(this.resizeTimer);
+        }
+        this.resizeTimer = window.setTimeout(() => {
+            const { width, height } = entry.contentRect;
+            if (!this.isValidDimension(width, height)) {
+                ManagerLogger_1.terminalLogger.warn(`⚠️ Skipping resize for terminal ${terminalId}: invalid dimensions (${width}x${height})`);
+                return;
+            }
+            try {
+                this.resetXtermInlineStyles(terminalId);
+                fitAddon.fit();
+                terminal.refresh(0, terminal.rows - 1);
+                ManagerLogger_1.terminalLogger.debug(`✅ Terminal ${terminalId} resized to ${width}x${height}`);
+            }
+            catch (error) {
+                ManagerLogger_1.terminalLogger.error(`❌ Failed to resize terminal ${terminalId}:`, error);
+            }
+        }, this.options.resizeDebounceMs);
+    }
+    resetXtermInlineStyles(terminalId) {
+        if (!this.container) {
+            ManagerLogger_1.terminalLogger.warn(`⚠️ No container reference for terminal ${terminalId}`);
+            return;
+        }
+        DOMUtils_1.DOMUtils.resetXtermInlineStyles(this.container);
+        ManagerLogger_1.terminalLogger.debug(`🔧 Reset xterm inline styles for terminal ${terminalId}`);
+    }
+    isValidDimension(width, height) {
+        return width > this.options.minWidth && height > this.options.minHeight;
+    }
+    /**
+     * Check if running in a potentially problematic WebGL environment
+     * (e.g., x86 Node.js on ARM macOS via Rosetta, or Volta with x86 Node)
+     *
+     * @see https://github.com/electron/electron/issues/45574
+     */
+    isProblematicWebGLEnvironment() {
+        try {
+            // Check if we're in a VS Code WebView (limited WebGL support)
+            const isVSCodeWebView = typeof window !== 'undefined' && window.navigator.userAgent.includes('Electron');
+            // Check if we're on macOS
+            const isMacOS = typeof window !== 'undefined' && window.navigator.userAgent.includes('Mac');
+            // Test WebGL context creation
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+            if (!gl) {
+                ManagerLogger_1.terminalLogger.warn('⚠️ WebGL not available in this environment');
+                return true;
+            }
+            // Check for known problematic configurations
+            const renderer = (gl.getParameter(gl.RENDERER) || '');
+            const vendor = (gl.getParameter(gl.VENDOR) || '');
+            ManagerLogger_1.terminalLogger.debug(`WebGL Renderer: ${renderer}, Vendor: ${vendor}`);
+            // Some integrated GPUs on macOS have issues with WebGL in WebViews
+            const problematicPatterns = [
+                /SwiftShader/i, // Software renderer (indicates GPU issues)
+                /llvmpipe/i, // Software renderer on Linux
+            ];
+            for (const pattern of problematicPatterns) {
+                if (pattern.test(renderer) || pattern.test(vendor)) {
+                    ManagerLogger_1.terminalLogger.warn(`⚠️ Detected problematic WebGL renderer: ${renderer}`);
+                    return true;
+                }
+            }
+            // Additional check: VS Code WebView on macOS can have WebGL issues
+            // when creating multiple terminals due to context limit
+            if (isVSCodeWebView && isMacOS) {
+                ManagerLogger_1.terminalLogger.info('ℹ️ macOS VS Code WebView detected - WebGL may be unstable');
+                // Don't return true here - let it try WebGL first, it will fallback if needed
+            }
+            // Clean up test canvas
+            canvas.remove();
+            return false;
+        }
+        catch (error) {
+            ManagerLogger_1.terminalLogger.warn('⚠️ Error checking WebGL environment:', error);
+            return true;
+        }
+    }
+    /**
+     * Enable WebGL rendering with auto-fallback.
+     *
+     * Waits for the terminal's theme to be applied (background color set)
+     * before loading WebGL to prevent black background / invisible text issues.
+     */
+    async enableWebGL(terminal, terminalId) {
+        if (!this.options.enableWebGL) {
+            ManagerLogger_1.terminalLogger.info(`WebGL disabled by option for terminal: ${terminalId}`);
+            return false;
+        }
+        // Check for problematic WebGL environments first
+        if (this.isProblematicWebGLEnvironment()) {
+            ManagerLogger_1.terminalLogger.info(`🔧 Skipping WebGL for terminal ${terminalId} due to problematic environment`);
+            return false;
+        }
+        // Wait for theme to be applied before loading WebGL.
+        // The root cause of the previous black-background issue was WebGL loading
+        // before theme colors were set, causing it to render with default black.
+        const themeReady = await this.waitForThemeReady(terminal, terminalId);
+        if (!themeReady) {
+            ManagerLogger_1.terminalLogger.warn(`⚠️ Theme not ready for ${terminalId}, skipping WebGL`);
+            return false;
+        }
+        try {
+            // Lazy load WebglAddon
+            const { WebglAddon } = await Promise.resolve().then(() => require('@xterm/addon-webgl'));
+            const addon = new WebglAddon();
+            this.webglAddon = addon;
+            // Setup context loss handler
+            addon.onContextLoss(() => {
+                ManagerLogger_1.terminalLogger.warn(`⚠️ WebGL context lost for terminal ${terminalId}, falling back to DOM renderer`);
+                this.fallbackToDOMRenderer(terminal, terminalId);
+                terminal.refresh(0, terminal.rows - 1);
+            });
+            // Load WebGL addon
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            terminal.loadAddon(addon);
+            // Verify WebGL is actually working after loading
+            await this.verifyWebGLRendering(terminal, terminalId);
+            ManagerLogger_1.terminalLogger.info(`✅ WebGL renderer enabled for terminal: ${terminalId}`);
+            return true;
+        }
+        catch (error) {
+            ManagerLogger_1.terminalLogger.warn(`⚠️ Failed to enable WebGL for terminal ${terminalId}, using DOM renderer:`, error);
+            this.fallbackToDOMRenderer(terminal, terminalId);
+            return false;
+        }
+    }
+    /**
+     * Wait for the terminal's theme to be applied before enabling WebGL.
+     * Checks that the terminal element has a non-default background color set.
+     * Times out after 500ms to avoid blocking terminal creation.
+     */
+    async waitForThemeReady(terminal, terminalId) {
+        const maxWaitMs = 500;
+        const checkIntervalMs = 50;
+        let elapsed = 0;
+        while (elapsed < maxWaitMs) {
+            // Check if terminal element exists and has theme applied
+            const element = terminal.element;
+            if (element) {
+                const viewport = element.querySelector('.xterm-viewport');
+                if (viewport) {
+                    const bg = viewport.style.backgroundColor || '';
+                    // Theme is ready if viewport has a non-empty, non-default background
+                    if (bg && bg !== 'rgb(0, 0, 0)' && bg !== '#000000' && bg !== 'black') {
+                        ManagerLogger_1.terminalLogger.debug(`🎨 Theme ready for ${terminalId} after ${elapsed}ms (bg: ${bg})`);
+                        return true;
+                    }
+                }
+            }
+            await new Promise((resolve) => setTimeout(resolve, checkIntervalMs));
+            elapsed += checkIntervalMs;
+        }
+        // Theme didn't apply in time — still allow WebGL with a warning
+        ManagerLogger_1.terminalLogger.warn(`⚠️ Theme wait timed out for ${terminalId} after ${maxWaitMs}ms, proceeding with WebGL`);
+        return true;
+    }
+    /**
+     * Verify WebGL is actually rendering correctly.
+     * Waits two frames for WebGL to initialize and forces a terminal refresh.
+     */
+    async verifyWebGLRendering(terminal, terminalId) {
+        // Wait a frame for WebGL to initialize
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        // Force a refresh to ensure all layers render
+        terminal.refresh(0, terminal.rows - 1);
+        // Wait another frame
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        ManagerLogger_1.terminalLogger.debug(`✅ WebGL rendering verified for terminal: ${terminalId}`);
+    }
+    /**
+     * Fallback to DOM renderer when WebGL fails
+     */
+    fallbackToDOMRenderer(terminal, terminalId) {
+        try {
+            if (this.webglAddon) {
+                this.webglAddon.dispose();
+                this.webglAddon = null;
+            }
+            ManagerLogger_1.terminalLogger.info(`✅ Terminal ${terminalId} using DOM renderer`);
+            // Clear selection state immediately to prevent stale selection layer
+            try {
+                terminal.clearSelection();
+            }
+            catch {
+                // clearSelection may not be available in all terminal states
+            }
+            // Force terminal refresh to ensure DOM renderer redraws text properly
+            // This is critical when switching from failed WebGL to DOM renderer
+            setTimeout(() => {
+                try {
+                    terminal.refresh(0, terminal.rows - 1);
+                    ManagerLogger_1.terminalLogger.debug(`🔄 Terminal ${terminalId} refreshed after DOM renderer fallback`);
+                }
+                catch (error) {
+                    ManagerLogger_1.terminalLogger.warn(`⚠️ Failed to refresh terminal ${terminalId}:`, error);
+                }
+            }, 50);
+        }
+        catch (error) {
+            ManagerLogger_1.terminalLogger.error(`❌ Failed to dispose WebGL addon for terminal ${terminalId}:`, error);
+        }
+    }
+    /**
+     * Detect device type from wheel event
+     */
+    detectDevice(event) {
+        // deltaMode 0 = pixels (trackpad)
+        // deltaMode 1 = lines (mouse wheel)
+        const isTrackpad = event.deltaMode === 0;
+        const smoothScrollDuration = isTrackpad
+            ? webview_1.RENDERING_CONSTANTS.TRACKPAD_SMOOTH_SCROLL_MS
+            : webview_1.RENDERING_CONSTANTS.MOUSE_SCROLL_DURATION_MS;
+        this.currentDevice = {
+            isTrackpad,
+            smoothScrollDuration,
+        };
+        return this.currentDevice;
+    }
+    /**
+     * Update terminal smooth scroll duration
+     */
+    updateSmoothScrollDuration(terminal, duration) {
+        try {
+            terminal.options.smoothScrollDuration = duration;
+            ManagerLogger_1.terminalLogger.debug(`Updated smooth scroll duration: ${duration}ms`);
+        }
+        catch (error) {
+            ManagerLogger_1.terminalLogger.warn(`Failed to update smooth scroll duration:`, error);
+        }
+    }
+    /**
+     * Setup device-specific smooth scrolling
+     */
+    setupSmoothScrolling(terminal, container, terminalId) {
+        const wheelHandler = (event) => {
+            const device = this.detectDevice(event);
+            this.updateSmoothScrollDuration(terminal, device.smoothScrollDuration);
+        };
+        // Use passive listener for better scroll performance
+        container.addEventListener('wheel', wheelHandler, {
+            passive: true,
+        });
+        ManagerLogger_1.terminalLogger.info(`✅ Device-specific smooth scrolling enabled for terminal: ${terminalId}`);
+    }
+    /**
+     * Dispose resize observer
+     */
+    disposeResizeObserver() {
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+            this.resizeObserver = null;
+        }
+        if (this.resizeTimer !== null) {
+            window.clearTimeout(this.resizeTimer);
+            this.resizeTimer = null;
+        }
+    }
+    /**
+     * Dispose all resources
+     */
+    dispose() {
+        this.disposeResizeObserver();
+        if (this.webglAddon) {
+            try {
+                this.webglAddon.dispose();
+                this.webglAddon = null;
+            }
+            catch (error) {
+                ManagerLogger_1.terminalLogger.warn(`Failed to dispose WebGL addon:`, error);
+            }
+        }
+        ManagerLogger_1.terminalLogger.debug('RenderingOptimizer disposed');
+    }
+}
+exports.RenderingOptimizer = RenderingOptimizer;
+//# sourceMappingURL=RenderingOptimizer.js.map

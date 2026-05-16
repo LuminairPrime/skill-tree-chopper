@@ -1,0 +1,16 @@
+node_modules/
+.vscode/
+.opencode/
+vendors/
+test-workspace/
+.agents/
+.agent/
+.forge/
+.gemini/
+.github/
+docs/
+openspec/
+src/
+*.ts
+*.map
+tsconfig.json

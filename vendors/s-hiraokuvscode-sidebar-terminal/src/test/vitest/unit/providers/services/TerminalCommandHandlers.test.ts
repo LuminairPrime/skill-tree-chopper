@@ -1,0 +1,379 @@
+/**
+ * TerminalCommandHandlers Unit Tests
+ */
+
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import * as vscode from 'vscode';
+import { TerminalCommandHandlers } from '../../../../../providers/services/TerminalCommandHandlers';
+
+// Mock VS Code API
+vi.mock('vscode', () => ({
+  env: {
+    clipboard: {
+      readText: vi.fn().mockResolvedValue('clipboard content'),
+      writeText: vi.fn().mockResolvedValue(undefined),
+    },
+  },
+  window: {
+    showErrorMessage: vi.fn(),
+  },
+}));
+
+// Mock logger
+vi.mock('../../../../../utils/logger', () => ({
+  provider: vi.fn(),
+}));
+
+// Mock UnifiedConfigurationService
+const { mockUnifiedConfig } = vi.hoisted(() => ({
+  mockUnifiedConfig: {
+    getTerminalProfilesConfig: vi
+      .fn()
+      .mockReturnValue({ profiles: { linux: {} }, defaultProfiles: {} }),
+    getWebViewFontSettings: vi.fn().mockReturnValue({ fontSize: 14 }),
+  },
+}));
+
+vi.mock('../../../../../config/UnifiedConfigurationService', () => ({
+  getUnifiedConfigurationService: vi.fn(() => mockUnifiedConfig),
+}));
+
+describe('TerminalCommandHandlers', () => {
+  let handlers: TerminalCommandHandlers;
+  let mockTerminalManager: any;
+  let mockCommService: any;
+  let mockLinkResolver: any;
+
+  beforeEach(() => {
+    mockTerminalManager = {
+      getActiveTerminalId: vi.fn().mockReturnValue('t1'),
+      setActiveTerminal: vi.fn(),
+      createTerminal: vi.fn().mockReturnValue('t-new'),
+      getCurrentState: vi.fn().mockReturnValue({}),
+      getTerminals: vi.fn().mockReturnValue([]),
+      sendInput: vi.fn(),
+      resize: vi.fn(),
+      removeTerminal: vi.fn(),
+      killTerminal: vi.fn().mockResolvedValue(undefined),
+      reorderTerminals: vi.fn(),
+      renameTerminal: vi.fn().mockReturnValue(true),
+      updateTerminalHeader: vi.fn().mockReturnValue(true),
+      getTerminal: vi.fn().mockReturnValue({ shellPath: '/bin/bash' }),
+      switchAiAgentConnection: vi.fn().mockReturnValue({ success: true, newStatus: 'connected' }),
+    };
+
+    mockCommService = {
+      sendMessage: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockLinkResolver = {
+      handleOpenTerminalLink: vi.fn(),
+    };
+
+    handlers = new TerminalCommandHandlers({
+      terminalManager: mockTerminalManager,
+      communicationService: mockCommService,
+      linkResolver: mockLinkResolver,
+      getSplitDirection: () => 'vertical',
+    });
+
+    vi.clearAllMocks();
+  });
+
+  describe('Terminal Lifecycle Commands', () => {
+    it('should handle focus terminal', async () => {
+      await handlers.handleFocusTerminal({ command: 'focusTerminal', terminalId: 't2' });
+      expect(mockTerminalManager.setActiveTerminal).toHaveBeenCalledWith('t2');
+    });
+
+    it('should handle create terminal', async () => {
+      await handlers.handleCreateTerminal({ command: 'createTerminal' });
+      expect(mockTerminalManager.createTerminal).toHaveBeenCalled();
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'stateUpdate' })
+      );
+    });
+
+    it('should handle split terminal', () => {
+      handlers.handleSplitTerminal({ command: 'splitTerminal', direction: 'horizontal' });
+      expect(mockTerminalManager.createTerminal).toHaveBeenCalled();
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          command: 'split',
+          direction: 'horizontal',
+        })
+      );
+    });
+
+    it('should handle kill terminal', async () => {
+      await handlers.handleKillTerminal({ command: 'killTerminal', terminalId: 't1' });
+      expect(mockTerminalManager.killTerminal).toHaveBeenCalledWith('t1');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'terminalRemoved' })
+      );
+    });
+  });
+
+  describe('Terminal Interaction Commands', () => {
+    it('should handle terminalInteraction switch-next', async () => {
+      mockTerminalManager.getTerminals.mockReturnValue([{ id: 't1' }, { id: 't2' }, { id: 't3' }]);
+      mockTerminalManager.getActiveTerminalId.mockReturnValue('t1');
+
+      await handlers.handleTerminalInteraction({
+        command: 'terminalInteraction',
+        type: 'switch-next',
+        terminalId: 't1',
+      } as any);
+
+      expect(mockTerminalManager.setActiveTerminal).toHaveBeenCalledWith('t2');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'focusTerminal', terminalId: 't2' })
+      );
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'stateUpdate' })
+      );
+    });
+
+    it('should handle terminalInteraction switch-previous', async () => {
+      mockTerminalManager.getTerminals.mockReturnValue([{ id: 't1' }, { id: 't2' }, { id: 't3' }]);
+      mockTerminalManager.getActiveTerminalId.mockReturnValue('t1');
+
+      await handlers.handleTerminalInteraction({
+        command: 'terminalInteraction',
+        type: 'switch-previous',
+        terminalId: 't1',
+      } as any);
+
+      expect(mockTerminalManager.setActiveTerminal).toHaveBeenCalledWith('t3');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'focusTerminal', terminalId: 't3' })
+      );
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'stateUpdate' })
+      );
+    });
+
+    it('should handle terminalInteraction create-terminal', async () => {
+      await handlers.handleTerminalInteraction({
+        command: 'terminalInteraction',
+        type: 'create-terminal',
+        terminalId: '',
+      } as any);
+
+      expect(mockTerminalManager.createTerminal).toHaveBeenCalled();
+      expect(mockTerminalManager.setActiveTerminal).toHaveBeenCalledWith('t-new');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'stateUpdate' })
+      );
+    });
+
+    it('should handle terminalInteraction kill-terminal', async () => {
+      mockTerminalManager.getActiveTerminalId.mockReturnValue('t1');
+
+      await handlers.handleTerminalInteraction({
+        command: 'terminalInteraction',
+        type: 'kill-terminal',
+        terminalId: 't1',
+      } as any);
+
+      expect(mockTerminalManager.killTerminal).toHaveBeenCalledWith('t1');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'terminalRemoved', terminalId: 't1' })
+      );
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'stateUpdate' })
+      );
+    });
+
+    it('should use the active terminal when terminalInteraction kill-terminal omits terminalId', async () => {
+      mockTerminalManager.getActiveTerminalId.mockReturnValue('t2');
+
+      await handlers.handleTerminalInteraction({
+        command: 'terminalInteraction',
+        type: 'kill-terminal',
+      } as any);
+
+      expect(mockTerminalManager.killTerminal).toHaveBeenCalledWith('t2');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'terminalRemoved', terminalId: 't2' })
+      );
+    });
+
+    it('should fall back to message terminalId when active terminal is unavailable during navigation', async () => {
+      mockTerminalManager.getTerminals.mockReturnValue([{ id: 't1' }, { id: 't2' }, { id: 't3' }]);
+      mockTerminalManager.getActiveTerminalId.mockReturnValue(undefined);
+
+      await handlers.handleTerminalInteraction({
+        command: 'terminalInteraction',
+        type: 'switch-next',
+        terminalId: 't2',
+      } as any);
+
+      expect(mockTerminalManager.setActiveTerminal).toHaveBeenCalledWith('t3');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'focusTerminal', terminalId: 't3' })
+      );
+    });
+
+    it('should ignore unsupported terminal interaction types', async () => {
+      await handlers.handleTerminalInteraction({
+        command: 'terminalInteraction',
+        type: 'unsupported',
+        terminalId: 't1',
+      } as any);
+
+      expect(mockTerminalManager.createTerminal).not.toHaveBeenCalled();
+      expect(mockTerminalManager.killTerminal).not.toHaveBeenCalled();
+      expect(mockTerminalManager.setActiveTerminal).not.toHaveBeenCalled();
+      expect(mockCommService.sendMessage).not.toHaveBeenCalled();
+    });
+
+    it('should handle terminal input', () => {
+      handlers.handleTerminalInput({ command: 'input', terminalId: 't1', data: 'ls\n' });
+      expect(mockTerminalManager.sendInput).toHaveBeenCalledWith('ls\n', 't1');
+    });
+
+    it('should handle terminal resize', () => {
+      handlers.handleTerminalResize({ command: 'resize', terminalId: 't1', cols: 100, rows: 30 });
+      expect(mockTerminalManager.resize).toHaveBeenCalledWith(100, 30, 't1');
+    });
+
+    it('should handle reorder', async () => {
+      // @ts-expect-error - test mock type
+      await handlers.handleReorderTerminals({ command: 'reorder', order: ['t2', 't1'] });
+      expect(mockTerminalManager.reorderTerminals).toHaveBeenCalledWith(['t2', 't1']);
+    });
+
+    it('should handle rename terminal and send state update', async () => {
+      await handlers.handleRenameTerminal({
+        command: 'renameTerminal',
+        terminalId: 't1',
+        newName: 'Renamed Terminal',
+      } as any);
+
+      expect(mockTerminalManager.renameTerminal).toHaveBeenCalledWith('t1', 'Renamed Terminal');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'stateUpdate' })
+      );
+    });
+
+    it('should ignore rename terminal with empty name', async () => {
+      await handlers.handleRenameTerminal({
+        command: 'renameTerminal',
+        terminalId: 't1',
+        newName: '   ',
+      } as any);
+
+      expect(mockTerminalManager.renameTerminal).not.toHaveBeenCalled();
+    });
+
+    it('should handle update terminal header with name and color', async () => {
+      await handlers.handleUpdateTerminalHeader({
+        command: 'updateTerminalHeader',
+        terminalId: 't1',
+        newName: 'Agent Terminal',
+        indicatorColor: '#FF69B4',
+      } as any);
+
+      expect(mockTerminalManager.updateTerminalHeader).toHaveBeenCalledWith('t1', {
+        newName: 'Agent Terminal',
+        indicatorColor: '#FF69B4',
+      });
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'stateUpdate' })
+      );
+    });
+
+    it('should handle update terminal header with OFF indicator color', async () => {
+      await handlers.handleUpdateTerminalHeader({
+        command: 'updateTerminalHeader',
+        terminalId: 't1',
+        indicatorColor: 'transparent',
+      } as any);
+
+      expect(mockTerminalManager.updateTerminalHeader).toHaveBeenCalledWith('t1', {
+        indicatorColor: 'transparent',
+      });
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'stateUpdate' })
+      );
+    });
+
+    it('should normalize lowercase hex indicator colors before updating terminal header', async () => {
+      await handlers.handleUpdateTerminalHeader({
+        command: 'updateTerminalHeader',
+        terminalId: 't1',
+        indicatorColor: '#ff69b4',
+      } as any);
+
+      expect(mockTerminalManager.updateTerminalHeader).toHaveBeenCalledWith('t1', {
+        indicatorColor: '#FF69B4',
+      });
+    });
+
+    it('should fall back to renameTerminal when updateTerminalHeader is unavailable', async () => {
+      delete mockTerminalManager.updateTerminalHeader;
+
+      await handlers.handleUpdateTerminalHeader({
+        command: 'updateTerminalHeader',
+        terminalId: 't1',
+        newName: '  Agent Terminal  ',
+        indicatorColor: 'not-a-color',
+      } as any);
+
+      expect(mockTerminalManager.renameTerminal).toHaveBeenCalledWith('t1', 'Agent Terminal');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'stateUpdate' })
+      );
+    });
+
+    it('should ignore update terminal header when all provided updates are invalid', async () => {
+      await handlers.handleUpdateTerminalHeader({
+        command: 'updateTerminalHeader',
+        terminalId: 't1',
+        newName: '   ',
+        indicatorColor: 'not-a-color',
+      } as any);
+
+      expect(mockTerminalManager.updateTerminalHeader).not.toHaveBeenCalled();
+      expect(mockTerminalManager.renameTerminal).not.toHaveBeenCalled();
+      expect(mockCommService.sendMessage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Clipboard Commands', () => {
+    it('should handle clipboard request (paste)', async () => {
+      // @ts-expect-error - test mock type
+      await handlers.handleClipboardRequest({ command: 'paste', terminalId: 't1' });
+      expect(vscode.env.clipboard.readText).toHaveBeenCalled();
+      // Text is wrapped with bracketed paste mode escape sequences
+      expect(mockTerminalManager.sendInput).toHaveBeenCalledWith(
+        '\x1b[200~clipboard content\x1b[201~',
+        't1'
+      );
+    });
+
+    it('should handle copy to clipboard', async () => {
+      // @ts-expect-error - test mock type
+      await handlers.handleCopyToClipboard({ command: 'copy', text: 'selected text' });
+      expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('selected text');
+    });
+  });
+
+  describe('Other Commands', () => {
+    it('should handle terminal link', async () => {
+      const msg = { command: 'openLink', linkType: 'url', url: 'http://test.com' };
+      await handlers.handleOpenTerminalLink(msg as any);
+      expect(mockLinkResolver.handleOpenTerminalLink).toHaveBeenCalledWith(msg);
+    });
+
+    it('should handle AI agent switch', async () => {
+      // @ts-expect-error - test mock type
+      await handlers.handleSwitchAiAgent({ command: 'switchAgent', terminalId: 't1' });
+      expect(mockTerminalManager.switchAiAgentConnection).toHaveBeenCalledWith('t1');
+      expect(mockCommService.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ command: 'switchAiAgentResponse' })
+      );
+    });
+  });
+});

@@ -1,0 +1,74 @@
+name: TDD Quality Check
+
+on:
+  push:
+    branches: [main, for-publish]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  tdd-check:
+    name: TDD Quality Gate
+    runs-on: ubuntu-latest
+    # 25 minutes timeout (extended due to known Ubuntu test timeout issue)
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Setup Python (for node-gyp)
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential xvfb
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Rebuild native dependencies
+        run: npm rebuild --verbose
+
+      - name: Compile tests
+        run: npm run compile-tests
+        continue-on-error: true
+
+      - name: Run Vitest Tests
+        run: |
+          echo "Running Vitest unit tests..."
+          npm run test || echo "Some tests failed"
+        continue-on-error: true
+
+      - name: Run TDD Quality Checks
+        run: |
+          echo "Running TDD quality checks..."
+          npm run tdd:check-quality || echo "Quality check has issues"
+          npm run tdd:quality-gate || echo "Quality gate has issues"
+        continue-on-error: true
+
+      - name: Generate TDD Report
+        run: |
+          npm run tdd:generate-report > tdd-report.md || echo "Failed to generate report"
+        continue-on-error: true
+
+      - name: Upload TDD Report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: tdd-report
+          path: tdd-report.md
+          retention-days: 30

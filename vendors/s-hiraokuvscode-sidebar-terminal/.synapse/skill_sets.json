@@ -1,0 +1,68 @@
+{
+  "architect": {
+    "name": "architect",
+    "description": "System architecture and design — design docs, API contracts, code review",
+    "skills": [
+      "synapse-a2a",
+      "system-design",
+      "api-design",
+      "code-review",
+      "project-docs"
+    ]
+  },
+  "developer": {
+    "name": "developer",
+    "description": "Implementation and quality — test-first development, refactoring, code simplification",
+    "skills": [
+      "synapse-a2a",
+      "test-first",
+      "refactoring",
+      "code-simplifier",
+      "agent-memory"
+    ]
+  },
+  "reviewer": {
+    "name": "reviewer",
+    "description": "Code review and security — structured reviews, security audits, code simplification",
+    "skills": [
+      "synapse-a2a",
+      "code-review",
+      "security-audit",
+      "code-simplifier"
+    ]
+  },
+  "frontend": {
+    "name": "frontend",
+    "description": "Frontend development — React/Next.js performance, component composition, design systems, accessibility",
+    "skills": [
+      "synapse-a2a",
+      "react-performance",
+      "frontend-design",
+      "react-composition",
+      "web-accessibility"
+    ]
+  },
+  "manager": {
+    "name": "manager",
+    "description": "Multi-agent management — task delegation, progress monitoring, quality verification, cross-review orchestration, re-instruction",
+    "skills": [
+      "synapse-a2a",
+      "synapse-manager",
+      "task-planner",
+      "agent-memory",
+      "code-review",
+      "synapse-reinst"
+    ]
+  },
+  "documentation": {
+    "name": "documentation",
+    "description": "Documentation expert — audit, restructure, synchronize, and maintain project documentation",
+    "skills": [
+      "synapse-a2a",
+      "project-docs",
+      "doc-organizer",
+      "api-design",
+      "agent-memory"
+    ]
+  }
+}

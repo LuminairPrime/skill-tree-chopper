@@ -1,0 +1,66 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const config_1 = require("vitest/config");
+const path_1 = require("path");
+exports.default = (0, config_1.defineConfig)({
+    test: {
+        // Test environment
+        environment: 'happy-dom',
+        // Global test setup
+        globals: true,
+        // Setup files - run before each test file
+        setupFiles: ['./src/test/vitest/setup.ts'],
+        // Test file patterns - only include vitest-specific tests
+        // Legacy tests remain in src/test/unit, src/test/integration, etc.
+        include: ['src/test/vitest/**/*.{test,spec}.ts'],
+        exclude: ['**/node_modules/**', '**/dist/**', '**/out/**'],
+        // Timeout settings
+        testTimeout: 30000,
+        hookTimeout: 30000,
+        teardownTimeout: 10000,
+        // Coverage configuration
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'html', 'lcov'],
+            include: ['src/**/*.ts'],
+            exclude: ['src/test/**', 'src/**/*.d.ts', 'src/webview/bundle/**'],
+            thresholds: {
+                // Adjusted thresholds based on codebase complexity
+                // WebView components require DOM/browser environment for full testing
+                // Target: Incremental improvement toward 70% lines, 70% functions, 60% branches
+                lines: 60,
+                functions: 60,
+                branches: 50,
+            },
+        },
+        // Reporter
+        reporters: ['default'],
+        // Suppress console log forwarding to prevent EnvironmentTeardownError.
+        // Tests that produce console output (e.g. TerminalCreationService) can trigger
+        // "Closing rpc while onUserConsoleLog was pending" when the worker shuts down
+        // before the log RPC completes. Returning false stops Vitest from forwarding
+        // the log, eliminating the race condition entirely.
+        onConsoleLog() {
+            return false;
+        },
+        // Parallel execution
+        // Use 'threads' instead of 'forks' to prevent EnvironmentTeardownError.
+        // The 'forks' pool creates child processes where onConsoleLog config
+        // doesn't suppress RPC calls, causing "Closing rpc while onUserConsoleLog
+        // was pending" on CI (especially Windows/macOS).
+        pool: 'threads',
+        // Sequence for consistent ordering
+        sequence: {
+            shuffle: false,
+        },
+    },
+    resolve: {
+        alias: {
+            // Mock vscode module
+            vscode: path_1.default.resolve(__dirname, 'src/test/vitest/mocks/vscode.ts'),
+            // Mock node-pty
+            'node-pty': path_1.default.resolve(__dirname, 'src/test/vitest/mocks/node-pty.ts'),
+        },
+    },
+});
+//# sourceMappingURL=vitest.config.js.map

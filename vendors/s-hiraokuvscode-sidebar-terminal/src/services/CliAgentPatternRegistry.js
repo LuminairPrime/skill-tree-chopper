@@ -1,0 +1,484 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CliAgentPatternRegistry = void 0;
+/**
+ * Centralized pattern registry for CLI Agent detection
+ */
+class CliAgentPatternRegistry {
+    constructor() {
+        this.agentPatterns = this.initializeAgentPatterns();
+        this.shellPromptPatterns = this.initializeShellPromptPatterns();
+    }
+    /**
+     * Initialize all agent pattern definitions
+     */
+    initializeAgentPatterns() {
+        const patterns = new Map();
+        // Claude Code patterns
+        patterns.set('claude', {
+            type: 'claude',
+            commandPrefixes: ['claude ', 'claude'],
+            startupPatterns: ['Welcome to Claude Code!', 'Tips for getting started'],
+            startupRegexPatterns: [
+                // Allow "ClaudeCode" as some TUIs can lose the visible whitespace after ANSI stripping.
+                /Claude\s*Code/i,
+            ],
+            activityKeywords: ['claude', 'anthropic'],
+            terminationPatterns: ['[Process completed]'],
+            terminationRegexPatterns: [/\[Process completed\]/i, /\[process exited with code \d+\]/i],
+        });
+        // Gemini CLI patterns
+        patterns.set('gemini', {
+            type: 'gemini',
+            commandPrefixes: ['gemini ', 'gemini'],
+            startupPatterns: [
+                'Welcome to Gemini',
+                'Gemini CLI started',
+                'Google Gemini is ready',
+                'Gemini Code assistant',
+                'Starting Gemini session',
+                'Gemini model initialized',
+                'Type your message or @path/to/file',
+                'gemini --help',
+                'gemini --version',
+                'Usage: gemini',
+                'gemini >',
+                'gemini:',
+                'gemini mcp',
+                'gemini skills',
+                'gemini extensions',
+                'gemini hooks',
+            ],
+            startupRegexPatterns: [
+                /You are running Gemini CLI.*directory/i,
+                /gemini.*Available commands/i,
+                /gemini.*Options:/i,
+                /gemini.*how can i help/i,
+                /gemini.*what would you like/i,
+                /^gemini\s+/,
+                /gemini-2\.5-pro/i,
+                /gemini-1\.5-pro/i,
+                /gemini-pro/i,
+                /gemini flash/i,
+                /gemini-exp/i,
+                /gemini.*context left/i,
+                /google.*gemini.*chat/i,
+                /gemini\s+(?:mcp|skills|extensions|hooks)/i,
+            ],
+            activityKeywords: ['gemini', 'google', 'google ai'],
+            terminationPatterns: ['Agent powering down. Goodbye!'],
+            terminationRegexPatterns: [/Agent powering down\.\s*Goodbye!/i],
+        });
+        // OpenAI Codex patterns
+        patterns.set('codex', {
+            type: 'codex',
+            commandPrefixes: ['codex ', 'codex'],
+            startupPatterns: ['OpenAI Codex'],
+            startupRegexPatterns: [/OpenAI\s+Codex/i],
+            activityKeywords: ['codex', 'openai'],
+            terminationPatterns: [],
+            terminationRegexPatterns: [/\[process exited with code \d+\]/i],
+        });
+        // GitHub Copilot CLI patterns
+        patterns.set('copilot', {
+            type: 'copilot',
+            commandPrefixes: ['copilot ', 'copilot', 'gh copilot'],
+            startupPatterns: ['Welcome to GitHub Copilot CLI'],
+            startupRegexPatterns: [/GitHub\s+Copilot/i],
+            activityKeywords: ['copilot', 'github'],
+            terminationPatterns: [],
+            terminationRegexPatterns: [/\[process exited with code \d+\]/i],
+        });
+        // OpenCode patterns
+        patterns.set('opencode', {
+            type: 'opencode',
+            commandPrefixes: ['opencode ', 'opencode'],
+            startupPatterns: [],
+            startupRegexPatterns: [/OpenCode\s+(?:Zen|Base)/i],
+            activityKeywords: ['opencode', 'open code'],
+            terminationPatterns: [],
+            terminationRegexPatterns: [/\[process exited with code \d+\]/i],
+        });
+        return patterns;
+    }
+    /**
+     * Initialize shell prompt patterns for termination detection
+     */
+    initializeShellPromptPatterns() {
+        return {
+            standard: [
+                // Standard bash/zsh prompts with username@hostname
+                /^[\w.-]+@[\w.-]+:[~\/]?[\w\/.~-]*\$\s*$/,
+                /^[\w.-]+@[\w.-]+\s+[~\/]?[\w\/.~-]*[$%#]\s*$/,
+                // Oh My Zsh themes with symbols
+                /^➜\s+[~\/]?[\w\/.~-]*\s*$/,
+                /^[➜▶⚡]\s+[~\/]?[\w\/.~-]*\s*$/,
+                // Starship prompt variations
+                /^❯\s*$/,
+                /^❯\s+\[.*?\].*$/,
+                // Simple shell prompts
+                /^[$%#>]\s*$/,
+                // PowerShell patterns
+                /^PS\s+[A-Z]:\\[\w\\.-]*>\s*$/,
+                /^PS>\s*$/,
+                // Fish shell patterns
+                /^[\w.-]+\s+[~\/][\w\/.-]*>\s*$/,
+                // Python/conda environment prompts
+                /^\([\w.-]+\)\s+[~\/]?[\w\/.~-]*[$%#]\s*$/,
+                // Directory-only prompts
+                /^~\$\s*$/,
+                /^\/[\w\/.~-]*\$\s*$/,
+                /^\.\/[\w\/.~-]*\$\s*$/,
+                /^[A-Z]:\\[\w\\.-]*>\s*$/,
+                // Time-based prompts
+                /^\[\d{1,2}:\d{2}(:\d{2})?\]\s*[~\/]?[\w\/.~-]*[$%#]\s*$/,
+                // Git-aware prompts
+                /^[\w.-]+\s+git:\([^)]+\)\s*[~\/]?[\w\/.~-]*\$\s*$/,
+                // Powerlevel/oh-my-zsh decorated prompts (e.g. "➜ project git:(main) ✗")
+                /^[➜▶⚡❯]\s+(?:[~\/]?[\w\/.-]+)(?:\s+git:\([^)]+\))?(?:\s+[✗✘✔✱✚●•±!?])?\s*$/,
+                // Flexible patterns
+                /^\w+\$\s*$/,
+                /^\w+%\s*$/,
+                /^\w+#\s*$/,
+                /^[\w-]+:\s*.*\$\s*$/,
+                /^.*@.*:\s*.*\$\s*$/,
+                /^.*\s+\$\s*$/,
+                /^.*\s+%\s*$/,
+                // Terminal-specific patterns
+                /^Last login:/,
+                /^logout$/i,
+                /^Connection to .* closed\.$/,
+                /^Session terminated\.$/i,
+            ],
+            processCompletion: [],
+            explicitTermination: [
+                '[process completed]',
+                '[process exited',
+                'agent powering down',
+                'command not found: claude',
+                'command not found: gemini',
+                'command not found: codex',
+                'command not found: copilot',
+                'command not found: opencode',
+            ],
+            crashIndicators: [
+                'segmentation fault',
+                'core dumped',
+                'fatal error',
+                'panic:',
+                'stack overflow',
+                'out of memory',
+                'terminated unexpectedly',
+                'crashed',
+            ],
+        };
+    }
+    /**
+     * Get pattern definition for specific agent type
+     */
+    getAgentPatterns(agentType) {
+        return this.agentPatterns.get(agentType);
+    }
+    /**
+     * Get all registered agent types
+     */
+    getAllAgentTypes() {
+        return Array.from(this.agentPatterns.keys());
+    }
+    /**
+     * Get all agent pattern definitions
+     */
+    getAllAgentPatterns() {
+        return Array.from(this.agentPatterns.values());
+    }
+    /**
+     * Get shell prompt patterns
+     */
+    getShellPromptPatterns() {
+        return this.shellPromptPatterns;
+    }
+    /**
+     * Check if command input matches any agent
+     * @param input User command input
+     * @returns Matched agent type or null
+     */
+    matchCommandInput(input) {
+        const lowerInput = input.toLowerCase().trim();
+        if (!lowerInput) {
+            return null;
+        }
+        const tokens = this.extractCommandTokens(lowerInput);
+        const tokenMatch = this.matchCommandTokens(tokens);
+        if (tokenMatch) {
+            return tokenMatch;
+        }
+        for (const [agentType, patterns] of this.agentPatterns.entries()) {
+            for (const prefix of patterns.commandPrefixes) {
+                if (lowerInput.startsWith(prefix) || lowerInput === prefix.trim()) {
+                    return agentType;
+                }
+            }
+        }
+        return null;
+    }
+    extractCommandTokens(input) {
+        const tokens = (input.match(/[^\s]+/g) || []).map((token) => this.stripTokenQuotes(token));
+        if (tokens.length === 0) {
+            return [];
+        }
+        let index = 0;
+        while (index < tokens.length && this.isEnvironmentAssignment(tokens[index])) {
+            index++;
+        }
+        if (tokens[index] === 'env') {
+            index++;
+            while (index < tokens.length &&
+                (this.isEnvironmentAssignment(tokens[index]) || tokens[index]?.startsWith('-'))) {
+                index++;
+            }
+        }
+        return tokens.slice(index);
+    }
+    isEnvironmentAssignment(token) {
+        return !!token && /^[a-z_][a-z0-9_]*=/.test(token);
+    }
+    stripTokenQuotes(token) {
+        return token.replace(/^['"]+|['"]+$/g, '');
+    }
+    matchCommandTokens(tokens) {
+        if (tokens.length === 0) {
+            return null;
+        }
+        const directMatch = this.matchDirectCommand(tokens);
+        if (directMatch) {
+            return directMatch;
+        }
+        return this.matchWrappedCommand(tokens);
+    }
+    matchDirectCommand(tokens) {
+        const first = tokens[0];
+        const second = tokens[1];
+        if (!first) {
+            return null;
+        }
+        if (first === 'gh' && second === 'copilot') {
+            return 'copilot';
+        }
+        return this.matchAgentAlias(this.normalizeCommandToken(first));
+    }
+    matchWrappedCommand(tokens) {
+        const wrapper = tokens[0];
+        if (!wrapper) {
+            return null;
+        }
+        let targetIndex = -1;
+        if (wrapper === 'npx' || wrapper === 'bunx') {
+            targetIndex = 1;
+        }
+        else if ((wrapper === 'pnpm' || wrapper === 'yarn') && tokens[1] === 'dlx') {
+            targetIndex = 2;
+        }
+        else if (wrapper === 'npm' && tokens[1] === 'exec') {
+            targetIndex = 2;
+        }
+        if (targetIndex === -1) {
+            return null;
+        }
+        const target = this.extractWrapperTarget(tokens, targetIndex);
+        if (!target) {
+            return null;
+        }
+        return this.matchAgentAlias(this.normalizePackageToken(target));
+    }
+    extractWrapperTarget(tokens, startIndex) {
+        for (let i = startIndex; i < tokens.length; i++) {
+            const token = tokens[i];
+            if (!token || token === '--') {
+                continue;
+            }
+            if (token.startsWith('-')) {
+                continue;
+            }
+            return token;
+        }
+        return null;
+    }
+    normalizeCommandToken(token) {
+        const normalized = this.stripVersionSuffix(this.stripShellDelimiters(token));
+        const pathSplit = normalized.split(/[\\/]/);
+        return pathSplit[pathSplit.length - 1] || normalized;
+    }
+    normalizePackageToken(token) {
+        const normalized = this.stripShellDelimiters(token);
+        return this.stripVersionSuffix(normalized);
+    }
+    stripShellDelimiters(token) {
+        return token.replace(/[;|&]+$/g, '');
+    }
+    stripVersionSuffix(token) {
+        if (!token.includes('@')) {
+            return token;
+        }
+        if (token.startsWith('@')) {
+            const secondAt = token.indexOf('@', 1);
+            return secondAt > 0 ? token.slice(0, secondAt) : token;
+        }
+        return token.split('@')[0] ?? token;
+    }
+    matchAgentAlias(token) {
+        const normalized = token.toLowerCase();
+        switch (normalized) {
+            case 'claude':
+            case 'claude-code':
+            case '@anthropic-ai/claude-code':
+                return 'claude';
+            case 'gemini':
+            case 'gemini-cli':
+            case '@google/gemini-cli':
+                return 'gemini';
+            case 'codex':
+            case 'openai-codex':
+            case '@openai/codex':
+                return 'codex';
+            case 'copilot':
+            case '@github/copilot':
+            case 'github/copilot':
+            case 'gh-copilot':
+                return 'copilot';
+            case 'opencode':
+            case '@opencode-ai/opencode':
+            case '@sst/opencode':
+            case 'sst/opencode':
+                return 'opencode';
+            default:
+                return null;
+        }
+    }
+    /**
+     * Check if output matches any agent startup pattern
+     * @param output Terminal output
+     * @returns Matched agent type or null
+     */
+    matchStartupOutput(output) {
+        for (const [agentType, patterns] of this.agentPatterns.entries()) {
+            // Check string patterns
+            for (const pattern of patterns.startupPatterns ?? []) {
+                if (output.includes(pattern)) {
+                    return agentType;
+                }
+            }
+            // Check regex patterns
+            for (const regex of patterns.startupRegexPatterns ?? []) {
+                if (regex.test(output)) {
+                    return agentType;
+                }
+            }
+        }
+        return null;
+    }
+    /**
+     * Check if output indicates agent activity
+     * @param output Terminal output
+     * @param agentType Agent type to check (optional, checks all if not specified)
+     * @returns True if output indicates agent activity
+     */
+    isAgentActivity(output, agentType) {
+        // Check specific agent type if provided
+        if (agentType) {
+            const patterns = this.agentPatterns.get(agentType);
+            if (patterns) {
+                return patterns.activityKeywords.some((keyword) => this.containsKeyword(output, keyword));
+            }
+        }
+        // Check all agent types
+        for (const patterns of this.agentPatterns.values()) {
+            const hasKeyword = patterns.activityKeywords.some((keyword) => this.containsKeyword(output, keyword));
+            if (hasKeyword) {
+                return true;
+            }
+        }
+        return false;
+    }
+    containsKeyword(output, keyword) {
+        const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const pattern = new RegExp(`\\b${escapedKeyword}\\b`, 'i');
+        return pattern.test(output);
+    }
+    /**
+     * Check if line matches shell prompt pattern
+     * @param line Cleaned terminal line
+     * @returns True if line is a shell prompt
+     */
+    isShellPrompt(line) {
+        if (!line || line.trim().length === 0) {
+            return false;
+        }
+        // Skip lines that are too long
+        if (line.length > 100) {
+            return false;
+        }
+        // Check against standard shell prompt patterns
+        return this.shellPromptPatterns.standard.some((pattern) => pattern.test(line));
+    }
+    /**
+     * Check if line matches termination pattern for any agent
+     * @param line Cleaned terminal line
+     * @param agentType Agent type to check (optional, checks all if not specified)
+     * @returns True if line indicates termination
+     */
+    isTerminationPattern(line, agentType) {
+        const lowerLine = line.toLowerCase().trim();
+        // Check explicit termination messages
+        if (this.shellPromptPatterns.explicitTermination.some((pattern) => lowerLine.includes(pattern.toLowerCase()))) {
+            return true;
+        }
+        // Check process completion
+        if (this.shellPromptPatterns.processCompletion.some((pattern) => lowerLine === pattern.toLowerCase())) {
+            return true;
+        }
+        // Check crash indicators
+        if (this.shellPromptPatterns.crashIndicators.some((pattern) => lowerLine.includes(pattern.toLowerCase()))) {
+            return true;
+        }
+        // Check agent-specific termination patterns
+        const patterns = agentType
+            ? [this.agentPatterns.get(agentType)].filter(Boolean)
+            : Array.from(this.agentPatterns.values());
+        for (const pattern of patterns) {
+            if (!pattern)
+                continue;
+            // Check string patterns
+            if (pattern.terminationPatterns.some((p) => lowerLine.includes(p.toLowerCase()))) {
+                return true;
+            }
+            // Check regex patterns
+            if (pattern.terminationRegexPatterns.some((regex) => regex.test(line))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Clean ANSI escape sequences from terminal data
+     * @param text Raw terminal text
+     * @returns Cleaned text
+     */
+    cleanAnsiEscapeSequences(text) {
+        return (text
+            // CSI sequences (colors, cursor, private modes)
+            .replace(/\x1b\[[0-9;?]*[A-Za-z]/g, '')
+            // OSC sequences terminated by BEL (multi-digit parameter support)
+            .replace(/\x1b\][0-9;]*[^\x07]*\x07/g, '')
+            // OSC sequences terminated by ST (ESC \)
+            .replace(/\x1b\][0-9;]*[^\x1b]*\x1b\\/g, '')
+            // Remaining lone ESC sequences (SS3, DCS, APC, keypad modes)
+            .replace(/\x1b[^[\]]/g, '')
+            // Remove carriage return
+            .replace(/\r/g, '')
+            // Remove control characters but preserve newlines for line-based matching
+            .replace(/[\x00-\x09\x0B-\x1F\x7F]/g, '')
+            .trim());
+    }
+}
+exports.CliAgentPatternRegistry = CliAgentPatternRegistry;
+//# sourceMappingURL=CliAgentPatternRegistry.js.map

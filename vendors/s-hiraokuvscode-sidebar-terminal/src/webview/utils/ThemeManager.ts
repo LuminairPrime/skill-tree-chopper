@@ -1,0 +1,254 @@
+/**
+ * ThemeManager Utility
+ * Centralized theme and styling management with VS Code integration
+ */
+
+import { ThemeColors, TerminalTheme, DARK_THEME, getVSCodeThemeColors } from '../types/theme.types';
+
+/**
+ * Centralized theme manager for VS Code integration
+ * Provides consistent color management across all components
+ */
+export class ThemeManager {
+  private static isInitialized = false;
+  private static themeColors: ThemeColors = {
+    background: '#1e1e1e',
+    foreground: '#d4d4d4',
+    border: '#454545',
+  };
+
+  private static parseHexColor(color: string): { r: number; g: number; b: number } | null {
+    if (!color.startsWith('#')) {
+      return null;
+    }
+
+    const hex = color.slice(1);
+    if (hex.length === 3) {
+      return {
+        r: parseInt(hex[0]! + hex[0]!, 16),
+        g: parseInt(hex[1]! + hex[1]!, 16),
+        b: parseInt(hex[2]! + hex[2]!, 16),
+      };
+    }
+
+    if (hex.length === 6) {
+      return {
+        r: parseInt(hex.slice(0, 2), 16),
+        g: parseInt(hex.slice(2, 4), 16),
+        b: parseInt(hex.slice(4, 6), 16),
+      };
+    }
+
+    return null;
+  }
+
+  private static parseRgbColor(color: string): { r: number; g: number; b: number } | null {
+    const match = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (!match) {
+      return null;
+    }
+
+    return {
+      r: Number(match[1]),
+      g: Number(match[2]),
+      b: Number(match[3]),
+    };
+  }
+
+  private static resolveThemeType(): 'light' | 'dark' {
+    if (typeof document !== 'undefined' && typeof getComputedStyle !== 'undefined') {
+      const computedStyle = getComputedStyle(document.documentElement);
+      const background =
+        computedStyle.getPropertyValue('--vscode-terminal-background').trim() ||
+        computedStyle.getPropertyValue('--vscode-editor-background').trim();
+      const rgb = this.parseHexColor(background) ?? this.parseRgbColor(background);
+
+      if (rgb) {
+        const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+        return luminance >= 0.5 ? 'light' : 'dark';
+      }
+    }
+
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    return 'dark';
+  }
+
+  /**
+   * Initialize the theme manager
+   */
+  public static initialize(): void {
+    try {
+      if (this.isInitialized) {
+        return;
+      }
+
+      // Update theme colors from CSS custom properties
+      this.updateThemeColors();
+      this.isInitialized = true;
+    } catch (error) {
+      console.warn('ThemeManager initialization failed:', error);
+      // Continue with default colors
+      this.isInitialized = true;
+    }
+  }
+
+  /**
+   * Get current theme colors
+   */
+  public static getThemeColors(): ThemeColors {
+    if (!this.isInitialized) {
+      this.initialize();
+    }
+    return { ...this.themeColors };
+  }
+
+  /**
+   * Apply theme to an element
+   */
+  public static applyTheme(element: HTMLElement, customTheme?: Partial<ThemeColors>): void {
+    if (!element) {
+      return;
+    }
+
+    const colors = customTheme || this.getThemeColors();
+
+    if (colors.background) {
+      element.style.background = colors.background;
+    }
+    if (colors.foreground) {
+      element.style.color = colors.foreground;
+    }
+    if (colors.border) {
+      element.style.borderColor = colors.border;
+    }
+  }
+
+  /**
+   * Get VS Code CSS custom property value
+   */
+  public static getVSCodeColor(property: string, fallback: string = '#1e1e1e'): string {
+    try {
+      if (!property || typeof document === 'undefined') {
+        return fallback;
+      }
+
+      const root = document.documentElement;
+      if (!root || !getComputedStyle) {
+        return fallback;
+      }
+
+      const value = getComputedStyle(root).getPropertyValue(property).trim();
+      return value || fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  /**
+   * Create terminal theme from VS Code colors
+   */
+  public static createTerminalTheme(overrides?: Partial<TerminalTheme>): TerminalTheme {
+    const colors = this.getThemeColors();
+
+    // Use DARK_THEME as base and override with VS Code colors
+    const defaultTheme: TerminalTheme = {
+      ...DARK_THEME,
+      background: colors.background,
+      foreground: colors.foreground,
+      cursor: this.getVSCodeColor('--vscode-terminalCursor-foreground', DARK_THEME.cursor),
+      selectionBackground: this.getVSCodeColor(
+        '--vscode-terminal-selectionBackground',
+        DARK_THEME.selectionBackground
+      ),
+    };
+
+    return { ...defaultTheme, ...overrides };
+  }
+
+  /**
+   * Update element theme by selector
+   */
+  public static updateElementTheme(selector: string, styles: Partial<CSSStyleDeclaration>): void {
+    try {
+      const elements = document.querySelectorAll<HTMLElement>(selector);
+      elements.forEach((element) => {
+        Object.assign(element.style, styles);
+      });
+    } catch (error) {
+      console.warn('Failed to update element theme:', error);
+    }
+  }
+
+  /**
+   * Get all VS Code theme variables
+   */
+  public static getThemeVariables(): Record<string, string> {
+    const variables: Record<string, string> = {};
+
+    try {
+      if (typeof document === 'undefined' || !getComputedStyle) {
+        return variables;
+      }
+
+      const root = document.documentElement;
+      const computedStyle = getComputedStyle(root);
+
+      // Common VS Code variables
+      const vsCodeProperties = [
+        '--vscode-editor-background',
+        '--vscode-editor-foreground',
+        '--vscode-widget-border',
+        '--vscode-focusBorder',
+        '--vscode-button-background',
+        '--vscode-button-foreground',
+        '--vscode-input-background',
+        '--vscode-input-foreground',
+        '--vscode-list-activeSelectionBackground',
+        '--vscode-list-hoverBackground',
+        '--vscode-terminal-foreground',
+        '--vscode-terminal-background',
+        '--vscode-terminalCursor-foreground',
+        '--vscode-terminal-selectionBackground',
+      ];
+
+      vsCodeProperties.forEach((property) => {
+        const value = computedStyle.getPropertyValue(property).trim();
+        if (value) {
+          variables[property] = value;
+        }
+      });
+    } catch (error) {
+      console.warn('Failed to get theme variables:', error);
+    }
+
+    return variables;
+  }
+
+  /**
+   * Update theme colors from CSS custom properties
+   */
+  private static updateThemeColors(): void {
+    const resolvedTheme = getVSCodeThemeColors(this.resolveThemeType());
+
+    this.themeColors = {
+      background: resolvedTheme.background,
+      foreground: resolvedTheme.foreground,
+      border: this.getVSCodeColor('--vscode-widget-border', '#454545'),
+    };
+  }
+
+  /**
+   * Dispose of theme manager
+   */
+  public static dispose(): void {
+    this.isInitialized = false;
+    this.themeColors = {
+      background: '#1e1e1e',
+      foreground: '#d4d4d4',
+      border: '#454545',
+    };
+  }
+}

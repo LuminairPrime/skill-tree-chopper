@@ -1,0 +1,294 @@
+/**
+ * Terminal Addon Manager
+ *
+ * Extracted from TerminalLifecycleCoordinator to centralize addon management.
+ *
+ * Responsibilities:
+ * - Loading and initializing xterm.js addons
+ * - Managing addon lifecycle and disposal
+ * - Providing typed access to loaded addons
+ * - Handling optional vs required addons gracefully
+ *
+ * @see openspec/changes/refactor-terminal-foundation/specs/split-lifecycle-manager/spec.md
+ */
+
+import { Terminal } from '@xterm/xterm';
+import { FitAddon } from '@xterm/addon-fit';
+import { WebLinksAddon } from '@xterm/addon-web-links';
+import { SearchAddon } from '@xterm/addon-search';
+import { SerializeAddon } from '@xterm/addon-serialize';
+import { Unicode11Addon } from '@xterm/addon-unicode11';
+import { WebglAddon } from '@xterm/addon-webgl';
+import { terminalLogger } from '../utils/ManagerLogger';
+import { AddonLoader } from '../utils/AddonLoader';
+import { ErrorHandler } from '../utils/ErrorHandler';
+
+/**
+ * Configuration for addon loading
+ */
+export interface AddonConfig {
+  enableGpuAcceleration?: boolean;
+  enableSearchAddon?: boolean;
+  enableUnicode11?: boolean;
+  linkHandler?: (event: MouseEvent | undefined, uri: string) => void;
+  /**
+   * VS Code standard link activation modifier key.
+   * - 'alt': Alt+Click activates links (VS Code default)
+   * - 'ctrlCmd': Cmd+Click (macOS) or Ctrl+Click (Windows/Linux) activates links
+   * Follows VS Code's editor.multiCursorModifier setting.
+   */
+  linkModifier?: 'alt' | 'ctrlCmd';
+}
+
+/**
+ * Container for loaded addons
+ */
+export interface LoadedAddons {
+  fitAddon: FitAddon;
+  webLinksAddon: WebLinksAddon;
+  serializeAddon: SerializeAddon;
+  searchAddon?: SearchAddon;
+  webglAddon?: WebglAddon;
+  unicode11Addon?: Unicode11Addon;
+}
+
+/**
+ * Service responsible for managing xterm.js addons
+ */
+export class TerminalAddonManager {
+  /**
+   * Load all addons for a terminal instance using AddonLoader utility
+   *
+   * Refactored to use generic AddonLoader, eliminating 60+ lines of duplicated code.
+   * @see AddonLoader for generic loading implementation
+   */
+  public async loadAllAddons(
+    terminal: Terminal,
+    terminalId: string,
+    config: AddonConfig
+  ): Promise<LoadedAddons> {
+    const addons: Partial<LoadedAddons> = {};
+
+    try {
+      // Load essential addons (required - throws on error)
+      const fitAddon = await AddonLoader.loadAddon(terminal, terminalId, FitAddon, {
+        required: true,
+      });
+      if (!fitAddon) {
+        throw new Error(`FitAddon failed to load for terminal: ${terminalId}`);
+      }
+      addons.fitAddon = fitAddon;
+      this.patchFitAddonForScrollbar(terminal, fitAddon);
+
+      if (config.linkHandler) {
+        // Use custom handler so links are opened by the extension (vscode.env.openExternal)
+        // VS Code standard: links require modifier key + click to activate
+        // This follows editor.multiCursorModifier setting:
+        // - 'alt': Alt+Click activates links (VS Code default when multiCursorModifier is 'alt')
+        // - 'ctrlCmd': Cmd/Ctrl+Click activates links (when multiCursorModifier is 'ctrlCmd')
+        const linkModifier = config.linkModifier ?? 'ctrlCmd'; // Default to Cmd/Ctrl for link activation
+
+        const webLinksAddon = new WebLinksAddon(
+          (event, uri) => {
+            try {
+              terminalLogger.info(
+                `🔗 [WEBVIEW] Link clicked in terminal ${terminalId}: ${uri} (meta=${Boolean(
+                  (event as MouseEvent | undefined)?.metaKey
+                )}, ctrl=${Boolean((event as MouseEvent | undefined)?.ctrlKey)}, alt=${Boolean(
+                  (event as MouseEvent | undefined)?.altKey
+                )})`
+              );
+
+              // Forward to extension
+              config.linkHandler?.(event as MouseEvent | undefined, uri);
+            } catch (error) {
+              terminalLogger.warn(`⚠️ WebLinksAddon handler failed for ${terminalId}:`, error);
+            }
+          },
+          // VS Code standard: willLinkActivate checks for modifier key
+          // When modifier is pressed + left click, activate the link
+          // This allows normal text selection without triggering links
+          {
+            willLinkActivate: (event: MouseEvent) => {
+              if (!event || event.button !== 0) return false;
+
+              // Check for the appropriate modifier key based on VS Code settings
+              // VS Code's terminal uses the OPPOSITE modifier for links:
+              // - When multiCursorModifier is 'alt', Cmd/Ctrl+Click opens links
+              // - When multiCursorModifier is 'ctrlCmd', Alt+Click opens links
+              if (linkModifier === 'alt') {
+                // Alt is used for multi-cursor, so Cmd/Ctrl opens links
+                return event.metaKey || event.ctrlKey;
+              } else {
+                // Cmd/Ctrl is used for multi-cursor, so Alt opens links
+                return event.altKey;
+              }
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any
+        );
+
+        terminal.loadAddon(webLinksAddon);
+        addons.webLinksAddon = webLinksAddon;
+        terminalLogger.info(
+          `✅ WebLinksAddon loaded with custom handler for terminal: ${terminalId}`
+        );
+      } else {
+        addons.webLinksAddon = await AddonLoader.loadAddon(terminal, terminalId, WebLinksAddon, {
+          required: true,
+        });
+      }
+
+      addons.serializeAddon = await AddonLoader.loadAddon(terminal, terminalId, SerializeAddon, {
+        required: true,
+        addonName: 'SerializeAddon (scrollback)',
+      });
+
+      // Load optional addons (graceful degradation - returns undefined on error)
+      if (config.enableSearchAddon) {
+        addons.searchAddon = await AddonLoader.loadAddon(terminal, terminalId, SearchAddon, {
+          required: false,
+        });
+      }
+
+      // 🔧 FIX: WebGL addon is now loaded ONLY by RenderingOptimizer
+      // to avoid duplicate loading which causes rendering issues on macOS.
+      // RenderingOptimizer has better error handling and automatic DOM fallback.
+
+      if (config.enableUnicode11) {
+        addons.unicode11Addon = await AddonLoader.loadAddon(terminal, terminalId, Unicode11Addon, {
+          required: false,
+          onLoaded: (_addon, term) => {
+            term.unicode.activeVersion = '11';
+          },
+        });
+      }
+
+      terminalLogger.info(`✅ All addons loaded successfully for terminal: ${terminalId}`);
+
+      return addons as LoadedAddons;
+    } catch (error) {
+      ErrorHandler.handleOperationError(`Addon loading for ${terminalId}`, error, {
+        severity: 'error',
+        rethrow: true,
+        context: { terminalId },
+      });
+      // TypeScript requires return statement after rethrow (unreachable code)
+      throw error;
+    }
+  }
+
+  /**
+   * Get specific addon from loaded addons
+   */
+  public getAddon<T extends keyof LoadedAddons>(
+    addons: LoadedAddons,
+    addonName: T
+  ): LoadedAddons[T] {
+    return addons[addonName];
+  }
+
+  /**
+   * Dispose all addons
+   */
+  public disposeAddons(addons: LoadedAddons | undefined): void {
+    if (!addons) {
+      return;
+    }
+
+    try {
+      // Dispose optional addons
+      if (addons.searchAddon) {
+        addons.searchAddon.dispose();
+      }
+      if (addons.webglAddon) {
+        addons.webglAddon.dispose();
+      }
+      if (addons.unicode11Addon) {
+        (addons.unicode11Addon as any).dispose?.();
+      }
+
+      // Note: FitAddon, WebLinksAddon, and SerializeAddon are disposed
+      // automatically when the terminal is disposed
+
+      terminalLogger.info('✅ Addons disposed successfully');
+    } catch (error) {
+      ErrorHandler.handleOperationError('Addon disposal', error, {
+        severity: 'warn',
+        rethrow: false,
+      });
+    }
+  }
+
+  /**
+   * Dispose cleanup
+   */
+  public dispose(): void {
+    terminalLogger.info('TerminalAddonManager disposed');
+  }
+
+  private patchFitAddonForScrollbar(terminal: Terminal, fitAddon: FitAddon): void {
+    const originalPropose = fitAddon.proposeDimensions.bind(fitAddon);
+
+    fitAddon.proposeDimensions = () => {
+      const element = terminal.element as HTMLElement | null;
+      const parent = element?.parentElement as HTMLElement | null;
+      const core = (
+        terminal as unknown as {
+          _core?: {
+            _renderService?: { dimensions?: { css: { cell: { width: number; height: number } } } };
+            viewport?: { scrollBarWidth: number };
+          };
+        }
+      )._core;
+      const dimensions = core?._renderService?.dimensions;
+
+      if (!element || !parent || !dimensions) {
+        return originalPropose();
+      }
+
+      const cellWidth = dimensions.css.cell.width;
+      const cellHeight = dimensions.css.cell.height;
+      if (cellWidth === 0 || cellHeight === 0) {
+        return originalPropose();
+      }
+
+      const parentStyle = window.getComputedStyle(parent);
+      const elementStyle = window.getComputedStyle(element);
+      const height = parseInt(parentStyle.getPropertyValue('height'), 10);
+      const width = Math.max(0, parseInt(parentStyle.getPropertyValue('width'), 10));
+
+      if (Number.isNaN(height) || Number.isNaN(width)) {
+        return originalPropose();
+      }
+
+      const paddingVertical =
+        (parseInt(elementStyle.getPropertyValue('padding-top'), 10) || 0) +
+        (parseInt(elementStyle.getPropertyValue('padding-bottom'), 10) || 0);
+      const paddingHorizontal =
+        (parseInt(elementStyle.getPropertyValue('padding-left'), 10) || 0) +
+        (parseInt(elementStyle.getPropertyValue('padding-right'), 10) || 0);
+      const parentPaddingVertical =
+        (parseInt(parentStyle.getPropertyValue('padding-top'), 10) || 0) +
+        (parseInt(parentStyle.getPropertyValue('padding-bottom'), 10) || 0);
+      const parentPaddingHorizontal =
+        (parseInt(parentStyle.getPropertyValue('padding-left'), 10) || 0) +
+        (parseInt(parentStyle.getPropertyValue('padding-right'), 10) || 0);
+
+      const viewport = element.querySelector('.xterm-viewport') as HTMLElement | null;
+      const actualScrollbarWidth = viewport
+        ? Math.max(0, viewport.offsetWidth - viewport.clientWidth)
+        : 0;
+      const scrollbarWidth = actualScrollbarWidth || core?.viewport?.scrollBarWidth || 0;
+
+      const availableHeight = height - paddingVertical - parentPaddingVertical;
+      const availableWidth = width - paddingHorizontal - parentPaddingHorizontal - scrollbarWidth;
+      const safetyPaddingPx = 0; // Remove safety padding to maximize visible area
+
+      return {
+        cols: Math.max(2, Math.floor((availableWidth - safetyPaddingPx) / cellWidth)),
+        rows: Math.max(1, Math.floor(availableHeight / cellHeight)),
+      };
+    };
+  }
+}

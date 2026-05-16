@@ -1,0 +1,309 @@
+"use strict";
+/**
+ * Terminal Auto-Save Service
+ *
+ * Extracted from TerminalCreationService for better maintainability.
+ * Handles automatic scrollback save on terminal output.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TerminalAutoSaveService = void 0;
+const ManagerLogger_1 = require("../../utils/ManagerLogger");
+/**
+ * Service for managing terminal scrollback auto-save functionality
+ */
+class TerminalAutoSaveService {
+    constructor(coordinator) {
+        this.coordinator = coordinator;
+    }
+    /**
+     * Clear periodic save timer for a terminal (call on terminal dispose)
+     */
+    static clearPeriodicSaveTimer(terminalId) {
+        const timer = TerminalAutoSaveService.periodicSaveTimers.get(terminalId);
+        if (timer) {
+            window.clearInterval(timer);
+            TerminalAutoSaveService.periodicSaveTimers.delete(terminalId);
+            ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Cleared periodic save timer for: ${terminalId}`);
+        }
+        // Dispose xterm.js event listeners to prevent accumulation
+        const disposables = TerminalAutoSaveService.terminalListenerDisposables.get(terminalId);
+        if (disposables) {
+            disposables.forEach((d) => d.dispose());
+            TerminalAutoSaveService.terminalListenerDisposables.delete(terminalId);
+        }
+        // Also remove from registered terminals
+        TerminalAutoSaveService.registeredTerminals.delete(terminalId);
+    }
+    /**
+     * Setup visibility change handler for sleep/wake recovery
+     * This ensures scrollback is saved before sleep and restored after wake
+     */
+    static setupVisibilityChangeHandler() {
+        if (TerminalAutoSaveService.visibilityHandlerSetup) {
+            return;
+        }
+        document.addEventListener('visibilitychange', () => {
+            const now = Date.now();
+            if (document.visibilityState === 'hidden') {
+                TerminalAutoSaveService.lastHiddenAt = now;
+                // Page is being hidden (possibly going to sleep)
+                // Save all terminal scrollback immediately
+                ManagerLogger_1.terminalLogger.debug('[AUTO-SAVE] Page hidden - saving all scrollback immediately');
+                TerminalAutoSaveService.saveAllScrollbackImmediately();
+                return;
+            }
+            if (document.visibilityState === 'visible') {
+                const hiddenAt = TerminalAutoSaveService.lastHiddenAt;
+                const timeHidden = hiddenAt ? now - hiddenAt : 0;
+                // Consider it a sleep/wake only if hidden for a long enough period
+                const isLikelyWakeFromSleep = hiddenAt > 0 && timeHidden > 60000;
+                ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Page visible - hiddenDuration: ${timeHidden}ms, likelyWake: ${isLikelyWakeFromSleep}`);
+                if (isLikelyWakeFromSleep) {
+                    // Request scrollback restoration from Extension
+                    ManagerLogger_1.terminalLogger.debug('[AUTO-SAVE] Likely wake from sleep - requesting scrollback refresh');
+                    TerminalAutoSaveService.requestScrollbackRefresh();
+                }
+            }
+        });
+        window.addEventListener('pagehide', () => {
+            // Ensure latest scrollback is pushed before the webview unloads.
+            TerminalAutoSaveService.saveAllScrollbackImmediately();
+            TerminalAutoSaveService.requestSessionSaveOnExit();
+        });
+        TerminalAutoSaveService.visibilityHandlerSetup = true;
+        ManagerLogger_1.terminalLogger.debug('[AUTO-SAVE] Visibility change handler setup complete');
+    }
+    /**
+     * Save all terminal scrollback immediately (called before sleep)
+     */
+    static saveAllScrollbackImmediately() {
+        const windowWithApi = window;
+        if (!windowWithApi.vscodeApi) {
+            // eslint-disable-next-line no-console
+            console.warn('[AUTO-SAVE] vscodeApi not available for immediate save');
+            return;
+        }
+        for (const [terminalId, { serializeAddon }] of TerminalAutoSaveService.registeredTerminals) {
+            if (TerminalAutoSaveService.isTerminalRestoring(terminalId)) {
+                continue;
+            }
+            try {
+                const serialized = serializeAddon.serialize({ scrollback: 1000 });
+                const lines = serialized.split('\n');
+                windowWithApi.vscodeApi.postMessage({
+                    command: 'pushScrollbackData',
+                    terminalId,
+                    scrollbackData: lines,
+                    timestamp: Date.now(),
+                    beforeSleep: true,
+                });
+                ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Saved scrollback before sleep for ${terminalId}: ${lines.length} lines`);
+            }
+            catch (error) {
+                // eslint-disable-next-line no-console
+                console.warn(`[AUTO-SAVE] Failed to save scrollback before sleep for ${terminalId}:`, error);
+            }
+        }
+    }
+    /**
+     * Request scrollback refresh from Extension after wake
+     */
+    static requestScrollbackRefresh() {
+        const windowWithApi = window;
+        if (!windowWithApi.vscodeApi) {
+            // eslint-disable-next-line no-console
+            console.warn('[AUTO-SAVE] vscodeApi not available for scrollback refresh request');
+            return;
+        }
+        // Request the Extension to resend the latest scrollback data
+        windowWithApi.vscodeApi.postMessage({
+            command: 'requestScrollbackRefresh',
+            timestamp: Date.now(),
+            terminalIds: Array.from(TerminalAutoSaveService.registeredTerminals.keys()),
+        });
+        ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Requested scrollback refresh for ${TerminalAutoSaveService.registeredTerminals.size} terminals`);
+    }
+    static requestSessionSaveOnExit() {
+        const windowWithApi = window;
+        if (!windowWithApi.vscodeApi) {
+            // eslint-disable-next-line no-console
+            console.warn('[AUTO-SAVE] vscodeApi not available for exit save request');
+            return;
+        }
+        windowWithApi.vscodeApi.postMessage({
+            command: 'persistenceSaveSession',
+            data: { preferCache: true, reason: 'pagehide' },
+            timestamp: Date.now(),
+        });
+        ManagerLogger_1.terminalLogger.debug('[AUTO-SAVE] Requested session save on webview unload');
+    }
+    /**
+     * Dispose all static state, clearing all Maps and Sets to allow GC.
+     * Should be called when the WebView is fully torn down.
+     */
+    static disposeAll() {
+        // Collect keys first to avoid mutating the Map during iteration
+        const terminalIds = [...TerminalAutoSaveService.periodicSaveTimers.keys()];
+        for (const terminalId of terminalIds) {
+            TerminalAutoSaveService.clearPeriodicSaveTimer(terminalId);
+        }
+        TerminalAutoSaveService.periodicSaveTimers.clear();
+        TerminalAutoSaveService.registeredTerminals.clear();
+        TerminalAutoSaveService.terminalListenerDisposables.clear();
+        TerminalAutoSaveService.restoringTerminals.clear();
+        ManagerLogger_1.terminalLogger.debug('[AUTO-SAVE] All static state disposed');
+    }
+    /**
+     * Mark a terminal as currently being restored (blocks auto-save)
+     * Called from ScrollbackMessageHandler at restoration start
+     */
+    static markTerminalRestoring(terminalId) {
+        TerminalAutoSaveService.restoringTerminals.add(terminalId);
+        ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Marked terminal as restoring: ${terminalId}`);
+    }
+    /**
+     * Mark a terminal as restored (ends protection period after delay)
+     * Called from ScrollbackMessageHandler after restoration completes
+     */
+    static markTerminalRestored(terminalId) {
+        // 5 second protection period to allow restoration to settle
+        setTimeout(() => {
+            TerminalAutoSaveService.restoringTerminals.delete(terminalId);
+            ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Restoration protection ended: ${terminalId}`);
+        }, 5000);
+    }
+    /**
+     * Check if a terminal is currently being restored
+     */
+    static isTerminalRestoring(terminalId) {
+        return TerminalAutoSaveService.restoringTerminals.has(terminalId);
+    }
+    /**
+     * Clear restoration state for a terminal immediately.
+     */
+    static clearTerminalRestorationState(terminalId) {
+        TerminalAutoSaveService.restoringTerminals.delete(terminalId);
+    }
+    /**
+     * Clear all restoration state.
+     */
+    static clearAllRestorationState() {
+        TerminalAutoSaveService.restoringTerminals.clear();
+    }
+    /**
+     * Setup automatic scrollback save on terminal output (VS Code standard approach)
+     */
+    setupScrollbackAutoSave(terminal, terminalId, serializeAddon) {
+        let saveTimer = null;
+        const pushScrollbackToExtension = () => {
+            // Skip auto-save if terminal is currently being restored
+            if (TerminalAutoSaveService.isTerminalRestoring(terminalId)) {
+                ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Skipped save during restoration: ${terminalId}`);
+                return;
+            }
+            if (saveTimer) {
+                window.clearTimeout(saveTimer);
+            }
+            saveTimer = window.setTimeout(() => {
+                // Double-check restoration status before actually saving
+                if (TerminalAutoSaveService.isTerminalRestoring(terminalId)) {
+                    ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Skipped delayed save during restoration: ${terminalId}`);
+                    return;
+                }
+                try {
+                    const serialized = serializeAddon.serialize({ scrollback: 1000 });
+                    const lines = serialized.split('\n');
+                    const windowWithApi = window;
+                    const message = {
+                        command: 'pushScrollbackData',
+                        terminalId,
+                        scrollbackData: lines,
+                        timestamp: Date.now(),
+                    };
+                    if (windowWithApi.vscodeApi) {
+                        windowWithApi.vscodeApi.postMessage(message);
+                        ManagerLogger_1.terminalLogger.info(`[AUTO-SAVE] Pushed scrollback via vscodeApi for terminal ${terminalId}: ${lines.length} lines`);
+                    }
+                    else {
+                        if (this.coordinator && typeof this.coordinator.postMessageToExtension === 'function') {
+                            this.coordinator.postMessageToExtension(message);
+                            ManagerLogger_1.terminalLogger.info(`[AUTO-SAVE] Pushed scrollback via MessageManager for terminal ${terminalId}: ${lines.length} lines`);
+                        }
+                        else {
+                            ManagerLogger_1.terminalLogger.error(`[AUTO-SAVE] No message transport available for terminal ${terminalId}`);
+                        }
+                    }
+                }
+                catch (error) {
+                    ManagerLogger_1.terminalLogger.warn(`[AUTO-SAVE] Failed to push scrollback for terminal ${terminalId}:`, error);
+                }
+            }, 3000);
+        };
+        // Capture both user input (onData) and process output (onLineFeed) so AI-generated output is saved
+        // Store disposables for proper cleanup on terminal removal
+        const onDataDisposable = terminal.onData(pushScrollbackToExtension);
+        const onLineFeedDisposable = terminal.onLineFeed(pushScrollbackToExtension);
+        const initialTimer = setTimeout(pushScrollbackToExtension, 2000);
+        // Track all disposables for this terminal
+        const disposables = [
+            onDataDisposable,
+            onLineFeedDisposable,
+            { dispose: () => clearTimeout(initialTimer) },
+        ];
+        TerminalAutoSaveService.terminalListenerDisposables.set(terminalId, disposables);
+        // 🔧 FIX: Add periodic save to ensure scrollback is captured even during long idle periods
+        // This fixes the issue where scrollback data is lost when terminal is left idle for extended time
+        const periodicTimer = window.setInterval(() => {
+            // Skip if terminal is being restored
+            if (TerminalAutoSaveService.isTerminalRestoring(terminalId)) {
+                return;
+            }
+            try {
+                const serialized = serializeAddon.serialize({ scrollback: 1000 });
+                const lines = serialized.split('\n');
+                const windowWithApi = window;
+                const message = {
+                    command: 'pushScrollbackData',
+                    terminalId,
+                    scrollbackData: lines,
+                    timestamp: Date.now(),
+                    periodic: true, // Mark as periodic save for debugging
+                };
+                if (windowWithApi.vscodeApi) {
+                    windowWithApi.vscodeApi.postMessage(message);
+                    ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Periodic save for terminal ${terminalId}: ${lines.length} lines`);
+                }
+                else if (this.coordinator &&
+                    typeof this.coordinator.postMessageToExtension === 'function') {
+                    this.coordinator.postMessageToExtension(message);
+                    ManagerLogger_1.terminalLogger.debug(`[AUTO-SAVE] Periodic save via coordinator for terminal ${terminalId}: ${lines.length} lines`);
+                }
+            }
+            catch (error) {
+                ManagerLogger_1.terminalLogger.warn(`[AUTO-SAVE] Periodic save failed for terminal ${terminalId}:`, error);
+            }
+        }, TerminalAutoSaveService.PERIODIC_SAVE_INTERVAL);
+        // Track the timer for cleanup
+        TerminalAutoSaveService.periodicSaveTimers.set(terminalId, periodicTimer);
+        // 🔧 FIX: Register terminal for visibility change recovery (sleep/wake)
+        TerminalAutoSaveService.registeredTerminals.set(terminalId, { terminal, serializeAddon });
+        TerminalAutoSaveService.setupVisibilityChangeHandler();
+        ManagerLogger_1.terminalLogger.info(`[AUTO-SAVE] Scrollback auto-save enabled for terminal: ${terminalId} (periodic: ${TerminalAutoSaveService.PERIODIC_SAVE_INTERVAL}ms)`);
+    }
+}
+exports.TerminalAutoSaveService = TerminalAutoSaveService;
+// Static Set to track terminals currently being restored (blocks auto-save)
+TerminalAutoSaveService.restoringTerminals = new Set();
+// Periodic save interval (30 seconds) - ensures scrollback is saved even without user activity
+TerminalAutoSaveService.PERIODIC_SAVE_INTERVAL = 30000;
+// Track periodic save timers for cleanup
+TerminalAutoSaveService.periodicSaveTimers = new Map();
+// Track registered terminals for visibility change recovery
+TerminalAutoSaveService.registeredTerminals = new Map();
+// Track xterm.js event listener disposables per terminal for proper cleanup
+TerminalAutoSaveService.terminalListenerDisposables = new Map();
+// Track if visibility change handler is set up
+TerminalAutoSaveService.visibilityHandlerSetup = false;
+// Track last hidden timestamp to detect sleep/wake
+TerminalAutoSaveService.lastHiddenAt = 0;
+//# sourceMappingURL=TerminalAutoSaveService.js.map
