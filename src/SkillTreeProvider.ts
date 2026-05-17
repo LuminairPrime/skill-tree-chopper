@@ -132,16 +132,13 @@ export class SkillTreeProvider implements vscode.TreeDataProvider<SkillNode> {
     for (const agentPrefix of KNOWN_AGENT_PREFIXES) {
       const agentUri = vscode.Uri.joinPath(baseRootUri, agentPrefix);
 
-      let isDir = false;
       try {
         const stat = await vscode.workspace.fs.stat(agentUri);
-        isDir = (stat.type & vscode.FileType.Directory) !== 0;
-      } catch (e) {
+        if ((stat.type & vscode.FileType.Directory) === 0) {
+          continue;
+        }
+      } catch {
         // Folder doesn't exist, ignore
-        continue;
-      }
-
-      if (!isDir) {
         continue;
       }
 
@@ -151,15 +148,12 @@ export class SkillTreeProvider implements vscode.TreeDataProvider<SkillNode> {
       const containerName = 'skills';
       const containerUri = vscode.Uri.joinPath(agentUri, containerName);
 
-      let isContainerDir = false;
       try {
         const stat = await vscode.workspace.fs.stat(containerUri);
-        isContainerDir = (stat.type & vscode.FileType.Directory) !== 0;
-      } catch (e) {
-        continue;
-      }
-
-      if (!isContainerDir) {
+        if ((stat.type & vscode.FileType.Directory) === 0) {
+          continue;
+        }
+      } catch {
         continue;
       }
 
@@ -174,7 +168,9 @@ export class SkillTreeProvider implements vscode.TreeDataProvider<SkillNode> {
       try {
         const stat = await vscode.workspace.fs.stat(archivedUri);
         isArchivedDir = (stat.type & vscode.FileType.Directory) !== 0;
-      } catch (e) {}
+      } catch {
+        // Safe to ignore if .archived doesn't exist
+      }
 
       if (isArchivedDir) {
         await this.scanForSkillFolders(archivedUri, skillFolderNodes);
@@ -241,9 +237,10 @@ export class SkillTreeProvider implements vscode.TreeDataProvider<SkillNode> {
           );
         }
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (this.outputChannel) {
-        this.outputChannel.appendLine(`Failed to scan dir ${dirUri.fsPath}: ${e.message}`);
+        const errMsg = e instanceof Error ? e.message : String(e);
+        this.outputChannel.appendLine(`Failed to scan dir ${dirUri.fsPath}: ${errMsg}`);
       }
     }
   }

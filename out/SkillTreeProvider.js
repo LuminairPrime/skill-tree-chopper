@@ -97,31 +97,27 @@ class SkillTreeProvider {
         const nodes = [];
         for (const agentPrefix of exports.KNOWN_AGENT_PREFIXES) {
             const agentUri = vscode.Uri.joinPath(baseRootUri, agentPrefix);
-            let isDir = false;
             try {
                 const stat = await vscode.workspace.fs.stat(agentUri);
-                isDir = (stat.type & vscode.FileType.Directory) !== 0;
+                if ((stat.type & vscode.FileType.Directory) === 0) {
+                    continue;
+                }
             }
-            catch (e) {
+            catch {
                 // Folder doesn't exist, ignore
-                continue;
-            }
-            if (!isDir) {
                 continue;
             }
             const containerNodes = [];
             // STRICT RULE: The folder must be named 'skills'
             const containerName = 'skills';
             const containerUri = vscode.Uri.joinPath(agentUri, containerName);
-            let isContainerDir = false;
             try {
                 const stat = await vscode.workspace.fs.stat(containerUri);
-                isContainerDir = (stat.type & vscode.FileType.Directory) !== 0;
+                if ((stat.type & vscode.FileType.Directory) === 0) {
+                    continue;
+                }
             }
-            catch (e) {
-                continue;
-            }
-            if (!isContainerDir) {
+            catch {
                 continue;
             }
             const skillFolderNodes = [];
@@ -134,7 +130,9 @@ class SkillTreeProvider {
                 const stat = await vscode.workspace.fs.stat(archivedUri);
                 isArchivedDir = (stat.type & vscode.FileType.Directory) !== 0;
             }
-            catch (e) { }
+            catch {
+                // Safe to ignore if .archived doesn't exist
+            }
             if (isArchivedDir) {
                 await this.scanForSkillFolders(archivedUri, skillFolderNodes);
             }
@@ -168,7 +166,8 @@ class SkillTreeProvider {
         }
         catch (e) {
             if (this.outputChannel) {
-                this.outputChannel.appendLine(`Failed to scan dir ${dirUri.fsPath}: ${e.message}`);
+                const errMsg = e instanceof Error ? e.message : String(e);
+                this.outputChannel.appendLine(`Failed to scan dir ${dirUri.fsPath}: ${errMsg}`);
             }
         }
     }

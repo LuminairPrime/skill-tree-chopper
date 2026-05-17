@@ -28,10 +28,9 @@ export function activate(context: vscode.ExtensionContext) {
 
       try {
         isValid = await hasSkillMd(currentUri);
-      } catch (error: any) {
-        outputChannel.appendLine(
-          `Validation failed for ${currentFsPath}: ${error.message || error}`,
-        );
+      } catch (error: unknown) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        outputChannel.appendLine(`Validation failed for ${currentFsPath}: ${errMsg}`);
       }
 
       if (!isValid) {
@@ -48,9 +47,10 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.Uri.file(targetFsPath),
         { overwrite: false },
       );
-    } catch (error: any) {
-      outputChannel.appendLine(`Failed to move skill folder: ${error.message}`);
-      vscode.window.showErrorMessage(`Failed to move skill folder: ${error.message}`);
+    } catch (error: unknown) {
+      const errMsg = error instanceof Error ? error.message : String(error);
+      outputChannel.appendLine(`Failed to move skill folder: ${errMsg}`);
+      vscode.window.showErrorMessage(`Failed to move skill folder: ${errMsg}`);
     }
   };
 

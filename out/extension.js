@@ -27,7 +27,8 @@ function activate(context) {
                 isValid = await (0, SkillTreeProvider_1.hasSkillMd)(currentUri);
             }
             catch (error) {
-                outputChannel.appendLine(`Validation failed for ${currentFsPath}: ${error.message || error}`);
+                const errMsg = error instanceof Error ? error.message : String(error);
+                outputChannel.appendLine(`Validation failed for ${currentFsPath}: ${errMsg}`);
             }
             if (!isValid) {
                 outputChannel.appendLine(`Skipping move for ${currentFsPath} - no skill.md file found.`);
@@ -39,8 +40,9 @@ function activate(context) {
             await vscode.workspace.fs.rename(vscode.Uri.file(currentFsPath), vscode.Uri.file(targetFsPath), { overwrite: false });
         }
         catch (error) {
-            outputChannel.appendLine(`Failed to move skill folder: ${error.message}`);
-            vscode.window.showErrorMessage(`Failed to move skill folder: ${error.message}`);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            outputChannel.appendLine(`Failed to move skill folder: ${errMsg}`);
+            vscode.window.showErrorMessage(`Failed to move skill folder: ${errMsg}`);
         }
     };
     const checkboxListener = treeView.onDidChangeCheckboxState(async (e) => {
