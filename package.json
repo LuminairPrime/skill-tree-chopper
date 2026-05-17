@@ -2,7 +2,7 @@
   "name": "skill-tree-chopper",
   "displayName": "Skill Tree Chopper",
   "description": "A VS Code extension to audit and toggle AI skill directories.",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "publisher": "LuminairPrime",
   "license": "MIT",
   "icon": "resources/icons/skill-tree-chopper-icon.png",
