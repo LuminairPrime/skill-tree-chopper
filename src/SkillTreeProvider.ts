@@ -1,6 +1,11 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
 import * as os from 'os';
+import {
+    getSkillFolderCheckboxState,
+    getSkillsContainerCheckboxState,
+    isSkillMarkdownFile,
+    SkillCheckboxState
+} from './skillFolderState';
 
 export type SkillNodeType = 'scope-root' | 'agent-root' | 'skills-container' | 'skill-folder';
 
@@ -10,11 +15,17 @@ export async function hasSkillMd(folderUri: vscode.Uri): Promise<boolean> {
     try {
         const entries = await vscode.workspace.fs.readDirectory(folderUri);
         return entries.some(([name, type]) =>
-            (type & vscode.FileType.File) !== 0 && name.toLowerCase() === 'skill.md'
+            (type & vscode.FileType.File) !== 0 && isSkillMarkdownFile(name)
         );
     } catch {
         return false;
     }
+}
+
+function toVsCodeCheckboxState(state: SkillCheckboxState): vscode.TreeItemCheckboxState {
+    return state === 'checked'
+        ? vscode.TreeItemCheckboxState.Checked
+        : vscode.TreeItemCheckboxState.Unchecked;
 }
 
 export class SkillNode extends vscode.TreeItem {
@@ -31,38 +42,13 @@ export class SkillNode extends vscode.TreeItem {
             this.id = this.resourceUri.fsPath;
             
             if (this.type === 'skill-folder') {
-                const fsPath = this.resourceUri.fsPath;
-                const parentDirName = path.basename(path.dirname(fsPath));
-                
-                // If it's inside an '.archived' folder, it's unchecked (disabled)
-                const isArchived = parentDirName === '.archived';
-                this.checkboxState = isArchived ? vscode.TreeItemCheckboxState.Unchecked : vscode.TreeItemCheckboxState.Checked;
-                
-                // Allow actions like delete
-                this.contextValue = 'skillFolder';
+                this.checkboxState = toVsCodeCheckboxState(getSkillFolderCheckboxState(this.resourceUri.fsPath));
             } else if (this.type === 'skills-container') {
-                // Skills container checkbox state depends on children
-                let hasCheckedChild = false;
-                let hasUncheckedChild = false;
-                
-                if (this.children) {
-                    for (const child of this.children) {
-                        if (child.checkboxState === vscode.TreeItemCheckboxState.Checked) {
-                            hasCheckedChild = true;
-                        } else if (child.checkboxState === vscode.TreeItemCheckboxState.Unchecked) {
-                            hasUncheckedChild = true;
-                        }
-                    }
-                }
-                
-                // If ANY child is checked, the container is checked.
-                // If ALL children are unchecked, it is unchecked.
-                // If no children, default to checked.
-                if (hasCheckedChild || !hasUncheckedChild) {
-                     this.checkboxState = vscode.TreeItemCheckboxState.Checked;
-                } else {
-                     this.checkboxState = vscode.TreeItemCheckboxState.Unchecked;
-                }
+                const childStates = (this.children ?? []).map((child) =>
+                    child.checkboxState === vscode.TreeItemCheckboxState.Checked ? 'checked' : 'unchecked'
+                );
+
+                this.checkboxState = toVsCodeCheckboxState(getSkillsContainerCheckboxState(childStates));
             }
         }
 
@@ -83,7 +69,10 @@ export class SkillTreeProvider implements vscode.TreeDataProvider<SkillNode> {
     private _onDidChangeTreeData: vscode.EventEmitter<SkillNode | undefined | null | void> = new vscode.EventEmitter<SkillNode | undefined | null | void>();
     readonly onDidChangeTreeData: vscode.Event<SkillNode | undefined | null | void> = this._onDidChangeTreeData.event;
 
-    constructor(private readonly outputChannel: vscode.OutputChannel) {}
+    constructor(
+        private readonly outputChannel: vscode.OutputChannel,
+        private readonly homeDirectory: string = os.homedir()
+    ) {}
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
@@ -116,13 +105,13 @@ export class SkillTreeProvider implements vscode.TreeDataProvider<SkillNode> {
             }
 
             // 2. Global Roots
-            const globalChildren = await this.scanAgentRoots(vscode.Uri.file(os.homedir()));
+            const globalChildren = await this.scanAgentRoots(vscode.Uri.file(this.homeDirectory));
             if (globalChildren.length > 0) {
                 const globalRootNode = new SkillNode(
                     'Global Skills',
                     'scope-root',
                     vscode.TreeItemCollapsibleState.Collapsed,
-                    vscode.Uri.file(os.homedir()),
+                    vscode.Uri.file(this.homeDirectory),
                     globalChildren
                 );
                 roots.push(globalRootNode);

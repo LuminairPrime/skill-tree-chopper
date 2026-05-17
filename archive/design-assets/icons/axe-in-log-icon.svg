@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     stroke-linecap="round" stroke-linejoin="round">
+
+  <!-- ============================================================
+       LOG – cylinder lying on its side, tilted ~12° CW
+       The log is deliberately compact so the axe reads larger.
+       ============================================================ -->
+
+  <!-- Barrel outline (back rect, slightly skewed) -->
+  <!-- Left cap edge (far side) -->
+  <path d="M3.5 9.5 Q3 17 3.5 17.5" />
+
+  <!-- Barrel body – two long curved sides -->
+  <!-- bottom edge -->
+  <path d="M3.5 17.5 Q10 20.5 15.5 18.5" />
+  <!-- top edge -->
+  <path d="M3.5 9.5  Q10 12   15.5 10" />
+
+  <!-- Right cap arc (near side, fully visible) -->
+  <path d="M15.5 10 Q18.5 14 15.5 18.5" />
+
+  <!-- Grain lines on barrel (3 vertical streaks) -->
+  <path d="M6.5 10.5 Q6.2 15.5 6.5 18" />
+  <path d="M9.5 11.5 Q9.2 16.5 9.5 18.8" />
+  <path d="M12.5 11  Q12.2 16  12.5 18.5" />
+
+  <!-- ============================================================
+       CUT FACE – ellipse on the left (upper) end of the log
+       Centre ≈ (8.5, 11.5), rx≈5, ry≈2.8, tilted to match log
+       ============================================================ -->
+  <ellipse cx="8.5" cy="11" rx="5" ry="2.6"
+           transform="rotate(-12 8.5 11)" />
+
+  <!-- Growth rings (two concentric inner ellipses) -->
+  <ellipse cx="8.5" cy="11" rx="3.2" ry="1.6"
+           transform="rotate(-12 8.5 11)" />
+  <ellipse cx="8.5" cy="11" rx="1.5" ry="0.8"
+           transform="rotate(-12 8.5 11)" />
+
+  <!-- ============================================================
+       AXE HEAD – wedge buried into the face
+       Bit (blade) points downward into the log.
+       Positioned centre-upper on the cut face.
+       ============================================================ -->
+  <!--
+    Axe head shape:
+      Poll (top/back): narrow flat top at ~(8,6.5)–(10,5.5)
+      Bit (blade):  sweeps down-left to cutting edge at ~(7,10)
+      Heel (bottom of blade): curves back up to poll base ~(10,9)
+  -->
+  <path d="
+    M 8.2 6.2
+    L 10.2 5.2
+    C 11.5 7   11 9.5  9.5 10.5
+    C 8.5 11   7.5 11  7.2 10.2
+    C 6.8  9   7.2 7   8.2 6.2
+    Z
+  " />
+
+  <!-- Axe eye (hole in head) -->
+  <ellipse cx="9.2" cy="7.2" rx="0.7" ry="0.45"
+           transform="rotate(-20 9.2 7.2)" />
+
+  <!-- ============================================================
+       HANDLE – emerges from the eye, sweeps up-right
+       Long enough to feel realistic (~10 px diagonal)
+       ============================================================ -->
+  <path d="M 9.8 6.5 C 13 4.5  17 3.5  21.5 4.5" stroke-width="2" />
+
+  <!-- Handle end (slight knob / flare) -->
+  <path d="M 21.5 4.5 C 22.5 4.8 22.5 6 21.5 6.2 L 20.5 6" />
+
+</svg>

@@ -5,6 +5,7 @@ exports.deactivate = deactivate;
 const vscode = require("vscode");
 const path = require("path");
 const SkillTreeProvider_1 = require("./SkillTreeProvider");
+const skillFolderState_1 = require("./skillFolderState");
 function activate(context) {
     const outputChannel = vscode.window.createOutputChannel('Skill Tree Chopper');
     context.subscriptions.push(outputChannel);
@@ -14,45 +15,32 @@ function activate(context) {
         showCollapseAll: true,
         manageCheckboxStateManually: true
     });
-    const moveFolder = async (currentFsPath, isChecking) => {
-        const parentDir = path.dirname(currentFsPath);
-        const parentDirName = path.basename(parentDir);
-        const skillFolderName = path.basename(currentFsPath);
-        let newPath = currentFsPath;
-        if (isChecking && parentDirName === '.archived') {
-            // Moving OUT of .archived: e.g. .cursor/skills/.archived/my-skill -> .cursor/skills/my-skill
-            const targetParentDir = path.dirname(parentDir);
-            newPath = path.join(targetParentDir, skillFolderName);
+    const moveSkillFolder = async (currentFsPath, isChecking) => {
+        const targetFsPath = (0, skillFolderState_1.getSkillFolderMoveTarget)(currentFsPath, isChecking);
+        if (!targetFsPath) {
+            return;
         }
-        else if (!isChecking && parentDirName !== '.archived') {
-            // Moving INTO .archived: e.g. .cursor/skills/my-skill -> .cursor/skills/.archived/my-skill
-            // PRE-FLIGHT VALIDATION: Only move if it contains a markdown file
+        if (!isChecking) {
             const currentUri = vscode.Uri.file(currentFsPath);
             let isValid = false;
             try {
                 isValid = await (0, SkillTreeProvider_1.hasSkillMd)(currentUri);
             }
-            catch (e) {
-                outputChannel.appendLine(`Validation failed for ${currentFsPath}: ${e.message || e}`);
+            catch (error) {
+                outputChannel.appendLine(`Validation failed for ${currentFsPath}: ${error.message || error}`);
             }
             if (!isValid) {
-                outputChannel.appendLine(`Skipping move for ${currentFsPath} - no markdown file found.`);
+                outputChannel.appendLine(`Skipping move for ${currentFsPath} - no skill.md file found.`);
                 return;
             }
-            const archivedDirPath = path.join(parentDir, '.archived');
-            const archivedDirUri = vscode.Uri.file(archivedDirPath);
-            await vscode.workspace.fs.createDirectory(archivedDirUri);
-            newPath = path.join(archivedDirPath, skillFolderName);
+            await vscode.workspace.fs.createDirectory(vscode.Uri.file(path.dirname(targetFsPath)));
         }
-        if (newPath !== currentFsPath) {
-            try {
-                const newUri = vscode.Uri.file(newPath);
-                await vscode.workspace.fs.rename(vscode.Uri.file(currentFsPath), newUri, { overwrite: false });
-            }
-            catch (error) {
-                outputChannel.appendLine(`Failed to move skill folder: ${error.message}`);
-                vscode.window.showErrorMessage(`Failed to move skill folder: ${error.message}`);
-            }
+        try {
+            await vscode.workspace.fs.rename(vscode.Uri.file(currentFsPath), vscode.Uri.file(targetFsPath), { overwrite: false });
+        }
+        catch (error) {
+            outputChannel.appendLine(`Failed to move skill folder: ${error.message}`);
+            vscode.window.showErrorMessage(`Failed to move skill folder: ${error.message}`);
         }
     };
     const checkboxListener = treeView.onDidChangeCheckboxState(async (e) => {
@@ -60,7 +48,7 @@ function activate(context) {
         for (const [item, state] of e.items) {
             const isChecking = state === vscode.TreeItemCheckboxState.Checked;
             if (item.type === 'skill-folder' && item.resourceUri) {
-                await moveFolder(item.resourceUri.fsPath, isChecking);
+                await moveSkillFolder(item.resourceUri.fsPath, isChecking);
                 requiresRefresh = true;
             }
             else if (item.type === 'skills-container' && item.children) {
@@ -69,7 +57,7 @@ function activate(context) {
                     if (item.children) {
                         for (const child of item.children) {
                             if (child.resourceUri) {
-                                await moveFolder(child.resourceUri.fsPath, isChecking);
+                                await moveSkillFolder(child.resourceUri.fsPath, isChecking);
                                 requiresRefresh = true;
                             }
                         }
@@ -84,20 +72,7 @@ function activate(context) {
     const refreshCommand = vscode.commands.registerCommand('aiSkills.refresh', () => {
         treeProvider.refresh();
     });
-    const deleteCommand = vscode.commands.registerCommand('aiSkills.deleteSkill', async (node) => {
-        if (node && node.resourceUri && node.type === 'skill-folder') {
-            try {
-                // Delete the entire folder and its contents
-                await vscode.workspace.fs.delete(node.resourceUri, { recursive: true, useTrash: true });
-                treeProvider.refresh();
-            }
-            catch (error) {
-                outputChannel.appendLine(`Failed to delete skill folder: ${error.message}`);
-                vscode.window.showErrorMessage(`Failed to delete skill folder: ${error.message}`);
-            }
-        }
-    });
-    context.subscriptions.push(treeView, checkboxListener, refreshCommand, deleteCommand);
+    context.subscriptions.push(treeView, checkboxListener, refreshCommand);
 }
 function deactivate() { }
 //# sourceMappingURL=extension.js.map
