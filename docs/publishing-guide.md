@@ -2,50 +2,55 @@
 
 This guide outlines the standard procedures for packaging, distributing, and publishing the AI Skill Auditor extension.
 
-## 1. Local Packaging (The `.vsix` file)
+## 1. Automated Publishing (Single Source of Truth)
 
-Creating a `.vsix` file allows you to distribute the extension directly (e.g., to team members or for local testing) without going through a marketplace.
+We use a GitHub Actions CI/CD pipeline (`.github/workflows/publish.yml`) to automatically publish the extension to **both** the Microsoft VS Code Marketplace and the Open VSX Registry simultaneously.
 
-1. **Install the packaging tool:**
+**Do not publish directly from your local machine using `vsce publish`.** Doing so will skip the Open VSX Registry deployment and create version mismatches.
+
+### How to Release a New Version
+
+We have configured `mise` tasks to safely handle version bumping and triggering the CI pipeline. Ensure your working directory is clean, and then run one of the following commands depending on the scale of your changes:
+
+```bash
+# For bug fixes (e.g., 1.0.0 -> 1.0.1)
+mise run release:patch
+# (Or simply `mise run release`)
+
+# For new features (e.g., 1.0.0 -> 1.1.0)
+mise run release:minor
+
+# For breaking changes (e.g., 1.0.0 -> 2.0.0)
+mise run release:major
+```
+
+**What these tasks do under the hood:**
+
+1. Verify the git working directory is clean.
+2. Run linters, unit tests, and compile the build.
+3. Automatically update `package.json` with the new version.
+4. Create a new git commit and a version tag (e.g., `v1.0.1`).
+5. Push the commit and the tag to GitHub (`git push --follow-tags`).
+6. The push triggers the GitHub Action, which handles building and uploading to both marketplaces using repository secrets.
+
+## 2. Local Packaging (For Testing & Verification)
+
+Creating a `.vsix` file locally allows you to distribute the extension directly (e.g., to team members or for local testing) without going through a marketplace.
+
+1. **Build the package:**
    ```bash
-   npm install -g @vscode/vsce
+   mise run package
    ```
-2. **Build the package:**
-   Ensure your `package.json` contains a valid `publisher`, `name`, `version`, `icon` (128x128), and that your `README.md` is updated. Then run:
-   ```bash
-   vsce package
-   ```
-3. **Install locally:**
-   This generates a file like `ai-skill-auditor-1.0.0.vsix`. You can install it in VS Code by opening the Extensions view, clicking the `...` menu, and selecting **"Install from VSIX..."**.
+   This generates a file like `skill-tree-chopper.vsix` in the `releases/` directory.
+2. **Install locally:**
+   You can install it in VS Code by opening the Extensions view, clicking the `...` menu, and selecting **"Install from VSIX..."**.
 
-## 2. Distributing via GitHub Releases
+## 3. Distributing via GitHub Releases (Optional)
 
-For open-source projects or beta distributions, GitHub Releases is a great place to host your `.vsix` binaries.
+For open-source projects or beta distributions, GitHub Releases is a great place to host your `.vsix` binaries alongside the automated marketplace deployments.
 
-1. Create a new Release in your GitHub repository and tag the version (e.g., `v1.0.0`).
-2. Add your changelog/release notes.
-3. Drag and drop the generated `ai-skill-auditor-1.0.0.vsix` file into the **Attached binaries** section of the release form.
-4. Publish the release.
-
-## 3. Publishing to the VS Code Marketplace
-
-To make the extension searchable directly within the VS Code Extension tab:
-
-1. **Create an Azure DevOps Organization:** The Visual Studio Marketplace authenticates publishers via Azure DevOps.
-2. **Generate a Personal Access Token (PAT):**
-   - Create a PAT in Azure DevOps.
-   - Set scopes to include `Marketplace (Manage)`.
-3. **Create a Publisher Profile:**
-   - Go to the [Visual Studio Marketplace Management Page](https://marketplace.visualstudio.com/manage) and create a publisher profile.
-   - **Important:** The publisher ID here must exactly match the `"publisher"` field in your `package.json`.
-4. **Login via CLI:**
-   ```bash
-   vsce login <your-publisher-name>
-   ```
-   _(When prompted, paste your Personal Access Token)._
-5. **Publish the Extension:**
-   ```bash
-   vsce publish
-   ```
-
-After publishing, the extension will undergo a virus scan and will be publicly available in the VS Code Marketplace shortly after.
+1. Wait for the `mise run release` command to push the new git tag.
+2. Go to the new tag on GitHub and click **Create Release**.
+3. Add your changelog/release notes.
+4. If needed, attach the locally built `.vsix` from `mise run package` to the **Attached binaries** section of the release form.
+5. Publish the release.
