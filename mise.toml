@@ -26,6 +26,11 @@ run = [
   "npx @vscode/vsce package --out releases/skill-tree-chopper.vsix"
 ]
 
+[tasks.check-clean]
+hide = true
+description = "Verify that the git working directory is clean before publishing"
+run = "node scripts/check-clean.js"
+
 [tasks."release:patch"]
 alias = "release"
 description = "Bump patch version, push tag to trigger CI publishing (Open VSX + MS)"
