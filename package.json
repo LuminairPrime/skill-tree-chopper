@@ -2,7 +2,7 @@
   "name": "skill-tree-chopper",
   "displayName": "Skill Tree Chopper",
   "description": "A VS Code extension to audit, disable, or delete AI skill directories.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "publisher": "LuminairPrime",
   "icon": "resources/icons/skill-tree-chopper-icon.png",
   "repository": {
