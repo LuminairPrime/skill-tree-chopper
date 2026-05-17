@@ -1,9 +1,10 @@
 {
   "name": "skill-tree-chopper",
   "displayName": "Skill Tree Chopper",
-  "description": "A VS Code extension to audit, disable, or delete AI skill directories.",
+  "description": "A VS Code extension to audit and toggle AI skill directories.",
   "version": "1.0.5",
   "publisher": "LuminairPrime",
+  "license": "MIT",
   "icon": "resources/icons/skill-tree-chopper-icon.png",
   "repository": {
     "type": "git",
@@ -15,9 +16,6 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onView:aiSkillAuditor"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -25,7 +23,7 @@
         {
           "id": "aiSkillAuditorContainer",
           "title": "Skill Tree Chopper",
-          "icon": "try7.svg"
+          "icon": "resources/icons/try7.svg"
         }
       ]
     },
@@ -42,11 +40,6 @@
         "command": "aiSkills.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
-      },
-      {
-        "command": "aiSkills.deleteSkill",
-        "title": "Delete Skill",
-        "icon": "$(trash)"
       }
     ],
     "menus": {
@@ -56,20 +49,15 @@
           "when": "view == aiSkillAuditor",
           "group": "navigation"
         }
-      ],
-      "view/item/context": [
-        {
-          "command": "aiSkills.deleteSkill",
-          "when": "view == aiSkillAuditor && viewItem == skillFolder",
-          "group": "inline"
-        }
       ]
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm.cmd run compile",
+    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prepare": "husky"
   },
   "devDependencies": {

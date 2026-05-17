@@ -1,6 +1,6 @@
 # Skill Tree Chopper
 
-**Skill Tree Chopper** is a VS Code extension designed to help developers audit and disable AI skill folders that are scattered across global and workspace directories.
+**Skill Tree Chopper** is a VS Code extension designed to help developers audit and toggle AI skill folders that are scattered across global and workspace directories.
 
 ## Why it exists (The Problem)
 
@@ -52,7 +52,7 @@ The extension currently monitors these exact locations:
 
 ## Usage Instructions
 
-1. **Open the Auditor:** Click the AI Skills icon (a robot/hubot icon) in the VS Code Activity Bar on the left.
+1. **Open the Auditor:** Click the Skill Tree Chopper icon in the VS Code Activity Bar on the left.
 2. **View Skills:** The tree view will display all discovered global and workspace skills. The hierarchy is organized by Scope (Workspace vs Global), Agent (`.cursor`, `.agents`), and the container folder (`skills`).
 3. **Mass Toggle:** You can click the checkbox next to the `skills` container to immediately archive or unarchive ALL skill folders inside it at once.
 4. **Individual Toggle:** Click the checkbox next to any specific skill folder to toggle its archive state.
@@ -62,4 +62,4 @@ The extension currently monitors these exact locations:
 
 Interested in building the extension from source, running the tests, or publishing an update?
 
-Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) guide for full details on our `mise` workflows, quality gates, and deployment process.
+Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) guide for full details on our `mise` workflows, quality gates, and deployment process. Release notes live in [CHANGELOG.md](CHANGELOG.md).

@@ -14,7 +14,7 @@ This project uses [mise](https://mise.jdx.dev/) as a task runner to manage build
 6. Package the extension: `mise run package` (The `.vsix` will be generated in the `releases/` directory)
 7. Clean up build artifacts: `mise run clean`
 
-The unit tests live under `test/unit` and currently focus on archive-state logic and skill discovery rules. See [docs/testing.md](docs/testing.md) for details.
+The unit tests live under `test/unit` and cover archive-state logic, skill discovery rules, and the extension's activation and checkbox-toggle wiring. See [docs/testing.md](docs/testing.md) for details.
 
 ## Code Quality & CI
 
