@@ -21,20 +21,25 @@ run = [
 description = "Authenticate with VS Code Marketplace using your Azure PAT"
 run = "npx @vscode/vsce login LuminairPrime"
 
+[tasks.check-clean]
+hide = true
+description = "Verify that the git working directory is clean before publishing"
+run = "node -e \"if (require('child_process').execSync('git status --porcelain').toString().trim()) { console.error('\\n❌ ERROR: Git working directory is not clean. Please commit or stash your changes before publishing.\\n'); process.exit(1); }\""
+
 [tasks."publish:patch"]
 alias = "publish"
 description = "Publish a patch update to VS Code Marketplace (e.g., 1.0.0 -> 1.0.1)"
-depends = ["build"]
+depends = ["check-clean", "build"]
 run = "npx @vscode/vsce publish patch"
 
 [tasks."publish:minor"]
 description = "Publish a minor update to VS Code Marketplace (e.g., 1.0.0 -> 1.1.0)"
-depends = ["build"]
+depends = ["check-clean", "build"]
 run = "npx @vscode/vsce publish minor"
 
 [tasks."publish:major"]
 description = "Publish a major update to VS Code Marketplace (e.g., 1.0.0 -> 2.0.0)"
-depends = ["build"]
+depends = ["check-clean", "build"]
 run = "npx @vscode/vsce publish major"
 
 [tasks.clean]
