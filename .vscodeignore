@@ -26,4 +26,8 @@ mise.toml
 .mise.toml
 .mise/
 .idea/
-*.swp
+*.swp.husky/
+eslint.config.mjs
+.prettierignore
+.lintstagedrc
+scripts/
