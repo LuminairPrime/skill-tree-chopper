@@ -1,5 +1,6 @@
 [env]
 # Shared environment variables can go here
+NODE_OPTIONS = "--no-deprecation"
 
 [tasks.build]
 description = "Compile the TypeScript code"
