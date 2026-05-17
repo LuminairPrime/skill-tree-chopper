@@ -30,15 +30,17 @@ For local or pre-release installs:
 
 ## Supported Paths
 
-The extension currently monitors these exact locations:
+The extension monitors an exhaustive list of standard agent directories based on industry frameworks (like OpenSpec, PRPM, and the Agent Skills standard), covering over 50 different AI tools.
 
 ### Global Paths (in your Home Directory `~`)
 
-- `~/.cursor/skills` (and its `.archived` counterpart)
-- `~/.claude/skills`
-- `~/.agents/skills`
-- `~/.gemini/skills`
-- `~/.forge/skills`
+It scans for `skills` subfolders within these agent directories, including:
+
+- **Major Assistants:** `~/.claude`, `~/.cursor`, `~/.gemini`, `~/.github` (Copilot), `~/.codeium/windsurf`, `~/.codex`
+- **Universal Standards:** `~/.agents`, `~/.agent`, `~/.prompts`
+- **Ecosystems & CLI Agents:** `.amazonq`, `.augment`, `.cline`, `.continue`, `.factory`, `.kiro`, `.opencode`, `.roo`, `.trae`, and many more.
+
+_(For the complete list, see `KNOWN_AGENT_PREFIXES` in the source code.)_
 
 ### Workspace Paths (in your current open project)
 
