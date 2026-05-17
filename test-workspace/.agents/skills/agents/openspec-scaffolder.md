@@ -1,7 +1,7 @@
 ---
 name: openspec-scaffolder
 description: Scaffold new OpenSpec changes with proposal, tasks, and delta specs. Automates the creation of OpenSpec change directory structure and ensures consistency with OpenSpec standards. Use this agent when starting a new feature or bug fix that requires OpenSpec documentation.
-tools: ["Glob", "Grep", "Read", "Write", "Bash"]
+tools: ['Glob', 'Grep', 'Read', 'Write', 'Bash']
 model: sonnet
 color: cyan
 ---
@@ -17,6 +17,7 @@ Create complete OpenSpec change directory structures with all required files fol
 ## Input Format
 
 You will receive:
+
 1. **change-id**: Verb-led, kebab-case identifier (e.g., `add-terminal-profile-sync`)
 2. **Problem statement**: Brief description of what needs to be solved
 3. **Affected capabilities**: List of capabilities that will be modified
@@ -56,6 +57,7 @@ openspec/changes/{change-id}/
 {Problem statement - clear explanation of the issue}
 
 **Context**:
+
 - {Background information}
 - {User pain points}
 - {Technical motivations}
@@ -63,29 +65,35 @@ openspec/changes/{change-id}/
 ## What Changes
 
 **Scope**:
+
 - [ ] {Change 1 description}
 - [ ] {Change 2 description}
 - [ ] {Change 3 description}
 
 **Affected Capabilities**:
+
 - `{capability-1}` - {Brief impact description}
 - `{capability-2}` - {Brief impact description}
 
 **Out of Scope**:
+
 - {Explicitly list what will NOT be changed}
 
 ## Impact
 
 **Code Impact**:
+
 - Modified files: `{file1.ts}`, `{file2.ts}`
 - New files: `{file3.ts}`
 - Removed files: `{file4.ts}`
 
 **User Impact**:
+
 - {How users will experience the change}
 - {Any breaking changes or migration required}
 
 **Technical Debt**:
+
 - {Technical debt introduced or resolved}
 
 ## Success Criteria
@@ -112,12 +120,14 @@ openspec/changes/{change-id}/
 ## Phase 1: Research & Design ({estimated hours}h)
 
 ### 1.1 Research
+
 - [ ] 1.1.1 Analyze VS Code implementation patterns
 - [ ] 1.1.2 Review similar features in codebase
 - [ ] 1.1.3 Check xterm.js documentation (if applicable)
 - [ ] 1.1.4 Identify required dependencies
 
 ### 1.2 Design
+
 - [ ] 1.2.1 Create architecture diagram (if design.md required)
 - [ ] 1.2.2 Define interfaces and types
 - [ ] 1.2.3 Plan Manager-Coordinator integration (if WebView)
@@ -126,12 +136,14 @@ openspec/changes/{change-id}/
 ## Phase 2: Implementation ({estimated hours}h)
 
 ### 2.1 Core Implementation (TDD: Red → Green → Refactor)
+
 - [ ] 2.1.1 Write failing unit tests
 - [ ] 2.1.2 Implement minimal working solution
 - [ ] 2.1.3 Refactor for quality and performance
 - [ ] 2.1.4 Add dispose handlers and cleanup
 
 ### 2.2 Integration
+
 - [ ] 2.2.1 Integrate with existing managers
 - [ ] 2.2.2 Add message handlers (if WebView communication)
 - [ ] 2.2.3 Update configuration schema (if needed)
@@ -140,17 +152,20 @@ openspec/changes/{change-id}/
 ## Phase 3: Testing ({estimated hours}h)
 
 ### 3.1 Unit Tests
+
 - [ ] 3.1.1 Happy path scenarios
 - [ ] 3.1.2 Edge cases
 - [ ] 3.1.3 Error conditions
 - [ ] 3.1.4 Coverage > 80%
 
 ### 3.2 Integration Tests
+
 - [ ] 3.2.1 Manager interaction tests
 - [ ] 3.2.2 Message routing tests (if WebView)
 - [ ] 3.2.3 Lifecycle tests
 
 ### 3.3 E2E Tests (if applicable)
+
 - [ ] 3.3.1 User interaction scenarios
 - [ ] 3.3.2 Performance benchmarks
 - [ ] 3.3.3 Cross-platform testing
@@ -158,18 +173,21 @@ openspec/changes/{change-id}/
 ## Phase 4: Documentation & Release ({estimated hours}h)
 
 ### 4.1 Documentation
+
 - [ ] 4.1.1 Update CLAUDE.md
 - [ ] 4.1.2 Add inline code comments
 - [ ] 4.1.3 Update README.md (if user-facing)
 - [ ] 4.1.4 Generate architecture diagrams
 
 ### 4.2 Quality Assurance
+
 - [ ] 4.2.1 Run `npm run pre-release:check`
 - [ ] 4.2.2 Security audit (no includes(), proper regex)
 - [ ] 4.2.3 Memory leak detection
 - [ ] 4.2.4 Platform compatibility check
 
 ### 4.3 Release Preparation
+
 - [ ] 4.3.1 Update CHANGELOG.md
 - [ ] 4.3.2 Archive OpenSpec change
 - [ ] 4.3.3 Create PR with comprehensive description
@@ -189,7 +207,7 @@ openspec/changes/{change-id}/
 
 ### Step 5: Generate spec.md (Delta Specifications)
 
-```markdown
+````markdown
 # {Capability Name} - Delta Specification
 
 ## Change ID: {change-id}
@@ -213,9 +231,11 @@ The system SHALL {clear, testable requirement statement}.
 **THEN** {expected outcome with measurable criteria}
 
 **Example**:
+
 ```typescript
 // Code example demonstrating the requirement
 ```
+````
 
 ---
 
@@ -230,6 +250,7 @@ The system SHALL {original requirement}.
 The system SHALL {modified requirement}.
 
 **Migration Path**:
+
 - {How existing code will be migrated}
 - {Breaking changes and workarounds}
 
@@ -251,6 +272,7 @@ The system SHALL {modified requirement}.
 The system SHALL {original requirement being removed}.
 
 **Deprecation Plan**:
+
 - Version {X.Y.Z}: Mark as deprecated
 - Version {X+1.0.0}: Remove completely
 - Migration: {Alternative solution}
@@ -260,12 +282,15 @@ The system SHALL {original requirement being removed}.
 ## Non-Functional Requirements
 
 ### Performance
+
 - {Performance requirement, e.g., "Terminal creation < 500ms"}
 
 ### Security
+
 - {Security requirement, e.g., "Use regex patterns, not includes()"}
 
 ### Compatibility
+
 - {Compatibility requirement, e.g., "Support Windows/macOS/Linux"}
 
 ---
@@ -273,13 +298,16 @@ The system SHALL {original requirement being removed}.
 ## Test Coverage Requirements
 
 **Unit Tests**:
+
 - [ ] {Test scenario 1}
 - [ ] {Test scenario 2}
 
 **Integration Tests**:
+
 - [ ] {Integration scenario 1}
 
 **E2E Tests** (if applicable):
+
 - [ ] {E2E scenario 1}
 
 **Target Coverage**: ≥ 80% for new code
@@ -293,7 +321,8 @@ The system SHALL {original requirement being removed}.
 - [ ] Security requirements satisfied
 - [ ] Documentation complete
 - [ ] Code review approved
-```
+
+````
 
 ### Step 6: Validate with OpenSpec CLI
 
@@ -306,11 +335,12 @@ openspec validate {change-id} --strict
 # - Valid Markdown formatting
 # - At least one scenario per requirement
 # - Proper ADDED/MODIFIED/REMOVED sections
-```
+````
 
 ## Design.md Criteria
 
 Create `design.md` ONLY if the change involves:
+
 - New architectural patterns (e.g., new Manager-Coordinator pattern)
 - Significant data flow changes
 - New external service integrations
@@ -318,6 +348,7 @@ Create `design.md` ONLY if the change involves:
 - Security model changes
 
 **design.md Template**:
+
 ```markdown
 # {Change ID} - Design Document
 
@@ -328,6 +359,7 @@ Create `design.md` ONLY if the change involves:
 ## Component Design
 
 ### Component 1: {Name}
+
 - **Responsibility**: {What it does}
 - **Interactions**: {What it communicates with}
 - **State Management**: {How state is managed}
@@ -349,6 +381,7 @@ Create `design.md` ONLY if the change involves:
 ## Alternative Designs Considered
 
 ### Alternative 1: {Name}
+
 - **Pros**: {Advantages}
 - **Cons**: {Disadvantages}
 - **Why not chosen**: {Rationale}
@@ -356,7 +389,7 @@ Create `design.md` ONLY if the change involves:
 
 ## Output Format
 
-```markdown
+````markdown
 ## OpenSpec Change Scaffolded
 
 **Change ID**: {change-id}
@@ -370,12 +403,16 @@ Create `design.md` ONLY if the change involves:
 ✅ specs/{capability-2}/spec.md
 
 **Validation**:
+
 ```bash
 openspec validate {change-id} --strict
 ```
+````
+
 Result: ✅ PASSED / ❌ FAILED (with error details)
 
 **Next Steps**:
+
 1. Fill in placeholder sections in proposal.md
 2. Refine task estimates in tasks.md
 3. Add specific scenarios to spec.md files
@@ -384,7 +421,8 @@ Result: ✅ PASSED / ❌ FAILED (with error details)
 6. Use `/implement-{change-id}` command (once generated by meta-command)
 
 **Estimated Effort**: {X} hours total
-```
+
+````
 
 ## Error Handling
 
@@ -396,39 +434,42 @@ Existing changes:
 - openspec/changes/{change-id}/
 
 Please choose a unique change ID.
-```
+````
 
 **Invalid Format**:
+
 ```markdown
 ❌ Error: Invalid change-id format: '{change-id}'
 
 Required format: verb-led, kebab-case
 Examples:
-  ✅ add-terminal-profile-sync
-  ✅ fix-webview-initialization
-  ✅ refactor-manager-architecture
+✅ add-terminal-profile-sync
+✅ fix-webview-initialization
+✅ refactor-manager-architecture
 
-  ❌ Terminal_Profile (underscores)
-  ❌ AddFeature (PascalCase)
-  ❌ new-feature-123 (no verb)
+❌ Terminal_Profile (underscores)
+❌ AddFeature (PascalCase)
+❌ new-feature-123 (no verb)
 ```
 
 **OpenSpec CLI Not Available**:
+
 ```markdown
 ⚠️ Warning: OpenSpec CLI not found
 
 Scaffolding completed, but validation skipped.
 
 To install OpenSpec CLI:
-  npm install -g @openspec/cli
+npm install -g @openspec/cli
 
 Then validate:
-  openspec validate {change-id} --strict
+openspec validate {change-id} --strict
 ```
 
 ## Integration with Agents
 
 ### Research Phase Agents
+
 After scaffolding, use research agents to gather implementation guidance:
 
 ```bash
@@ -439,6 +480,7 @@ After scaffolding, use research agents to gather implementation guidance:
 ```
 
 ### Implementation Phase Agents
+
 Once research is complete:
 
 ```bash
@@ -450,6 +492,7 @@ Once research is complete:
 ```
 
 ### Testing Phase Agents
+
 During testing:
 
 ```bash
@@ -466,16 +509,19 @@ playwright-test-generator
 ## MCP Server Integration
 
 ### GitHub MCP
+
 - Fetch VS Code source code examples
 - Review VS Code issue discussions
 - Analyze VS Code PR patterns
 
 ### Filesystem MCP
+
 - Safe bulk file operations
 - Template file generation
 - Directory structure validation
 
 ### NPM MCP
+
 - Check dependency versions (xterm.js, node-pty)
 - Verify compatibility
 - Find alternative packages
@@ -483,6 +529,7 @@ playwright-test-generator
 ## Quality Checklist
 
 Before marking scaffolding complete:
+
 - [ ] change-id is unique and follows naming convention
 - [ ] proposal.md has all required sections
 - [ ] tasks.md follows phase structure with estimates
@@ -507,6 +554,7 @@ Before marking scaffolding complete:
 ## Example Usage
 
 **Input**:
+
 ```
 change-id: add-terminal-profile-sync
 problem: Terminal profiles from VS Code settings are not synchronized
@@ -514,6 +562,7 @@ capabilities: terminal-lifecycle-management, configuration-management
 ```
 
 **Output**:
+
 ```
 ✅ openspec/changes/add-terminal-profile-sync/
 ✅ proposal.md (generated with problem statement)

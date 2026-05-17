@@ -18,6 +18,7 @@ The Secondary Terminal extension provides a production-ready terminal experience
 ## Accessing the API Documentation
 
 ### Local Development
+
 The generated API documentation is available in HTML format at `docs/api/index.html`.
 
 Open this file in your web browser to browse the complete API reference:
@@ -54,6 +55,7 @@ npm run docs:watch
 The API documentation is organized into the following categories:
 
 ### Core Components
+
 - **ExtensionLifecycle**: Main lifecycle management for the extension
   - Handles activation, deactivation, and resource cleanup
   - Manages all component initialization and dependency injection
@@ -64,16 +66,19 @@ The API documentation is organized into the following categories:
   - `deactivate()`: Called when extension is being deactivated
 
 ### Providers
+
 - Terminal providers for sidebar integration
 - WebView providers for UI rendering
 - Session providers for data persistence
 
 ### Managers
+
 - **TerminalManager**: Terminal lifecycle management
 - **SessionManager**: Session persistence and restoration
 - **StateManager**: Application state management
 
 ### Services
+
 - **Shell Integration Services**: Enhanced terminal features
 - **Configuration Services**: Extension settings management
 - **Keyboard Shortcut Services**: Keyboard handling
@@ -81,11 +86,13 @@ The API documentation is organized into the following categories:
 - **Link Services**: Link detection and handling (Phase 8)
 
 ### Commands
+
 - **File Reference Commands**: @mention functionality
 - **Terminal Commands**: Terminal operations
 - **Copilot Commands**: GitHub Copilot integration
 
 ### Utilities
+
 - **Logging**: Structured logging system
 - **Version Management**: Version information utilities
 - **Common Utilities**: Shared utility functions
@@ -98,7 +105,7 @@ When adding new public APIs or modifying existing ones, please follow these guid
 
 Use the TypeDoc-compatible JSDoc format:
 
-```typescript
+````typescript
 /**
  * Brief one-line description of the function or class.
  *
@@ -128,7 +135,7 @@ Use the TypeDoc-compatible JSDoc format:
  * @see RelatedClass - Link to related functionality
  * @public
  */
-```
+````
 
 ### 2. Use Appropriate Visibility Tags
 
@@ -140,16 +147,19 @@ Use the TypeDoc-compatible JSDoc format:
 ### 3. Documentation Best Practices
 
 #### Required Elements
+
 - Brief description (first paragraph)
 - `@param` tags for all parameters
 - `@returns` tag for return values
 
 #### Recommended Elements
+
 - `@remarks` for important implementation details
 - `@example` for non-trivial functionality
 - `@throws` for error conditions
 
 #### Optional Elements
+
 - `@see` for related APIs
 - `@deprecated` for deprecated functionality (include migration path)
 - `@since` for version information
@@ -160,12 +170,12 @@ Use the TypeDoc-compatible JSDoc format:
 - **Use Active Voice**: "Creates a terminal" not "A terminal is created"
 - **Start with Verbs**: For functions/methods (e.g., "Creates", "Returns", "Validates")
 - **Complete Sentences**: End descriptions with periods
-- **Include Context**: Explain *why* not just *what*
+- **Include Context**: Explain _why_ not just _what_
 - **Provide Examples**: For complex or non-obvious functionality
 
 ### 5. Code Example Guidelines
 
-```typescript
+````typescript
 // ❌ Bad: Too simple, no context
 /**
  * @example
@@ -183,7 +193,7 @@ Use the TypeDoc-compatible JSDoc format:
  * await lifecycle.activate(context);
  * ```
  */
-```
+````
 
 ### 6. Regenerate Documentation
 
@@ -205,12 +215,7 @@ The documentation generation is configured in `typedoc.json`:
   "entryPoints": ["src/extension.ts"],
   "entryPointStrategy": "expand",
   "out": "docs/api",
-  "exclude": [
-    "**/node_modules/**",
-    "**/test/**",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ],
+  "exclude": ["**/node_modules/**", "**/test/**", "**/*.test.ts", "**/*.spec.ts"],
   "excludePrivate": true,
   "excludeProtected": false,
   "excludeInternal": true,
@@ -219,6 +224,7 @@ The documentation generation is configured in `typedoc.json`:
 ```
 
 Key configuration options:
+
 - **Entry Point**: `src/extension.ts` (expands to all imported modules)
 - **Output Directory**: `docs/api/`
 - **Excluded Paths**: Tests, node_modules, build outputs
@@ -251,17 +257,20 @@ Before committing documentation changes:
 This API documentation implementation addresses [Issue #236](https://github.com/s-hiraoku/vscode-sidebar-terminal/issues/236):
 
 ### Phase 1: JSDoc Comments ✅
+
 - Added comprehensive JSDoc comments to main entry points
 - Documented ExtensionLifecycle class and all public methods
 - Established documentation standards and patterns
 
 ### Phase 2: TypeDoc Generation ✅
+
 - Configured TypeDoc with `typedoc.json`
 - Set up npm scripts for documentation generation
 - Generated HTML documentation in `docs/api/`
 - Created this documentation guide
 
 ### Phase 3: Architecture Diagrams ⏳
+
 - To be implemented in future enhancement
 - Will include component architecture diagrams
 - Sequence diagrams for key flows
@@ -270,12 +279,14 @@ This API documentation implementation addresses [Issue #236](https://github.com/
 ## Additional Resources
 
 ### External Documentation
+
 - [TypeDoc Official Documentation](https://typedoc.org/)
 - [TSDoc Specification](https://tsdoc.org/)
 - [JSDoc Reference](https://jsdoc.app/)
 - [VS Code Extension API](https://code.visualstudio.com/api)
 
 ### Internal Documentation
+
 - [Main README](../README.md)
 - [Contributing Guidelines](CONTRIBUTING.md)
 - [Architecture Documentation](architecture/)

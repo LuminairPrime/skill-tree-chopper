@@ -19,18 +19,20 @@ Custom editors let you provide a custom UI for editing specific file types.
 
 **Two types:**
 
-| Type | Use Case | Document Model |
-|------|----------|----------------|
-| `CustomTextEditorProvider` | Text-based files (JSON, XML, YAML) | Uses VS Code's `TextDocument` |
-| `CustomEditorProvider` | Binary files (images, custom formats) | Your own document model |
+| Type                       | Use Case                              | Document Model                |
+| -------------------------- | ------------------------------------- | ----------------------------- |
+| `CustomTextEditorProvider` | Text-based files (JSON, XML, YAML)    | Uses VS Code's `TextDocument` |
+| `CustomEditorProvider`     | Binary files (images, custom formats) | Your own document model       |
 
 **Choose `CustomTextEditorProvider` when:**
+
 - File is text-based
 - Want VS Code's built-in dirty tracking
 - Want Search/Replace to work
 - Want other extensions to access the document
 
 **Choose `CustomEditorProvider` when:**
+
 - File is binary
 - Need full control over document model
 - Default text model doesn't fit
@@ -54,12 +56,12 @@ class MyTextEditorProvider implements vscode.CustomTextEditorProvider {
   async resolveCustomTextEditor(
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<void> {
     // Setup webview
     webviewPanel.webview.options = {
       enableScripts: true,
-      localResourceRoots: [this.context.extensionUri]
+      localResourceRoots: [this.context.extensionUri],
     };
 
     // Set initial HTML
@@ -69,19 +71,19 @@ class MyTextEditorProvider implements vscode.CustomTextEditorProvider {
     const updateWebview = () => {
       webviewPanel.webview.postMessage({
         type: 'update',
-        content: document.getText()
+        content: document.getText(),
       });
     };
 
     // Listen for document changes (from other editors, search/replace, etc.)
-    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
+    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
       if (e.document.uri.toString() === document.uri.toString()) {
         updateWebview();
       }
     });
 
     // Listen for webview messages
-    webviewPanel.webview.onDidReceiveMessage(message => {
+    webviewPanel.webview.onDidReceiveMessage((message) => {
       switch (message.type) {
         case 'edit':
           this.applyEdit(document, message.content);
@@ -100,17 +102,13 @@ class MyTextEditorProvider implements vscode.CustomTextEditorProvider {
 
   private applyEdit(document: vscode.TextDocument, newContent: string) {
     const edit = new vscode.WorkspaceEdit();
-    edit.replace(
-      document.uri,
-      new vscode.Range(0, 0, document.lineCount, 0),
-      newContent
-    );
+    edit.replace(document.uri, new vscode.Range(0, 0, document.lineCount, 0), newContent);
     vscode.workspace.applyEdit(edit);
   }
 
   private getHtmlForWebview(webview: vscode.Webview): string {
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'editor.js')
+      vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'editor.js'),
     );
 
     const nonce = getNonce();
@@ -154,9 +152,9 @@ context.subscriptions.push(
     new MyTextEditorProvider(context),
     {
       webviewOptions: { retainContextWhenHidden: true },
-      supportsMultipleEditorsPerDocument: false
-    }
-  )
+      supportsMultipleEditorsPerDocument: false,
+    },
+  ),
 );
 ```
 
@@ -169,9 +167,7 @@ context.subscriptions.push(
       {
         "viewType": "myExt.myEditor",
         "displayName": "My Editor",
-        "selector": [
-          { "filenamePattern": "*.myext" }
-        ],
+        "selector": [{ "filenamePattern": "*.myext" }],
         "priority": "default"
       }
     ]
@@ -250,7 +246,9 @@ class MyDocument implements vscode.CustomDocument {
 class MyBinaryEditorProvider implements vscode.CustomEditorProvider<MyDocument> {
   public static readonly viewType = 'myExt.binaryEditor';
 
-  private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<MyDocument>>();
+  private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<
+    vscode.CustomDocumentEditEvent<MyDocument>
+  >();
   public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
 
   constructor(private readonly context: vscode.ExtensionContext) {}
@@ -259,7 +257,7 @@ class MyBinaryEditorProvider implements vscode.CustomEditorProvider<MyDocument> 
   async openCustomDocument(
     uri: vscode.Uri,
     openContext: vscode.CustomDocumentOpenContext,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<MyDocument> {
     const data = openContext.backupId
       ? await vscode.workspace.fs.readFile(vscode.Uri.parse(openContext.backupId))
@@ -272,7 +270,7 @@ class MyBinaryEditorProvider implements vscode.CustomEditorProvider<MyDocument> 
   async resolveCustomEditor(
     document: MyDocument,
     webviewPanel: vscode.WebviewPanel,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<void> {
     webviewPanel.webview.options = { enableScripts: true };
     webviewPanel.webview.html = this.getHtml(webviewPanel.webview, document);
@@ -281,12 +279,12 @@ class MyBinaryEditorProvider implements vscode.CustomEditorProvider<MyDocument> 
     const changeSubscription = document.onDidChange(() => {
       webviewPanel.webview.postMessage({
         type: 'update',
-        data: Array.from(document.data)
+        data: Array.from(document.data),
       });
     });
 
     // Handle webview edits
-    webviewPanel.webview.onDidReceiveMessage(message => {
+    webviewPanel.webview.onDidReceiveMessage((message) => {
       if (message.type === 'edit') {
         const edit: Edit = message.edit;
         document.applyEdit(edit);
@@ -295,7 +293,7 @@ class MyBinaryEditorProvider implements vscode.CustomEditorProvider<MyDocument> 
         this._onDidChangeCustomDocument.fire({
           document,
           undo: () => document.undo(edit),
-          redo: () => document.redo(edit)
+          redo: () => document.redo(edit),
         });
       }
     });
@@ -314,13 +312,16 @@ class MyBinaryEditorProvider implements vscode.CustomEditorProvider<MyDocument> 
   async saveCustomDocumentAs(
     document: MyDocument,
     destination: vscode.Uri,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<void> {
     await document.saveAs(destination);
   }
 
   // Revert
-  async revertCustomDocument(document: MyDocument, _token: vscode.CancellationToken): Promise<void> {
+  async revertCustomDocument(
+    document: MyDocument,
+    _token: vscode.CancellationToken,
+  ): Promise<void> {
     await document.revert();
   }
 
@@ -328,12 +329,12 @@ class MyBinaryEditorProvider implements vscode.CustomEditorProvider<MyDocument> 
   async backupCustomDocument(
     document: MyDocument,
     context: vscode.CustomDocumentBackupContext,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<vscode.CustomDocumentBackup> {
     await vscode.workspace.fs.writeFile(context.destination, document.data);
     return {
       id: context.destination.toString(),
-      delete: () => vscode.workspace.fs.delete(context.destination)
+      delete: () => vscode.workspace.fs.delete(context.destination),
     };
   }
 }
@@ -351,15 +352,14 @@ const fileWatcher = vscode.workspace.createFileSystemWatcher(document.uri.fsPath
 
 fileWatcher.onDidChange(() => {
   // File changed externally, ask user
-  vscode.window.showInformationMessage(
-    'File changed on disk. Reload?',
-    'Reload', 'Ignore'
-  ).then(choice => {
-    if (choice === 'Reload') {
-      // Trigger document reload
-      vscode.commands.executeCommand('workbench.action.files.revert');
-    }
-  });
+  vscode.window
+    .showInformationMessage('File changed on disk. Reload?', 'Reload', 'Ignore')
+    .then((choice) => {
+      if (choice === 'Reload') {
+        // Trigger document reload
+        vscode.commands.executeCommand('workbench.action.files.revert');
+      }
+    });
 });
 
 webviewPanel.onDidDispose(() => {
@@ -377,12 +377,12 @@ function scheduleUpdate() {
   updateTimeout = setTimeout(() => {
     webviewPanel.webview.postMessage({
       type: 'update',
-      content: document.getText()
+      content: document.getText(),
     });
   }, 100);
 }
 
-vscode.workspace.onDidChangeTextDocument(e => {
+vscode.workspace.onDidChangeTextDocument((e) => {
   if (e.document.uri.toString() === document.uri.toString()) {
     scheduleUpdate();
   }
@@ -438,14 +438,14 @@ class MyDocument {
 }
 
 // In provider
-webviewPanel.webview.onDidReceiveMessage(message => {
+webviewPanel.webview.onDidReceiveMessage((message) => {
   if (message.type === 'edit') {
     document.applyEdit(message.edit);
 
     this._onDidChangeCustomDocument.fire({
       document,
       undo: async () => document.undo(message.edit),
-      redo: async () => document.redo(message.edit)
+      redo: async () => document.redo(message.edit),
     });
   }
 });
@@ -483,13 +483,17 @@ For CustomEditorProvider, fire `onDidChangeCustomDocument` to mark dirty:
 // Document is dirty when this fires
 this._onDidChangeCustomDocument.fire({
   document,
-  undo: async () => { /* ... */ },
-  redo: async () => { /* ... */ }
+  undo: async () => {
+    /* ... */
+  },
+  redo: async () => {
+    /* ... */
+  },
 });
 
 // Or for non-undoable changes
 this._onDidChangeCustomDocument.fire({
-  document
+  document,
 });
 ```
 
@@ -516,7 +520,7 @@ const vscode = acquireVsCodeApi();
 let currentContent: string;
 
 // Receive updates from extension
-window.addEventListener('message', event => {
+window.addEventListener('message', (event) => {
   const message = event.data;
   switch (message.type) {
     case 'update':
@@ -530,7 +534,7 @@ window.addEventListener('message', event => {
 function makeEdit(newContent: string) {
   vscode.postMessage({
     type: 'edit',
-    content: newContent
+    content: newContent,
   });
 }
 

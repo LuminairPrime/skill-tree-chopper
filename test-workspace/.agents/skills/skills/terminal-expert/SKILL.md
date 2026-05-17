@@ -25,25 +25,25 @@ This skill provides comprehensive knowledge for implementing terminal features i
 
 ### Essential Addons
 
-| Addon | Package | Purpose | Loading |
-|-------|---------|---------|---------|
-| FitAddon | `@xterm/addon-fit` | Auto-resize to container | Always |
-| WebglAddon | `@xterm/addon-webgl` | GPU acceleration (30%+ perf) | Lazy |
-| SerializeAddon | `@xterm/addon-serialize` | Session persistence | Lazy |
-| SearchAddon | `@xterm/addon-search` | Find in terminal | Lazy |
-| Unicode11Addon | `@xterm/addon-unicode11` | Extended Unicode | Config |
-| WebLinksAddon | `@xterm/addon-web-links` | Clickable URLs | Config |
-| ImageAddon | `@xterm/addon-image` | Inline images | Config |
+| Addon          | Package                  | Purpose                      | Loading |
+| -------------- | ------------------------ | ---------------------------- | ------- |
+| FitAddon       | `@xterm/addon-fit`       | Auto-resize to container     | Always  |
+| WebglAddon     | `@xterm/addon-webgl`     | GPU acceleration (30%+ perf) | Lazy    |
+| SerializeAddon | `@xterm/addon-serialize` | Session persistence          | Lazy    |
+| SearchAddon    | `@xterm/addon-search`    | Find in terminal             | Lazy    |
+| Unicode11Addon | `@xterm/addon-unicode11` | Extended Unicode             | Config  |
+| WebLinksAddon  | `@xterm/addon-web-links` | Clickable URLs               | Config  |
+| ImageAddon     | `@xterm/addon-image`     | Inline images                | Config  |
 
 ### Performance Targets
 
-| Operation | Target | Notes |
-|-----------|--------|-------|
-| Terminal creation | <500ms | Including PTY spawn |
-| Session restore | <3s | 1000 lines scrollback |
-| Terminal disposal | <100ms | Full cleanup |
-| Resize handling | 100ms debounce | Prevents excessive calls |
-| Output buffering | 16ms flush | ~60fps rendering |
+| Operation         | Target         | Notes                    |
+| ----------------- | -------------- | ------------------------ |
+| Terminal creation | <500ms         | Including PTY spawn      |
+| Session restore   | <3s            | 1000 lines scrollback    |
+| Terminal disposal | <100ms         | Full cleanup             |
+| Resize handling   | 100ms debounce | Prevents excessive calls |
+| Output buffering  | 16ms flush     | ~60fps rendering         |
 
 ---
 
@@ -89,8 +89,8 @@ class TerminalManager {
         background: '#1e1e1e',
         foreground: '#d4d4d4',
         cursor: '#d4d4d4',
-        selectionBackground: '#264f78'
-      }
+        selectionBackground: '#264f78',
+      },
     });
   }
 
@@ -158,7 +158,7 @@ class ScrollbackManager {
     return this.serializeAddon.serialize({
       scrollback: options?.scrollback ?? 1000,
       excludeModes: true,
-      excludeAltBuffer: true
+      excludeAltBuffer: true,
     });
   }
 
@@ -252,17 +252,17 @@ class TerminalProcess {
     cwd: string,
     cols: number,
     rows: number,
-    env: { [key: string]: string }
+    env: { [key: string]: string },
   ) {
     this._ptyProcess = pty.spawn(shellPath, args, {
       name: 'xterm-256color',
       cols,
       rows,
       cwd,
-      env
+      env,
     });
 
-    this._ptyProcess.onData(data => this._onData.fire(data));
+    this._ptyProcess.onData((data) => this._onData.fire(data));
     this._ptyProcess.onExit(({ exitCode }) => this._onExit.fire(exitCode));
   }
 
@@ -337,7 +337,7 @@ terminal.attachCustomKeyEventHandler((event: KeyboardEvent) => {
 
   // Ctrl+V for paste
   if (event.ctrlKey && event.key === 'v') {
-    navigator.clipboard.readText().then(text => terminal.paste(text));
+    navigator.clipboard.readText().then((text) => terminal.paste(text));
     return false;
   }
 
@@ -392,12 +392,18 @@ OSC 633 ; P ; <Property>=<Value> ST    → Set property
 ```typescript
 class ShellIntegrationAddon implements ITerminalAddon {
   activate(terminal: Terminal): void {
-    terminal.parser.registerOscHandler(633, data => {
+    terminal.parser.registerOscHandler(633, (data) => {
       const [code, ...params] = data.split(';');
       switch (code) {
-        case 'A': this._handlePromptStart(); return true;
-        case 'B': this._handleCommandStart(); return true;
-        case 'C': this._handleExecutionStart(); return true;
+        case 'A':
+          this._handlePromptStart();
+          return true;
+        case 'B':
+          this._handleCommandStart();
+          return true;
+        case 'C':
+          this._handleExecutionStart();
+          return true;
         case 'D':
           const exitCode = params[0] ? parseInt(params[0]) : undefined;
           this._handleCommandFinished(exitCode);
@@ -447,7 +453,7 @@ class DisposableStore implements IDisposable {
     // LIFO order for safety
     const items = Array.from(this._toDispose).reverse();
     this._toDispose.clear();
-    items.forEach(item => item.dispose());
+    items.forEach((item) => item.dispose());
   }
 }
 ```
@@ -469,7 +475,7 @@ class XtermVSCodeIntegration {
     this.terminal = new Terminal({
       fontFamily: 'var(--vscode-editor-font-family)',
       fontSize: 14,
-      theme: this.getVSCodeTheme()
+      theme: this.getVSCodeTheme(),
     });
 
     this.fitAddon = new FitAddon();
@@ -483,28 +489,37 @@ class XtermVSCodeIntegration {
   private getVSCodeTheme(): ITheme {
     const style = getComputedStyle(document.body);
     return {
-      background: style.getPropertyValue('--vscode-terminal-background').trim() ||
-                  style.getPropertyValue('--vscode-editor-background').trim(),
+      background:
+        style.getPropertyValue('--vscode-terminal-background').trim() ||
+        style.getPropertyValue('--vscode-editor-background').trim(),
       foreground: style.getPropertyValue('--vscode-terminal-foreground').trim(),
       cursor: style.getPropertyValue('--vscode-terminalCursor-foreground').trim(),
-      selectionBackground: style.getPropertyValue('--vscode-terminal-selectionBackground').trim()
+      selectionBackground: style.getPropertyValue('--vscode-terminal-selectionBackground').trim(),
     };
   }
 
   private setupCommunication(): void {
     // Send input to extension
-    this.terminal.onData(data => {
+    this.terminal.onData((data) => {
       this.vscode.postMessage({ type: 'input', data });
     });
 
     // Receive output from extension
-    window.addEventListener('message', event => {
+    window.addEventListener('message', (event) => {
       const message = event.data;
       switch (message.type) {
-        case 'output': this.terminal.write(message.data); break;
-        case 'resize': this.terminal.resize(message.cols, message.rows); break;
-        case 'clear': this.terminal.clear(); break;
-        case 'focus': this.terminal.focus(); break;
+        case 'output':
+          this.terminal.write(message.data);
+          break;
+        case 'resize':
+          this.terminal.resize(message.cols, message.rows);
+          break;
+        case 'clear':
+          this.terminal.clear();
+          break;
+        case 'focus':
+          this.terminal.focus();
+          break;
       }
     });
 
@@ -552,7 +567,7 @@ const ANSI = {
   alternateScreen: '\x1b[?1049h',
   normalScreen: '\x1b[?1049l',
   hideCursor: '\x1b[?25l',
-  showCursor: '\x1b[?25h'
+  showCursor: '\x1b[?25h',
 };
 ```
 
@@ -561,11 +576,13 @@ const ANSI = {
 ## References
 
 For detailed reference documentation:
+
 - `references/xterm-api.md` - Complete xterm.js API reference
 - `references/vscode-terminal.md` - VS Code terminal source reference
 - `references/escape-sequences.md` - ANSI escape sequence reference
 
 For implementation reference:
+
 - VS Code Repository: https://github.com/microsoft/vscode
 - Terminal source: `src/vs/workbench/contrib/terminal/`
 - xterm.js: https://github.com/xtermjs/xterm.js

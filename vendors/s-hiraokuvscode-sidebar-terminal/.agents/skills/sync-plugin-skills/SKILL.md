@@ -10,6 +10,7 @@ Synchronize plugin skills with the current implementation and documentation.
 ## Purpose
 
 Ensure that skills in `plugins/synapse-a2a/skills/` accurately reflect:
+
 - Current implementation in `synapse/` directory
 - README.md documentation
 - Guides in `guides/` folder
@@ -45,6 +46,7 @@ Read the following files to understand current implementation and documentation:
 ### Step 2: Identify Gaps
 
 Compare and identify:
+
 - New CLI options/parameters not documented in skills
 - Changed command syntax or behavior
 - New features mentioned in README but missing from skills
@@ -56,16 +58,19 @@ Compare and identify:
 Update skill files to match current state:
 
 **synapse-a2a/SKILL.md**:
+
 - Quick Reference table
 - Command examples
 - Feature descriptions
 
 **synapse-a2a/references/commands.md**:
+
 - Full CLI command documentation
 - All options and parameters
 - Example usage
 
 **synapse-a2a/references/api.md**:
+
 - Endpoint paths
 - Request/response formats
 - Extension endpoints
@@ -73,6 +78,7 @@ Update skill files to match current state:
 ### Step 4: Verify Consistency
 
 Ensure consistency across:
+
 - Endpoint paths match between README and skills
 - Command syntax is identical
 - Option names and defaults match implementation
@@ -88,6 +94,7 @@ synapse send <target> <message> [options]
 ```
 
 Key options to verify:
+
 - `--from` / `-f`: Sender identification
 - `--priority` / `-p`: Priority levels (1-5)
 - `--wait` / `--notify` / `--silent`: Response mode control
@@ -115,6 +122,7 @@ synapse reset              # Reset to defaults
 ## Output
 
 After synchronization, report:
+
 1. Files that were updated
 2. Specific changes made
 3. Any manual review needed

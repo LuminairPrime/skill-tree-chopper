@@ -16,6 +16,7 @@ The current AI Skill Auditor extension implementation has several technical debt
 ## Capabilities
 
 ### New Capabilities
+
 - `publishing-guide`: Documentation that details the process for packaging and distributing the extension.
 - `code-quality-enhancements`: UX and architectural robustness improvements including progress indicators, fixed context menus, and optimized file system queries.
 

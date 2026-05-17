@@ -23,79 +23,79 @@ name: TDD Quality Check
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   tdd-quality-check:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [18.x, 20.x]
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Compile TypeScript
-      run: npm run compile-tests
-      
-    - name: Run ESLint
-      run: npm run lint
-      
-    - name: Run tests with coverage
-      run: npm run test:coverage
-      
-    - name: TDD Quality Check
-      run: npm run tdd:check-quality
-      
-    - name: Generate TDD Report
-      run: |
-        npm run tdd:generate-report > tdd-report.md
-        echo "TDD_REPORT<<EOF" >> $GITHUB_ENV
-        cat tdd-report.md >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
-        
-    - name: Comment TDD Report on PR
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `## 🧪 TDD Quality Report\n\n${process.env.TDD_REPORT}`
-          })
-          
-    - name: Upload TDD Metrics
-      uses: actions/upload-artifact@v4
-      with:
-        name: tdd-metrics-${{ matrix.node-version }}
-        path: |
-          tdd-metrics.json
-          coverage/
-          tdd-report.md
-          
-    - name: Quality Gate Check
-      run: |
-        if ! npm run tdd:quality-gate; then
-          echo "❌ TDD Quality Gate Failed"
-          echo "Please improve TDD compliance before merging"
-          exit 1
-        fi
-        echo "✅ TDD Quality Gate Passed"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile TypeScript
+        run: npm run compile-tests
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: TDD Quality Check
+        run: npm run tdd:check-quality
+
+      - name: Generate TDD Report
+        run: |
+          npm run tdd:generate-report > tdd-report.md
+          echo "TDD_REPORT<<EOF" >> $GITHUB_ENV
+          cat tdd-report.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Comment TDD Report on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🧪 TDD Quality Report\n\n${process.env.TDD_REPORT}`
+            })
+
+      - name: Upload TDD Metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: tdd-metrics-${{ matrix.node-version }}
+          path: |
+            tdd-metrics.json
+            coverage/
+            tdd-report.md
+
+      - name: Quality Gate Check
+        run: |
+          if ! npm run tdd:quality-gate; then
+            echo "❌ TDD Quality Gate Failed"
+            echo "Please improve TDD compliance before merging"
+            exit 1
+          fi
+          echo "✅ TDD Quality Gate Passed"
 ```
 
 ### 2. リリース前の総合品質チェック
@@ -113,45 +113,45 @@ on:
 jobs:
   comprehensive-quality-check:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # 全履歴を取得（メトリクス分析用）
-        
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Full TDD Compliance Check
-      run: |
-        echo "=== 総合TDD品質チェック ==="
-        npm run tdd:comprehensive-check
-        
-    - name: Generate Release Quality Report
-      run: |
-        npm run tdd:release-report > release-quality-report.md
-        
-    - name: Historical TDD Trend Analysis
-      run: |
-        npm run tdd:trend-analysis > tdd-trend.json
-        
-    - name: Create Release with Quality Report
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body_path: release-quality-report.md
-        draft: false
-        prerelease: false
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 全履歴を取得（メトリクス分析用）
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Full TDD Compliance Check
+        run: |
+          echo "=== 総合TDD品質チェック ==="
+          npm run tdd:comprehensive-check
+
+      - name: Generate Release Quality Report
+        run: |
+          npm run tdd:release-report > release-quality-report.md
+
+      - name: Historical TDD Trend Analysis
+        run: |
+          npm run tdd:trend-analysis > tdd-trend.json
+
+      - name: Create Release with Quality Report
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body_path: release-quality-report.md
+          draft: false
+          prerelease: false
 ```
 
 ## 🎛️ 品質ゲート設定
@@ -169,24 +169,24 @@ const fs = require('fs');
 class TDDQualityGate {
   constructor() {
     this.thresholds = {
-      tddCompliance: 0.80,    // 80%以上
-      testCoverage: 0.90,     // 90%以上
-      eslintScore: 0.95,      // 95%以上
-      testCount: 50,          // 最低50個のテスト
-      passingRate: 0.93       // 93%以上の成功率
+      tddCompliance: 0.8, // 80%以上
+      testCoverage: 0.9, // 90%以上
+      eslintScore: 0.95, // 95%以上
+      testCount: 50, // 最低50個のテスト
+      passingRate: 0.93, // 93%以上の成功率
     };
   }
 
   async checkQualityGate() {
     console.log('🚦 TDD Quality Gate Check Starting...');
-    
+
     const metrics = await this.collectMetrics();
     const results = this.evaluateMetrics(metrics);
-    
+
     this.printResults(results);
-    
-    const passed = results.every(result => result.passed);
-    
+
+    const passed = results.every((result) => result.passed);
+
     if (passed) {
       console.log('✅ All TDD Quality Gates Passed!');
       process.exit(0);
@@ -199,7 +199,7 @@ class TDDQualityGate {
   async collectMetrics() {
     const tddMetrics = TDDMetrics.getInstance();
     const currentMetrics = tddMetrics.getCurrentMetrics();
-    
+
     // テストカバレッジ取得
     let coverage = { percentage: 0 };
     try {
@@ -208,16 +208,16 @@ class TDDQualityGate {
     } catch (error) {
       console.warn('⚠️ Coverage data not found, using default');
     }
-    
+
     // ESLintスコア計算
     const eslintScore = await this.calculateESLintScore();
-    
+
     return {
       tddCompliance: currentMetrics.tddComplianceRate,
       testCoverage: coverage.pct / 100,
       eslintScore: eslintScore,
       testCount: currentMetrics.totalTests,
-      passingRate: currentMetrics.passingRate
+      passingRate: currentMetrics.passingRate,
     };
   }
 
@@ -228,55 +228,57 @@ class TDDQualityGate {
         value: metrics.tddCompliance,
         threshold: this.thresholds.tddCompliance,
         passed: metrics.tddCompliance >= this.thresholds.tddCompliance,
-        unit: '%'
+        unit: '%',
       },
       {
         name: 'Test Coverage',
         value: metrics.testCoverage,
         threshold: this.thresholds.testCoverage,
         passed: metrics.testCoverage >= this.thresholds.testCoverage,
-        unit: '%'
+        unit: '%',
       },
       {
         name: 'ESLint Score',
         value: metrics.eslintScore,
         threshold: this.thresholds.eslintScore,
         passed: metrics.eslintScore >= this.thresholds.eslintScore,
-        unit: '%'
+        unit: '%',
       },
       {
         name: 'Test Count',
         value: metrics.testCount,
         threshold: this.thresholds.testCount,
         passed: metrics.testCount >= this.thresholds.testCount,
-        unit: 'tests'
+        unit: 'tests',
       },
       {
         name: 'Test Passing Rate',
         value: metrics.passingRate,
         threshold: this.thresholds.passingRate,
         passed: metrics.passingRate >= this.thresholds.passingRate,
-        unit: '%'
-      }
+        unit: '%',
+      },
     ];
   }
 
   printResults(results) {
     console.log('\n📊 TDD Quality Gate Results:');
     console.log('================================');
-    
-    results.forEach(result => {
+
+    results.forEach((result) => {
       const status = result.passed ? '✅' : '❌';
-      const value = result.unit === '%' 
-        ? `${(result.value * 100).toFixed(1)}%`
-        : `${result.value} ${result.unit}`;
-      const threshold = result.unit === '%'
-        ? `${(result.threshold * 100).toFixed(1)}%`
-        : `${result.threshold} ${result.unit}`;
-        
+      const value =
+        result.unit === '%'
+          ? `${(result.value * 100).toFixed(1)}%`
+          : `${result.value} ${result.unit}`;
+      const threshold =
+        result.unit === '%'
+          ? `${(result.threshold * 100).toFixed(1)}%`
+          : `${result.threshold} ${result.unit}`;
+
       console.log(`${status} ${result.name}: ${value} (Required: ${threshold})`);
     });
-    
+
     console.log('================================\n');
   }
 
@@ -284,20 +286,20 @@ class TDDQualityGate {
     try {
       const { execSync } = require('child_process');
       const eslintOutput = execSync('npm run lint', { encoding: 'utf8' });
-      
+
       // ESLintエラーがない場合は100%
       if (eslintOutput.includes('0 problems')) {
         return 1.0;
       }
-      
+
       // エラー数に基づいてスコア計算
       const errorMatch = eslintOutput.match(/(\d+) problems?/);
       if (errorMatch) {
         const errorCount = parseInt(errorMatch[1]);
         const maxAllowedErrors = 10; // 許容エラー数
-        return Math.max(0, 1 - (errorCount / maxAllowedErrors));
+        return Math.max(0, 1 - errorCount / maxAllowedErrors);
       }
-      
+
       return 0.5; // 不明な場合は50%
     } catch (error) {
       console.warn('⚠️ ESLint score calculation failed:', error.message);
@@ -347,12 +349,12 @@ class MetricsHistory {
   saveCurrentMetrics() {
     const { TDDMetrics } = require('../src/test/utils/TDDMetrics');
     const currentMetrics = TDDMetrics.getInstance().getCurrentMetrics();
-    
+
     const entry = {
       timestamp: new Date().toISOString(),
       commit: process.env.GITHUB_SHA || 'local',
       branch: process.env.GITHUB_REF_NAME || 'local',
-      ...currentMetrics
+      ...currentMetrics,
     };
 
     let history = [];
@@ -364,7 +366,7 @@ class MetricsHistory {
     }
 
     history.push(entry);
-    
+
     // 最新100エントリのみ保持
     if (history.length > 100) {
       history = history.slice(-100);
@@ -378,7 +380,7 @@ class MetricsHistory {
     try {
       const historyData = fs.readFileSync(this.historyFile, 'utf8');
       const history = JSON.parse(historyData);
-      
+
       if (history.length < 2) {
         console.log('📊 Insufficient data for trend analysis');
         return;
@@ -386,12 +388,12 @@ class MetricsHistory {
 
       const latest = history[history.length - 1];
       const previous = history[history.length - 2];
-      
+
       const trends = {
         tddCompliance: this.calculateTrend(previous.tddComplianceRate, latest.tddComplianceRate),
         testCoverage: this.calculateTrend(previous.testCoverage, latest.testCoverage),
         testCount: this.calculateTrend(previous.totalTests, latest.totalTests),
-        qualityScore: this.calculateTrend(previous.qualityScore, latest.qualityScore)
+        qualityScore: this.calculateTrend(previous.qualityScore, latest.qualityScore),
       };
 
       console.log('📈 TDD Metrics Trends:');
@@ -432,84 +434,84 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       quality-passed: ${{ steps.quality-check.outputs.passed }}
-    
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: TDD Quality Gate
-      id: quality-check
-      run: |
-        if npm run tdd:quality-gate; then
-          echo "passed=true" >> $GITHUB_OUTPUT
-          echo "✅ Quality gate passed"
-        else
-          echo "passed=false" >> $GITHUB_OUTPUT
-          echo "❌ Quality gate failed"
-          exit 1
-        fi
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TDD Quality Gate
+        id: quality-check
+        run: |
+          if npm run tdd:quality-gate; then
+            echo "passed=true" >> $GITHUB_OUTPUT
+            echo "✅ Quality gate passed"
+          else
+            echo "passed=false" >> $GITHUB_OUTPUT
+            echo "❌ Quality gate failed"
+            exit 1
+          fi
 
   marketplace-publish:
     needs: quality-gate
     if: needs.quality-gate.outputs.quality-passed == 'true'
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Install VSCE
-      run: npm install -g vsce
-      
-    - name: Build extension
-      run: npm run package
-      
-    - name: Publish to Marketplace
-      env:
-        VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      run: vsce publish
-      
-    - name: Save release metrics
-      run: |
-        node -e "
-          const { MetricsHistory } = require('./scripts/metrics-history.js');
-          const history = new MetricsHistory();
-          history.saveCurrentMetrics();
-        "
-        
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: |
-          ## 📊 Release Quality Metrics
-          
-          ✅ TDD Quality Gate: Passed
-          📈 All quality thresholds met
-          🚀 Ready for production use
-          
-          See [Quality Report](link-to-report) for detailed metrics.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install VSCE
+        run: npm install -g vsce
+
+      - name: Build extension
+        run: npm run package
+
+      - name: Publish to Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: vsce publish
+
+      - name: Save release metrics
+        run: |
+          node -e "
+            const { MetricsHistory } = require('./scripts/metrics-history.js');
+            const history = new MetricsHistory();
+            history.saveCurrentMetrics();
+          "
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ## 📊 Release Quality Metrics
+
+            ✅ TDD Quality Gate: Passed
+            📈 All quality thresholds met
+            🚀 Ready for production use
+
+            See [Quality Report](link-to-report) for detailed metrics.
 ```
 
 ## 🎨 開発者エクスペリエンス向上
@@ -599,7 +601,7 @@ const { TDDMetrics } = require('../src/test/utils/TDDMetrics');
 class TDDDashboard {
   generateHTML() {
     const metrics = TDDMetrics.getInstance().getCurrentMetrics();
-    
+
     const html = `
 <!DOCTYPE html>
 <html>
@@ -640,7 +642,9 @@ class TDDDashboard {
     
     <h2>🎯 Recommendations</h2>
     <ul>
-        ${this.generateRecommendations(metrics).map(rec => `<li>${rec}</li>`).join('')}
+        ${this.generateRecommendations(metrics)
+          .map((rec) => `<li>${rec}</li>`)
+          .join('')}
     </ul>
 </body>
 </html>`;
@@ -652,11 +656,11 @@ class TDDDashboard {
   generateMetricHTML(label, value, threshold, suffix) {
     const percentage = suffix === '%' ? value * 100 : value;
     const thresholdPercentage = suffix === '%' ? threshold * 100 : threshold;
-    
+
     let cssClass = 'good';
     if (value < threshold * 0.8) cssClass = 'bad';
     else if (value < threshold) cssClass = 'warning';
-    
+
     return `
       <div class="metric ${cssClass}">
         <div class="value">${percentage.toFixed(1)}${suffix}</div>
@@ -667,23 +671,27 @@ class TDDDashboard {
 
   generateRecommendations(metrics) {
     const recommendations = [];
-    
+
     if (metrics.tddComplianceRate < 0.8) {
-      recommendations.push('TDD遵守率を向上させるため、Red-Green-Refactorサイクルを意識してください');
+      recommendations.push(
+        'TDD遵守率を向上させるため、Red-Green-Refactorサイクルを意識してください'
+      );
     }
-    
+
     if (metrics.testCoverage < 0.9) {
-      recommendations.push('テストカバレッジを向上させるため、エッジケースのテストを追加してください');
+      recommendations.push(
+        'テストカバレッジを向上させるため、エッジケースのテストを追加してください'
+      );
     }
-    
+
     if (metrics.qualityScore < 7) {
       recommendations.push('コード品質を向上させるため、リファクタリングを実施してください');
     }
-    
+
     if (recommendations.length === 0) {
       recommendations.push('素晴らしいTDD実践です！この品質を維持してください');
     }
-    
+
     return recommendations;
   }
 }
@@ -707,12 +715,12 @@ module.exports = { TDDDashboard };
 {
   "qualityGate": {
     "tddCompliance": {
-      "minimum": 0.80,
-      "target": 0.90,
+      "minimum": 0.8,
+      "target": 0.9,
       "description": "Red-Green-Refactor cycle compliance rate"
     },
     "testCoverage": {
-      "minimum": 0.90,
+      "minimum": 0.9,
       "target": 0.95,
       "description": "Code coverage by tests"
     },
@@ -749,18 +757,18 @@ const teamConfigs = {
   frontend: {
     testCoverage: 0.95,
     tddCompliance: 0.85,
-    specialChecks: ['accessibility', 'performance']
+    specialChecks: ['accessibility', 'performance'],
   },
   backend: {
-    testCoverage: 0.90,
-    tddCompliance: 0.80,
-    specialChecks: ['security', 'database']
+    testCoverage: 0.9,
+    tddCompliance: 0.8,
+    specialChecks: ['security', 'database'],
   },
   integration: {
     testCoverage: 0.85,
     tddCompliance: 0.75,
-    specialChecks: ['e2e', 'api']
-  }
+    specialChecks: ['e2e', 'api'],
+  },
 };
 ```
 

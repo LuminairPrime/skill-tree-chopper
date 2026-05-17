@@ -9,6 +9,7 @@ The current `scanForSkillFolders` implementation checks each folder for a `skill
 ## Capabilities
 
 ### New Capabilities
+
 - `parallel-scan`: Concurrent directory validation for skill discovery.
 
 ### Modified Capabilities

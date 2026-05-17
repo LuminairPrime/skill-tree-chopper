@@ -16,11 +16,13 @@ Environment variable: `BRAVE_API_KEY`
 ## Web Search
 
 ### Endpoint
+
 ```
 GET https://api.search.brave.com/res/v1/web/search
 ```
 
 ### Parameters
+
 - `q` (required): Search query
 - `count` (optional): Results count (1-20, default 10)
 - `offset` (optional): Pagination offset
@@ -46,6 +48,7 @@ curl -s "https://api.search.brave.com/res/v1/web/search?q=xterm.js+WebGL+tutoria
 ## Local Search
 
 ### Endpoint
+
 ```
 GET https://api.search.brave.com/res/v1/local/search
 ```
@@ -76,6 +79,7 @@ Use `jq` to extract relevant fields:
 ## Common Workflows
 
 ### Research a Technology
+
 ```bash
 curl -s "https://api.search.brave.com/res/v1/web/search?q=VS+Code+extension+development+2024&count=10" \
   -H "Accept: application/json" \
@@ -83,6 +87,7 @@ curl -s "https://api.search.brave.com/res/v1/web/search?q=VS+Code+extension+deve
 ```
 
 ### Find Error Solutions
+
 ```bash
 curl -s "https://api.search.brave.com/res/v1/web/search?q=WebGL+context+lost+solution&count=10" \
   -H "Accept: application/json" \

@@ -89,7 +89,8 @@ npm test
 npm run test:coverage
 ```
 
-Expected: 
+Expected:
+
 - Test success rate: ≥93%
 - Test coverage: ≥85%
 - Total tests: ≥275
@@ -126,12 +127,14 @@ Expected: Complete test suite execution with acceptable pass rates
 ### 4.1 Terminal Management
 
 **Test Terminal Creation:**
+
 - Press F5 to launch Extension Development Host
 - Open Command Palette (Cmd+Shift+P)
 - Search "Focus Terminal" or use Ctrl+`
 - Verify terminal appears in sidebar
 
 **Test Multiple Terminals:**
+
 - Create multiple terminals (up to 5)
 - Test split terminal functionality
 - Verify terminal deletion and cleanup
@@ -140,6 +143,7 @@ Expected: Complete test suite execution with acceptable pass rates
 ### 4.2 Core Features Testing
 
 **Terminal Persistence:**
+
 ```bash
 # Test session save/restore
 # In Extension Development Host:
@@ -150,6 +154,7 @@ Expected: Complete test suite execution with acceptable pass rates
 ```
 
 **CLI Agent Integration:**
+
 ```bash
 # Test CLI Agent detection
 # 1. Start Claude Code or Gemini in terminal
@@ -159,6 +164,7 @@ Expected: Complete test suite execution with acceptable pass rates
 ```
 
 **File Reference Commands:**
+
 ```bash
 # Test @filename integration (Cmd+Option+L / Ctrl+Alt+L)
 # 1. Open a file in editor
@@ -227,6 +233,7 @@ Expected: Native module compiles for target platform
 ### 6.2 Settings Integration Testing
 
 **Test Core Settings:**
+
 - `secondaryTerminal.maxTerminals` (1-5 range)
 - `secondaryTerminal.enablePersistentSessions`
 - `secondaryTerminal.enableCliAgentIntegration`
@@ -238,12 +245,14 @@ Expected: Native module compiles for target platform
 ### 7.1 Error Scenarios
 
 **Test Error Conditions:**
+
 - Invalid shell configuration
 - Terminal process crashes
 - WebView communication failures
 - Persistent session corruption
 
 **Test Resource Limits:**
+
 - Maximum terminal count (5)
 - Large terminal output handling
 - Memory usage under load
@@ -252,6 +261,7 @@ Expected: Native module compiles for target platform
 ### 7.2 Recovery Testing
 
 **Test Recovery Mechanisms:**
+
 - Extension reload after crash
 - Terminal recovery after VS Code restart
 - Corrupted session data handling
@@ -277,6 +287,7 @@ Expected: Acceptable memory usage and CPU performance
 ### 8.2 Memory Leak Testing
 
 **Test for Memory Leaks:**
+
 - Create and destroy multiple terminals
 - Switch between terminals frequently
 - Monitor extension host memory usage
@@ -289,7 +300,7 @@ Expected: Acceptable memory usage and CPU performance
 ```bash
 # Update version and create release
 npm run release:patch   # For patch releases
-npm run release:minor   # For minor releases  
+npm run release:minor   # For minor releases
 npm run release:major   # For major releases
 ```
 
@@ -315,6 +326,7 @@ Expected: VSIX installs correctly and all features work as expected
 ### 10.1 Release Notes Generation
 
 Generate comprehensive release notes including:
+
 - New features and enhancements
 - Bug fixes and improvements
 - Breaking changes (if any)
@@ -324,6 +336,7 @@ Generate comprehensive release notes including:
 ### 10.2 Documentation Updates
 
 Update relevant documentation:
+
 - README.md features and installation
 - CHANGELOG.md with version history
 - Package.json description and keywords
@@ -353,11 +366,13 @@ Update relevant documentation:
 ## Testing Environment
 
 **Development Testing:**
+
 - VS Code Extension Development Host (F5)
 - VS Code Developer Tools (Ctrl+Shift+I) for WebView debugging
 - Terminal functionality in real development workflows
 
 **Production Testing:**
+
 - Installed VSIX package testing
 - Fresh VS Code installation testing
 - Cross-platform validation

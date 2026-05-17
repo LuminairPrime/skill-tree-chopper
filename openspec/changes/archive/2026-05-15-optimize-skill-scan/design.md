@@ -5,10 +5,12 @@ The `ai-skill-auditor` scans specific agent folders (e.g., `.cursor/skills`) to 
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Parallelize read-only filesystem validation (`hasSkillMd`).
 - Maintain sequential constraints for write operations (mass-toggling via `moveFolder`).
 
 **Non-Goals:**
+
 - Lazy loading the global tree (the static targeted `KNOWN_AGENT_PREFIXES` scan combined with this parallelism is fast enough that complex asynchronous hydration strategies are unnecessary).
 
 ## Decisions

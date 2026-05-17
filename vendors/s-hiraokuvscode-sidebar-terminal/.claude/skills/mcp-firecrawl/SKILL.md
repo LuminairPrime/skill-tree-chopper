@@ -19,14 +19,14 @@ This skill enables web scraping and content extraction using Firecrawl through M
 
 ## Tool Selection Guide
 
-| Task | Tool | Notes |
-|------|------|-------|
-| Single page content | `firecrawl_scrape` | Fast, reliable |
-| Find URLs on site | `firecrawl_map` | Discovery only |
-| Web search | `firecrawl_search` | With optional scraping |
-| Multiple pages | `firecrawl_map` + `firecrawl_scrape` | Better than crawl |
-| Structured data | `firecrawl_extract` | Uses LLM extraction |
-| Full site crawl | `firecrawl_crawl` | Use with caution |
+| Task                | Tool                                 | Notes                  |
+| ------------------- | ------------------------------------ | ---------------------- |
+| Single page content | `firecrawl_scrape`                   | Fast, reliable         |
+| Find URLs on site   | `firecrawl_map`                      | Discovery only         |
+| Web search          | `firecrawl_search`                   | With optional scraping |
+| Multiple pages      | `firecrawl_map` + `firecrawl_scrape` | Better than crawl      |
+| Structured data     | `firecrawl_extract`                  | Uses LLM extraction    |
+| Full site crawl     | `firecrawl_crawl`                    | Use with caution       |
 
 ## Core Tools
 
@@ -46,6 +46,7 @@ mcp__firecrawl__firecrawl_scrape({
 ```
 
 **Key Parameters:**
+
 - `url`: Target URL
 - `formats`: Output formats - "markdown", "html", "links"
 - `onlyMainContent`: Extract only main content (recommended)
@@ -58,6 +59,7 @@ Search the web and optionally scrape results.
 **Tool:** `mcp__firecrawl__firecrawl_search`
 
 **Without scraping (preferred):**
+
 ```
 mcp__firecrawl__firecrawl_search({
   query: "xterm.js terminal tutorial",
@@ -66,6 +68,7 @@ mcp__firecrawl__firecrawl_search({
 ```
 
 **With scraping:**
+
 ```
 mcp__firecrawl__firecrawl_search({
   query: "VS Code extension API",

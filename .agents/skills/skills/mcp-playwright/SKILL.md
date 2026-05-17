@@ -29,11 +29,13 @@ This skill enables browser automation using Playwright through MCP. Playwright p
 ### Navigation
 
 **browser_navigate** - Navigate to a URL
+
 ```
 mcp__playwright__browser_navigate({ url: "https://example.com" })
 ```
 
 **browser_navigate_back** - Go back to previous page
+
 ```
 mcp__playwright__browser_navigate_back({})
 ```
@@ -41,11 +43,13 @@ mcp__playwright__browser_navigate_back({})
 ### Page Analysis
 
 **browser_snapshot** - Get accessibility tree (preferred for interaction)
+
 ```
 mcp__playwright__browser_snapshot({})
 ```
 
 **browser_take_screenshot** - Capture visual screenshot
+
 ```
 mcp__playwright__browser_take_screenshot({
   type: "png",
@@ -57,6 +61,7 @@ mcp__playwright__browser_take_screenshot({
 ### Element Interaction
 
 **browser_click** - Click an element (requires ref from snapshot)
+
 ```
 mcp__playwright__browser_click({
   element: "Submit button",
@@ -65,6 +70,7 @@ mcp__playwright__browser_click({
 ```
 
 **browser_type** - Type text into an element
+
 ```
 mcp__playwright__browser_type({
   element: "Search input",
@@ -75,6 +81,7 @@ mcp__playwright__browser_type({
 ```
 
 **browser_hover** - Hover over an element
+
 ```
 mcp__playwright__browser_hover({
   element: "Menu item",
@@ -85,6 +92,7 @@ mcp__playwright__browser_hover({
 ### Form Handling
 
 **browser_fill_form** - Fill multiple form fields
+
 ```
 mcp__playwright__browser_fill_form({
   fields: [
@@ -95,6 +103,7 @@ mcp__playwright__browser_fill_form({
 ```
 
 **browser_select_option** - Select dropdown option
+
 ```
 mcp__playwright__browser_select_option({
   element: "Country",
@@ -106,6 +115,7 @@ mcp__playwright__browser_select_option({
 ### Waiting and Dialogs
 
 **browser_wait_for** - Wait for conditions
+
 ```
 mcp__playwright__browser_wait_for({ text: "Loading complete" })
 mcp__playwright__browser_wait_for({ textGone: "Please wait..." })
@@ -113,6 +123,7 @@ mcp__playwright__browser_wait_for({ time: 2 })
 ```
 
 **browser_handle_dialog** - Handle browser dialogs
+
 ```
 mcp__playwright__browser_handle_dialog({ accept: true, promptText: "input" })
 ```
@@ -120,6 +131,7 @@ mcp__playwright__browser_handle_dialog({ accept: true, promptText: "input" })
 ### Page Management
 
 **browser_tabs** - Manage tabs
+
 ```
 mcp__playwright__browser_tabs({ action: "list" })
 mcp__playwright__browser_tabs({ action: "new" })
@@ -127,6 +139,7 @@ mcp__playwright__browser_tabs({ action: "select", index: 0 })
 ```
 
 **browser_close** - Close page
+
 ```
 mcp__playwright__browser_close({})
 ```
@@ -134,11 +147,13 @@ mcp__playwright__browser_close({})
 ### Advanced
 
 **browser_evaluate** - Execute JavaScript
+
 ```
 mcp__playwright__browser_evaluate({ function: "() => document.title" })
 ```
 
 **browser_press_key** - Press keyboard key
+
 ```
 mcp__playwright__browser_press_key({ key: "Enter" })
 ```

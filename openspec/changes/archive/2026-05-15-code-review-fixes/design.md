@@ -5,6 +5,7 @@ A recent code review for the `ai-skill-auditor` v1.0.0 extension identified mult
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Eliminate the circular dependency between `extension.ts` and `SkillTreeProvider.ts`.
 - Optimize file validation (`hasSkillMd`) to `O(1)` file system read per directory.
 - Simplify filesystem API calls for creating directories.
@@ -14,6 +15,7 @@ A recent code review for the `ai-skill-auditor` v1.0.0 extension identified mult
 - Provide a clear, persistent guide on publishing the extension.
 
 **Non-Goals:**
+
 - Modifying the underlying behavior of skill discovery.
 - Adding comprehensive end-to-end tests for the UI components.
 - Rewriting the TreeDataProvider logic.

@@ -26,9 +26,11 @@ Get a list of documentation topics for a GitHub repository.
 **Tool:** `mcp__deepwiki__read_wiki_structure`
 
 **Parameters:**
+
 - `repoName` (required): GitHub repository in "owner/repo" format
 
 **Example:**
+
 ```
 mcp__deepwiki__read_wiki_structure({ repoName: "microsoft/vscode" })
 ```
@@ -40,9 +42,11 @@ View comprehensive documentation about a GitHub repository.
 **Tool:** `mcp__deepwiki__read_wiki_contents`
 
 **Parameters:**
+
 - `repoName` (required): GitHub repository in "owner/repo" format
 
 **Example:**
+
 ```
 mcp__deepwiki__read_wiki_contents({ repoName: "xtermjs/xterm.js" })
 ```
@@ -54,10 +58,12 @@ Ask any question about a GitHub repository and get AI-powered answers.
 **Tool:** `mcp__deepwiki__ask_question`
 
 **Parameters:**
+
 - `repoName` (required): GitHub repository in "owner/repo" format
 - `question` (required): The question to ask about the repository
 
 **Example:**
+
 ```
 mcp__deepwiki__ask_question({
   repoName: "microsoft/vscode",

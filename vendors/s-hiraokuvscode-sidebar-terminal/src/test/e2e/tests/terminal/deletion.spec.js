@@ -1,7 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const test_1 = require("@playwright/test");
-const helpers_1 = require("../../helpers");
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
+const test_1 = require('@playwright/test');
+const helpers_1 = require('../../helpers');
 /**
  * Terminal Deletion Tests
  * Based on TEST_PLAN.md Section 1: Terminal Lifecycle Management
@@ -13,173 +13,183 @@ const helpers_1 = require("../../helpers");
 // TODO: Re-enable once TerminalLifecycleHelper is fully implemented
 // Currently helper methods return placeholder values (null, empty arrays)
 test_1.test.describe.skip('Terminal Deletion', () => {
-    let extensionHelper;
-    let terminalHelper;
-    test_1.test.beforeEach(async ({ page }) => {
-        extensionHelper = new helpers_1.VSCodeExtensionTestHelper(page);
-        terminalHelper = new helpers_1.TerminalLifecycleHelper(page);
-        await extensionHelper.activateExtension();
-    });
-    test_1.test.afterEach(async () => {
-        await terminalHelper.deleteAllTerminals();
-        await extensionHelper.dispose();
-    });
-    /**
-     * Test Scenario 1.3: Terminal Deletion
-     * Priority: P0 (Critical)
-     *
-     * Validates that terminals can be deleted and that
-     * the active terminal switches appropriately.
-     */
-    (0, test_1.test)('should delete terminal and switch focus @P0 @terminal-lifecycle', async () => {
-        // Arrange: Create 3 terminals
-        await terminalHelper.createTerminal(); // ID 1
-        await terminalHelper.createTerminal(); // ID 2
-        await terminalHelper.createTerminal(); // ID 3
-        // Verify initial state
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(3);
-        // Act: Delete terminal 2
-        await terminalHelper.deleteTerminal(2);
-        // Assert: Terminal 2 should be gone
-        (0, test_1.expect)(await terminalHelper.terminalExists(2)).toBe(false);
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(2);
-        // Assert: Terminals 1 and 3 should still exist
-        (0, test_1.expect)(await terminalHelper.terminalExists(1)).toBe(true);
-        (0, test_1.expect)(await terminalHelper.terminalExists(3)).toBe(true);
-        // Assert: Active terminal should be 1 or 3 (not 2)
-        const activeId = await terminalHelper.getActiveTerminalId();
-        (0, test_1.expect)(activeId).not.toBe(2);
-        (0, test_1.expect)([1, 3]).toContain(activeId);
-    });
-    /**
-     * Test Scenario 1.3 (Extended): Delete Active Terminal
-     * Priority: P0 (Critical)
-     *
-     * Validates that deleting the active terminal
-     * automatically switches focus to another terminal.
-     */
-    (0, test_1.test)('should switch focus when deleting active terminal @P0 @terminal-lifecycle', async () => {
-        // Arrange: Create 3 terminals
-        await terminalHelper.createTerminal(); // ID 1
-        await terminalHelper.createTerminal(); // ID 2
-        await terminalHelper.createTerminal(); // ID 3
-        // Switch to terminal 2
-        await terminalHelper.switchToTerminal(2);
-        // Verify terminal 2 is active
-        const activeBeforeDelete = await terminalHelper.getActiveTerminalId();
-        (0, test_1.expect)(activeBeforeDelete).toBe(2);
-        // Act: Delete active terminal (2)
-        await terminalHelper.deleteTerminal(2);
-        // Assert: Active terminal should change to 1 or 3
-        const activeAfterDelete = await terminalHelper.getActiveTerminalId();
-        (0, test_1.expect)(activeAfterDelete).not.toBe(2);
-        (0, test_1.expect)([1, 3]).toContain(activeAfterDelete);
-    });
-    /**
-     * Test Scenario: Delete All Terminals Sequentially
-     * Priority: P0 (Critical)
-     *
-     * Validates that terminals can be deleted one by one
-     * until none remain.
-     */
-    (0, test_1.test)('should delete all terminals sequentially @P0 @terminal-lifecycle', async () => {
-        // Arrange: Create 3 terminals
-        await terminalHelper.createTerminal();
-        await terminalHelper.createTerminal();
-        await terminalHelper.createTerminal();
-        // Act & Assert: Delete terminals one by one
+  let extensionHelper;
+  let terminalHelper;
+  test_1.test.beforeEach(async ({ page }) => {
+    extensionHelper = new helpers_1.VSCodeExtensionTestHelper(page);
+    terminalHelper = new helpers_1.TerminalLifecycleHelper(page);
+    await extensionHelper.activateExtension();
+  });
+  test_1.test.afterEach(async () => {
+    await terminalHelper.deleteAllTerminals();
+    await extensionHelper.dispose();
+  });
+  /**
+   * Test Scenario 1.3: Terminal Deletion
+   * Priority: P0 (Critical)
+   *
+   * Validates that terminals can be deleted and that
+   * the active terminal switches appropriately.
+   */
+  (0, test_1.test)('should delete terminal and switch focus @P0 @terminal-lifecycle', async () => {
+    // Arrange: Create 3 terminals
+    await terminalHelper.createTerminal(); // ID 1
+    await terminalHelper.createTerminal(); // ID 2
+    await terminalHelper.createTerminal(); // ID 3
+    // Verify initial state
+    (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(3);
+    // Act: Delete terminal 2
+    await terminalHelper.deleteTerminal(2);
+    // Assert: Terminal 2 should be gone
+    (0, test_1.expect)(await terminalHelper.terminalExists(2)).toBe(false);
+    (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(2);
+    // Assert: Terminals 1 and 3 should still exist
+    (0, test_1.expect)(await terminalHelper.terminalExists(1)).toBe(true);
+    (0, test_1.expect)(await terminalHelper.terminalExists(3)).toBe(true);
+    // Assert: Active terminal should be 1 or 3 (not 2)
+    const activeId = await terminalHelper.getActiveTerminalId();
+    (0, test_1.expect)(activeId).not.toBe(2);
+    (0, test_1.expect)([1, 3]).toContain(activeId);
+  });
+  /**
+   * Test Scenario 1.3 (Extended): Delete Active Terminal
+   * Priority: P0 (Critical)
+   *
+   * Validates that deleting the active terminal
+   * automatically switches focus to another terminal.
+   */
+  (0, test_1.test)(
+    'should switch focus when deleting active terminal @P0 @terminal-lifecycle',
+    async () => {
+      // Arrange: Create 3 terminals
+      await terminalHelper.createTerminal(); // ID 1
+      await terminalHelper.createTerminal(); // ID 2
+      await terminalHelper.createTerminal(); // ID 3
+      // Switch to terminal 2
+      await terminalHelper.switchToTerminal(2);
+      // Verify terminal 2 is active
+      const activeBeforeDelete = await terminalHelper.getActiveTerminalId();
+      (0, test_1.expect)(activeBeforeDelete).toBe(2);
+      // Act: Delete active terminal (2)
+      await terminalHelper.deleteTerminal(2);
+      // Assert: Active terminal should change to 1 or 3
+      const activeAfterDelete = await terminalHelper.getActiveTerminalId();
+      (0, test_1.expect)(activeAfterDelete).not.toBe(2);
+      (0, test_1.expect)([1, 3]).toContain(activeAfterDelete);
+    }
+  );
+  /**
+   * Test Scenario: Delete All Terminals Sequentially
+   * Priority: P0 (Critical)
+   *
+   * Validates that terminals can be deleted one by one
+   * until none remain.
+   */
+  (0, test_1.test)('should delete all terminals sequentially @P0 @terminal-lifecycle', async () => {
+    // Arrange: Create 3 terminals
+    await terminalHelper.createTerminal();
+    await terminalHelper.createTerminal();
+    await terminalHelper.createTerminal();
+    // Act & Assert: Delete terminals one by one
+    await terminalHelper.deleteTerminal(1);
+    (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(2);
+    await terminalHelper.deleteTerminal(2);
+    (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(1);
+    await terminalHelper.deleteTerminal(3);
+    (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
+  });
+  /**
+   * Test Scenario 1.6: Last Terminal Protection
+   * Priority: P1 (Important)
+   *
+   * Validates that the last terminal may require
+   * confirmation before deletion (if configured).
+   */
+  (0, test_1.test)('should handle last terminal deletion @P1 @terminal-lifecycle', async () => {
+    // Arrange: Create single terminal
+    await terminalHelper.createTerminal();
+    (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(1);
+    // Act: Delete the last terminal
+    await terminalHelper.deleteTerminal(1);
+    // Assert: Terminal should be deleted
+    (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
+    // Future: If confirmation is required, test the confirmation dialog
+    // const confirmDialog = await page.locator('.confirmation-dialog');
+    // await expect(confirmDialog).toBeVisible();
+  });
+  /**
+   * Test Scenario: Prevent Duplicate Deletion
+   * Priority: P0 (Critical)
+   *
+   * Validates that attempting to delete the same terminal
+   * multiple times doesn't cause errors.
+   */
+  (0, test_1.test)(
+    'should prevent duplicate deletion attempts @P0 @terminal-lifecycle',
+    async () => {
+      // Arrange: Create terminal
+      await terminalHelper.createTerminal();
+      // Act: Delete terminal multiple times
+      await terminalHelper.deleteTerminal(1);
+      // Attempt to delete again (should be safe/no-op)
+      try {
         await terminalHelper.deleteTerminal(1);
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(2);
-        await terminalHelper.deleteTerminal(2);
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(1);
-        await terminalHelper.deleteTerminal(3);
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
-    });
-    /**
-     * Test Scenario 1.6: Last Terminal Protection
-     * Priority: P1 (Important)
-     *
-     * Validates that the last terminal may require
-     * confirmation before deletion (if configured).
-     */
-    (0, test_1.test)('should handle last terminal deletion @P1 @terminal-lifecycle', async () => {
-        // Arrange: Create single terminal
-        await terminalHelper.createTerminal();
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(1);
-        // Act: Delete the last terminal
-        await terminalHelper.deleteTerminal(1);
-        // Assert: Terminal should be deleted
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
-        // Future: If confirmation is required, test the confirmation dialog
-        // const confirmDialog = await page.locator('.confirmation-dialog');
-        // await expect(confirmDialog).toBeVisible();
-    });
-    /**
-     * Test Scenario: Prevent Duplicate Deletion
-     * Priority: P0 (Critical)
-     *
-     * Validates that attempting to delete the same terminal
-     * multiple times doesn't cause errors.
-     */
-    (0, test_1.test)('should prevent duplicate deletion attempts @P0 @terminal-lifecycle', async () => {
-        // Arrange: Create terminal
-        await terminalHelper.createTerminal();
-        // Act: Delete terminal multiple times
-        await terminalHelper.deleteTerminal(1);
-        // Attempt to delete again (should be safe/no-op)
-        try {
-            await terminalHelper.deleteTerminal(1);
-        }
-        catch (error) {
-            // Expected - terminal already deleted
-        }
-        // Assert: Terminal count should be 0
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
-        (0, test_1.expect)(await terminalHelper.terminalExists(1)).toBe(false);
-    });
-    /**
-     * Test Scenario: Delete Non-Existent Terminal
-     * Priority: P1 (Important)
-     *
-     * Validates graceful handling when attempting to
-     * delete a terminal that doesn't exist.
-     */
-    (0, test_1.test)('should handle deleting non-existent terminal gracefully @P1 @terminal-lifecycle', async () => {
-        // Arrange: No terminals exist
-        // Act: Try to delete non-existent terminal
-        try {
-            await terminalHelper.deleteTerminal(5);
-        }
-        catch (error) {
-            // Expected - terminal doesn't exist
-        }
-        // Assert: Terminal count should still be 0
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
-    });
-    /**
-     * Test Scenario: Rapid Deletion (Race Conditions)
-     * Priority: P0 (Critical)
-     *
-     * Validates that rapid deletion attempts don't
-     * cause race conditions or duplicate deletions.
-     */
-    (0, test_1.test)('should handle rapid deletion without race conditions @P0 @terminal-lifecycle', async () => {
-        // Arrange: Create 3 terminals
-        await terminalHelper.createTerminal();
-        await terminalHelper.createTerminal();
-        await terminalHelper.createTerminal();
-        // Act: Delete all terminals rapidly in parallel
-        const deletePromises = [
-            terminalHelper.deleteTerminal(1),
-            terminalHelper.deleteTerminal(2),
-            terminalHelper.deleteTerminal(3),
-        ];
-        await Promise.all(deletePromises);
-        // Assert: All terminals should be deleted
-        (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
-        (0, test_1.expect)(await terminalHelper.terminalExists(1)).toBe(false);
-        (0, test_1.expect)(await terminalHelper.terminalExists(2)).toBe(false);
-        (0, test_1.expect)(await terminalHelper.terminalExists(3)).toBe(false);
-    });
+      } catch (error) {
+        // Expected - terminal already deleted
+      }
+      // Assert: Terminal count should be 0
+      (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
+      (0, test_1.expect)(await terminalHelper.terminalExists(1)).toBe(false);
+    }
+  );
+  /**
+   * Test Scenario: Delete Non-Existent Terminal
+   * Priority: P1 (Important)
+   *
+   * Validates graceful handling when attempting to
+   * delete a terminal that doesn't exist.
+   */
+  (0, test_1.test)(
+    'should handle deleting non-existent terminal gracefully @P1 @terminal-lifecycle',
+    async () => {
+      // Arrange: No terminals exist
+      // Act: Try to delete non-existent terminal
+      try {
+        await terminalHelper.deleteTerminal(5);
+      } catch (error) {
+        // Expected - terminal doesn't exist
+      }
+      // Assert: Terminal count should still be 0
+      (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
+    }
+  );
+  /**
+   * Test Scenario: Rapid Deletion (Race Conditions)
+   * Priority: P0 (Critical)
+   *
+   * Validates that rapid deletion attempts don't
+   * cause race conditions or duplicate deletions.
+   */
+  (0, test_1.test)(
+    'should handle rapid deletion without race conditions @P0 @terminal-lifecycle',
+    async () => {
+      // Arrange: Create 3 terminals
+      await terminalHelper.createTerminal();
+      await terminalHelper.createTerminal();
+      await terminalHelper.createTerminal();
+      // Act: Delete all terminals rapidly in parallel
+      const deletePromises = [
+        terminalHelper.deleteTerminal(1),
+        terminalHelper.deleteTerminal(2),
+        terminalHelper.deleteTerminal(3),
+      ];
+      await Promise.all(deletePromises);
+      // Assert: All terminals should be deleted
+      (0, test_1.expect)(await terminalHelper.getTerminalCount()).toBe(0);
+      (0, test_1.expect)(await terminalHelper.terminalExists(1)).toBe(false);
+      (0, test_1.expect)(await terminalHelper.terminalExists(2)).toBe(false);
+      (0, test_1.expect)(await terminalHelper.terminalExists(3)).toBe(false);
+    }
+  );
 });
 //# sourceMappingURL=deletion.spec.js.map

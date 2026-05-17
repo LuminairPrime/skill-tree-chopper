@@ -126,14 +126,14 @@ The reason each tool has a different flag is that resume/continue is handled by 
 
 When running multiple environments, CI pipelines, or isolated test suites, you can override storage paths via environment variables to prevent collisions:
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `SYNAPSE_REGISTRY_DIR` | `~/.a2a/registry` | Running agent registry |
-| `SYNAPSE_REPLY_TARGET_DIR` | `~/.a2a/reply` | Reply target persistence |
-| `SYNAPSE_EXTERNAL_REGISTRY_DIR` | `~/.a2a/external` | External agent storage |
-| `SYNAPSE_HISTORY_DB_PATH` | `~/.synapse/history/history.db` | Task history database |
-| `SYNAPSE_SKILLS_DIR` | `~/.synapse/skills` | Central skill store |
-| `SYNAPSE_SHARED_MEMORY_DB_PATH` | `.synapse/memory.db` | Shared memory database |
-| `SYNAPSE_SHARED_MEMORY_ENABLED` | `true` | Enable/disable shared memory |
+| Variable                        | Default                         | Purpose                      |
+| ------------------------------- | ------------------------------- | ---------------------------- |
+| `SYNAPSE_REGISTRY_DIR`          | `~/.a2a/registry`               | Running agent registry       |
+| `SYNAPSE_REPLY_TARGET_DIR`      | `~/.a2a/reply`                  | Reply target persistence     |
+| `SYNAPSE_EXTERNAL_REGISTRY_DIR` | `~/.a2a/external`               | External agent storage       |
+| `SYNAPSE_HISTORY_DB_PATH`       | `~/.synapse/history/history.db` | Task history database        |
+| `SYNAPSE_SKILLS_DIR`            | `~/.synapse/skills`             | Central skill store          |
+| `SYNAPSE_SHARED_MEMORY_DB_PATH` | `.synapse/memory.db`            | Shared memory database       |
+| `SYNAPSE_SHARED_MEMORY_ENABLED` | `true`                          | Enable/disable shared memory |
 
 Overriding these paths keeps parallel environments from stepping on each other's state — for example, a CI run using `SYNAPSE_REGISTRY_DIR=/tmp/ci-registry` avoids interfering with a developer's local agents.

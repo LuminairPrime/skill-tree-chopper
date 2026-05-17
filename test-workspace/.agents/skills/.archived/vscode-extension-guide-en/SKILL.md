@@ -1,12 +1,12 @@
 ---
 name: vscode-extension-guide-en
-description: "Guide for VS Code extension development from scaffolding to Marketplace publication"
+description: 'Guide for VS Code extension development from scaffolding to Marketplace publication'
 category: core-dev
 risk: safe
 source: community
 source_repo: lewiswigmore/agent-skills
 source_type: community
-date_added: "2026-04-12"
+date_added: '2026-04-12'
 author: lewiswigmore
 tags: [vscode, extension, ide, typescript, marketplace]
 tools: [claude, cursor, copilot, codex, gemini]
@@ -100,6 +100,7 @@ npx skills add lewiswigmore/agent-skills --skill vscode-extension-guide-en
 - `@debugging-strategies` - Systematic troubleshooting for extension issues
 
 ## Limitations
+
 - Use this skill only when the task clearly matches the scope described above.
 - Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
 - Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

@@ -202,6 +202,7 @@ synapse kill $agent_id -f
 ```
 
 **Key points:**
+
 - Spawning agent is responsible for lifecycle management.
 - Use `--headless` (automatically applied by spawn) for non-interactive execution.
 - Always force kill (`-f`) helper agents when done to clean up resources.
@@ -213,11 +214,13 @@ synapse kill $agent_id -f
 ### Agent Not Responding
 
 1. Check status:
+
    ```bash
    synapse list
    ```
 
 2. If PROCESSING for too long:
+
    ```bash
    synapse send <agent> "Status?" --priority 4 --response --from <your_agent_id>
    ```

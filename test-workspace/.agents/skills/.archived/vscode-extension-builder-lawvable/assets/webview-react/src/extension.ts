@@ -6,7 +6,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand('myExtension.openPanel', () => {
       MyPanel.createOrShow(context.extensionUri);
-    })
+    }),
   );
 
   // Restore panel if it was open
@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerWebviewPanelSerializer(MyPanel.viewType, {
       async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
         MyPanel.revive(webviewPanel, context.extensionUri);
-      }
+      },
     });
   }
 }
@@ -35,16 +35,11 @@ class MyPanel {
       return;
     }
 
-    const panel = vscode.window.createWebviewPanel(
-      MyPanel.viewType,
-      'My Panel',
-      column,
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'dist')]
-      }
-    );
+    const panel = vscode.window.createWebviewPanel(MyPanel.viewType, 'My Panel', column, {
+      enableScripts: true,
+      retainContextWhenHidden: true,
+      localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'dist')],
+    });
 
     MyPanel.currentPanel = new MyPanel(panel, extensionUri);
   }
@@ -62,9 +57,9 @@ class MyPanel {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     this._panel.webview.onDidReceiveMessage(
-      message => this._handleMessage(message),
+      (message) => this._handleMessage(message),
       null,
-      this._disposables
+      this._disposables,
     );
   }
 
@@ -77,7 +72,7 @@ class MyPanel {
         // Send data back to webview
         this._panel.webview.postMessage({
           type: 'data',
-          data: { message: 'Hello from extension!' }
+          data: { message: 'Hello from extension!' },
         });
         break;
     }
@@ -104,10 +99,10 @@ class MyPanel {
     const webview = this._panel.webview;
 
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'index.js')
+      vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'index.js'),
     );
     const styleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'index.css')
+      vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'index.css'),
     );
 
     const nonce = getNonce();

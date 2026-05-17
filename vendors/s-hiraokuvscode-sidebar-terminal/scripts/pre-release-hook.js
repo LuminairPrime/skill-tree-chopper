@@ -36,7 +36,6 @@ class PreReleaseHook {
 
       console.log('✅ Pre-release checks completed successfully!');
       return true;
-
     } catch (error) {
       console.error('❌ Pre-release checks failed:', error.message);
       return false;
@@ -66,16 +65,21 @@ class PreReleaseHook {
       preReleaseChecks: {
         backupCreated: true,
         rollbackPlanGenerated: true,
-        gitTagged: true
+        gitTagged: true,
       },
       rollbackInstructions: {
         emergency: 'npm run rollback:emergency',
         specific: `npm run rollback:to ${currentVersion}`,
-        listVersions: 'npm run rollback:list'
-      }
+        listVersions: 'npm run rollback:list',
+      },
     };
 
-    const metadataPath = path.join(__dirname, '..', '.version-backups', `release-metadata-v${currentVersion}.json`);
+    const metadataPath = path.join(
+      __dirname,
+      '..',
+      '.version-backups',
+      `release-metadata-v${currentVersion}.json`
+    );
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
 
     console.log(`📄 Release metadata generated: ${metadataPath}`);
@@ -85,10 +89,9 @@ class PreReleaseHook {
 // Auto-execute if called directly
 if (require.main === module) {
   const hook = new PreReleaseHook();
-  hook.executePreReleaseChecks()
-    .then(success => {
-      process.exit(success ? 0 : 1);
-    });
+  hook.executePreReleaseChecks().then((success) => {
+    process.exit(success ? 0 : 1);
+  });
 }
 
 module.exports = PreReleaseHook;

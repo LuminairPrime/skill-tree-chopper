@@ -2,13 +2,7 @@
   "all": true,
   "check-coverage": false,
   "include": ["out/**/*.js"],
-  "exclude": [
-    "out/test/**",
-    "out/**/*.test.js",
-    "out/**/*.spec.js",
-    "dist/**",
-    "node_modules/**"
-  ],
+  "exclude": ["out/test/**", "out/**/*.test.js", "out/**/*.spec.js", "dist/**", "node_modules/**"],
   "reporter": ["text", "html", "lcov", "json"],
   "report-dir": "./coverage",
   "temp-directory": "./coverage/.c8_output",

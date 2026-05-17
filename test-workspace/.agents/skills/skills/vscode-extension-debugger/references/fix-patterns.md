@@ -44,7 +44,7 @@ interface Logger {
 // Null object that does nothing
 const NullLogger: Logger = {
   log: () => {},
-  error: () => {}
+  error: () => {},
 };
 
 class TerminalManager {
@@ -126,12 +126,8 @@ class MyService {
   private store = new DisposableStore();
 
   initialize(context: vscode.ExtensionContext): void {
-    this.store.add(
-      vscode.workspace.onDidChangeConfiguration(() => this.refresh())
-    );
-    this.store.add(
-      vscode.window.onDidChangeActiveTextEditor(() => this.update())
-    );
+    this.store.add(vscode.workspace.onDidChangeConfiguration(() => this.refresh()));
+    this.store.add(vscode.window.onDidChangeActiveTextEditor(() => this.update()));
 
     context.subscriptions.push(this.store);
   }
@@ -143,7 +139,7 @@ class MyService {
 ```typescript
 async function withTerminal<T>(
   manager: TerminalManager,
-  action: (terminal: Terminal) => Promise<T>
+  action: (terminal: Terminal) => Promise<T>,
 ): Promise<T> {
   const terminal = await manager.createTerminal();
   try {
@@ -292,7 +288,7 @@ async function runInTerminal(command: string): Promise<void> {
 ```typescript
 function debounce<T extends (...args: any[]) => void>(
   fn: T,
-  delay: number
+  delay: number,
 ): T & { cancel: () => void } {
   let timeoutId: NodeJS.Timeout | undefined;
 
@@ -323,17 +319,14 @@ const debouncedResize = debounce((width: number, height: number) => {
 
 // Cleanup
 context.subscriptions.push({
-  dispose: () => debouncedResize.cancel()
+  dispose: () => debouncedResize.cancel(),
 });
 ```
 
 ### Throttle Pattern
 
 ```typescript
-function throttle<T extends (...args: any[]) => void>(
-  fn: T,
-  limit: number
-): T {
+function throttle<T extends (...args: any[]) => void>(fn: T, limit: number): T {
   let inThrottle = false;
   let lastArgs: Parameters<T> | undefined;
 
@@ -365,9 +358,7 @@ const throttledUpdate = throttle((data: string) => {
 ### Result Type Pattern
 
 ```typescript
-type Result<T, E = Error> =
-  | { success: true; value: T }
-  | { success: false; error: E };
+type Result<T, E = Error> = { success: true; value: T } | { success: false; error: E };
 
 function createTerminal(config: TerminalConfig): Result<Terminal> {
   try {
@@ -397,14 +388,9 @@ async function withRetry<T>(
     delay?: number;
     backoff?: number;
     shouldRetry?: (error: Error) => boolean;
-  } = {}
+  } = {},
 ): Promise<T> {
-  const {
-    maxAttempts = 3,
-    delay = 1000,
-    backoff = 2,
-    shouldRetry = () => true
-  } = options;
+  const { maxAttempts = 3, delay = 1000, backoff = 2, shouldRetry = () => true } = options;
 
   let lastError: Error;
   let currentDelay = delay;
@@ -420,7 +406,7 @@ async function withRetry<T>(
       }
 
       console.log(`Attempt ${attempt} failed, retrying in ${currentDelay}ms`);
-      await new Promise(resolve => setTimeout(resolve, currentDelay));
+      await new Promise((resolve) => setTimeout(resolve, currentDelay));
       currentDelay *= backoff;
     }
   }
@@ -429,14 +415,11 @@ async function withRetry<T>(
 }
 
 // Usage
-const terminal = await withRetry(
-  () => createTerminal(),
-  {
-    maxAttempts: 3,
-    delay: 500,
-    shouldRetry: (error) => error.message.includes('EBUSY')
-  }
-);
+const terminal = await withRetry(() => createTerminal(), {
+  maxAttempts: 3,
+  delay: 500,
+  shouldRetry: (error) => error.message.includes('EBUSY'),
+});
 ```
 
 ### Circuit Breaker Pattern
@@ -449,7 +432,7 @@ class CircuitBreaker {
 
   constructor(
     private threshold: number = 5,
-    private resetTimeout: number = 30000
+    private resetTimeout: number = 30000,
   ) {}
 
   async execute<T>(operation: () => Promise<T>): Promise<T> {
@@ -513,7 +496,7 @@ class TerminalStateMachine {
     ['idle', ['creating']],
     ['creating', ['running', 'disposed']],
     ['running', ['disposing']],
-    ['disposing', ['disposed']]
+    ['disposing', ['disposed']],
   ]);
 
   canTransition(to: TerminalState): boolean {
@@ -560,7 +543,7 @@ class TypedEventEmitter<T extends Record<string, any>> {
   }
 
   emit<K extends keyof T>(event: K, data: T[K]): void {
-    this.listeners.get(event)?.forEach(listener => {
+    this.listeners.get(event)?.forEach((listener) => {
       try {
         listener(data);
       } catch (error) {
@@ -636,17 +619,20 @@ class MessageQueue {
 
 ```typescript
 class RequestResponseHandler {
-  private pendingRequests = new Map<string, {
-    resolve: (value: unknown) => void;
-    reject: (error: Error) => void;
-    timeout: NodeJS.Timeout;
-  }>();
+  private pendingRequests = new Map<
+    string,
+    {
+      resolve: (value: unknown) => void;
+      reject: (error: Error) => void;
+      timeout: NodeJS.Timeout;
+    }
+  >();
 
   async request<T>(
     webview: vscode.Webview,
     type: string,
     data?: unknown,
-    timeoutMs = 5000
+    timeoutMs = 5000,
   ): Promise<T> {
     const id = crypto.randomUUID();
 
@@ -756,7 +742,7 @@ function captureState(manager: TerminalManager): object {
     terminalCount: manager.getTerminalCount(),
     activeTerminalId: manager.getActiveTerminalId(),
     terminalIds: manager.getAllTerminalIds(),
-    state: manager.getState()
+    state: manager.getState(),
   };
 }
 

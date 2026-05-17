@@ -5,6 +5,7 @@
 Use for strict multi-step operations with dependencies.
 
 Include:
+
 - explicit step order
 - required inputs/outputs per step
 - validation and rollback guidance
@@ -14,6 +15,7 @@ Include:
 Use when multiple services or MCP tools must be chained.
 
 Include:
+
 - phase separation
 - data handoff contract between phases
 - centralized error handling
@@ -23,6 +25,7 @@ Include:
 Use when output quality improves via review loops.
 
 Include:
+
 - quality criteria
 - validate -> refine -> re-validate loop
 - stop condition
@@ -32,6 +35,7 @@ Include:
 Use when the same user outcome maps to different tools.
 
 Include:
+
 - decision tree with explicit criteria
 - fallback behavior
 - user-facing explanation of selected path
@@ -41,6 +45,7 @@ Include:
 Use when the skill adds specialized policy/compliance logic.
 
 Include:
+
 - pre-action checks
 - decision policy
 - audit trail requirements

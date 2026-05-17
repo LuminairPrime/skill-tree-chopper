@@ -1,6 +1,6 @@
 # Brave Search MCP Tools Reference
 
-## mcp__brave-search__brave_web_search
+## mcp**brave-search**brave_web_search
 
 Perform a web search using the Brave Search API. Ideal for general queries, news, articles, and online content.
 
@@ -14,6 +14,7 @@ Perform a web search using the Brave Search API. Ideal for general queries, news
 **Returns:** Search results with titles, URLs, and snippets.
 
 **Example:**
+
 ```
 mcp__brave-search__brave_web_search({
   query: "TypeScript best practices 2024",
@@ -24,7 +25,7 @@ mcp__brave-search__brave_web_search({
 
 ---
 
-## mcp__brave-search__brave_local_search
+## mcp**brave-search**brave_local_search
 
 Search for local businesses and places. Returns detailed information including business names, addresses, ratings, phone numbers, and opening hours.
 
@@ -37,6 +38,7 @@ Search for local businesses and places. Returns detailed information including b
 **Returns:** Local business results with contact information, ratings, and hours.
 
 **Example:**
+
 ```
 mcp__brave-search__brave_local_search({
   query: "restaurants near Tokyo Station",
@@ -59,9 +61,9 @@ mcp__brave-search__brave_local_search({
 
 ### Effective Queries
 
-| Goal | Example Query |
-|------|--------------|
-| Latest docs | `xterm.js documentation 2024` |
-| Error solution | `"WebGL context lost" xterm fix` |
-| Comparisons | `xterm.js vs terminal.js comparison` |
-| Tutorials | `VS Code extension tutorial beginner` |
+| Goal           | Example Query                         |
+| -------------- | ------------------------------------- |
+| Latest docs    | `xterm.js documentation 2024`         |
+| Error solution | `"WebGL context lost" xterm fix`      |
+| Comparisons    | `xterm.js vs terminal.js comparison`  |
+| Tutorials      | `VS Code extension tutorial beginner` |

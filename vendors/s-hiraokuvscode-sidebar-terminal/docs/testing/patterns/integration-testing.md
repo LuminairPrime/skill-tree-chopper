@@ -17,12 +17,12 @@
 
 ### ユニットテストとの違い
 
-| 観点 | ユニットテスト | 統合テスト |
-|------|---------------|-----------|
-| スコープ | 単一クラス/関数 | 複数コンポーネント |
-| 依存関係 | すべてモック | 一部は実装を使用 |
-| 実行速度 | 高速（ms単位） | 中速（秒単位） |
-| 目的 | ロジックの正確性 | 連携の正確性 |
+| 観点     | ユニットテスト   | 統合テスト         |
+| -------- | ---------------- | ------------------ |
+| スコープ | 単一クラス/関数  | 複数コンポーネント |
+| 依存関係 | すべてモック     | 一部は実装を使用   |
+| 実行速度 | 高速（ms単位）   | 中速（秒単位）     |
+| 目的     | ロジックの正確性 | 連携の正確性       |
 
 ### 統合テストの範囲
 
@@ -61,7 +61,7 @@ describe('Integration: Webview Messaging', () => {
     // Webviewのモック
     mockWebview = {
       postMessage: vi.spyOn().resolves(true),
-      onDidReceiveMessage: vi.spyOn()
+      onDidReceiveMessage: vi.spyOn(),
     };
 
     // 実際のTerminalManagerを使用（モックではなく）
@@ -81,7 +81,7 @@ describe('Integration: Webview Messaging', () => {
       // Given: Webviewからターミナル作成リクエスト
       const createMessage = {
         command: 'createTerminal',
-        options: { shell: '/bin/bash' }
+        options: { shell: '/bin/bash' },
       };
 
       // When: メッセージを処理
@@ -96,7 +96,7 @@ describe('Integration: Webview Messaging', () => {
       expect(mockWebview.postMessage).to.have.been.calledWith(
         expect.objectContaining({
           command: 'terminalCreated',
-          terminal: expect.any(Object)
+          terminal: expect.any(Object),
         })
       );
     });
@@ -105,7 +105,7 @@ describe('Integration: Webview Messaging', () => {
       // Given: 無効な設定でターミナル作成
       const invalidMessage = {
         command: 'createTerminal',
-        options: { shell: null }
+        options: { shell: null },
       };
 
       // When: メッセージを処理
@@ -115,7 +115,7 @@ describe('Integration: Webview Messaging', () => {
       expect(mockWebview.postMessage).to.have.been.calledWith(
         expect.objectContaining({
           command: 'error',
-          message: expect.any(String)
+          message: expect.any(String),
         })
       );
     });
@@ -130,13 +130,13 @@ describe('Integration: Webview Messaging', () => {
       terminal.write('test output\n');
 
       // Then: Webviewにデータが転送される
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       expect(mockWebview.postMessage).to.have.been.calledWith(
         expect.objectContaining({
           command: 'data',
           terminalId: terminal.id,
-          data: 'test output\n'
+          data: 'test output\n',
         })
       );
     });
@@ -174,7 +174,7 @@ describe('Integration: Session Persistence', () => {
       get: (key: string) => mockGlobalState.get(key),
       update: async (key: string, value: any) => {
         mockGlobalState.set(key, value);
-      }
+      },
     };
 
     // 実際のサービスを使用して連携をテスト
@@ -193,11 +193,11 @@ describe('Integration: Session Persistence', () => {
       // Given: 複数のターミナルを作成
       const terminal1 = await terminalManager.createTerminal({
         name: 'Terminal 1',
-        cwd: '/home/user/project1'
+        cwd: '/home/user/project1',
       });
       const terminal2 = await terminalManager.createTerminal({
         name: 'Terminal 2',
-        cwd: '/home/user/project2'
+        cwd: '/home/user/project2',
       });
 
       // ターミナルにデータを書き込み
@@ -219,10 +219,7 @@ describe('Integration: Session Persistence', () => {
 
       // When: 新しいマネージャーでセッションを復元
       const newTerminalManager = new TerminalManager();
-      const newSessionManager = new SessionManager(
-        newTerminalManager,
-        storageService
-      );
+      const newSessionManager = new SessionManager(newTerminalManager, storageService);
 
       await newSessionManager.restoreSession();
 
@@ -244,8 +241,8 @@ describe('Integration: Session Persistence', () => {
         terminals: [
           { id: 1, name: 'Valid' },
           { id: 2 }, // 名前なし
-          null,      // 無効なデータ
-        ]
+          null, // 無効なデータ
+        ],
       });
 
       // When: セッション復元を試みる
@@ -259,7 +256,7 @@ describe('Integration: Session Persistence', () => {
   });
 
   describe('Auto-save Integration', () => {
-    it('should auto-save on terminal changes', async function() {
+    it('should auto-save on terminal changes', async function () {
       this.timeout(3000);
 
       // Given: オートセーブが有効
@@ -269,7 +266,7 @@ describe('Integration: Session Persistence', () => {
       await terminalManager.createTerminal({ name: 'Auto-saved' });
 
       // Then: 自動的に保存される
-      await new Promise(resolve => setTimeout(resolve, 600));
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
       const savedData = mockGlobalState.get('terminalSession');
       expect(savedData).to.exist;
@@ -304,7 +301,7 @@ describe('Integration: Terminal Lifecycle', () => {
     // Vitest handles mock lifecycle
 
     mockWebview = {
-      postMessage: vi.spyOn().resolves(true)
+      postMessage: vi.spyOn().resolves(true),
     };
 
     terminalManager = new TerminalManager();
@@ -410,7 +407,7 @@ describe('Integration: Global State Storage', () => {
       update: async (key: string, value: any): Promise<void> => {
         mockGlobalState.set(key, value);
       },
-      keys: (): readonly string[] => Array.from(mockGlobalState.keys())
+      keys: (): readonly string[] => Array.from(mockGlobalState.keys()),
     };
 
     storageService = new StorageService(mockStorage as any);
@@ -427,7 +424,7 @@ describe('Integration: Global State Storage', () => {
       const preferences = {
         theme: 'dark',
         fontSize: 14,
-        shell: '/bin/zsh'
+        shell: '/bin/zsh',
       };
 
       // When: 設定を保存
@@ -514,8 +511,8 @@ describe('Integration: Event Flow', () => {
       terminal.write('test\n');
 
       // Then: データイベントが発火
-      await new Promise(resolve => setTimeout(resolve, 50));
-      const dataEvents = eventLog.filter(e => e.type === 'terminalData');
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const dataEvents = eventLog.filter((e) => e.type === 'terminalData');
       expect(dataEvents).to.have.length.at.least(1);
     });
 
@@ -541,7 +538,7 @@ describe('Integration: Event Flow', () => {
       await terminalManager.createTerminal();
 
       // Then: イベントチェーンが正しく実行される
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       expect(events).to.deep.equal(['created', 'ready', 'activated']);
     });
   });
@@ -555,11 +552,11 @@ describe('Integration: Event Flow', () => {
 統合テストは複数のコンポーネントが連携するため、ユニットテストより時間がかかります。
 
 ```typescript
-describe('Integration Tests', function() {
+describe('Integration Tests', function () {
   // テストスイート全体のタイムアウトを延長
   this.timeout(10000); // 10秒
 
-  it('should complete complex operation', async function() {
+  it('should complete complex operation', async function () {
     // 個別のテストでさらに延長も可能
     this.timeout(15000); // 15秒
 

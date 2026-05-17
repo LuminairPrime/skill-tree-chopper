@@ -1,6 +1,6 @@
 # Firecrawl MCP Tools Reference
 
-## mcp__firecrawl__firecrawl_scrape
+## mcp**firecrawl**firecrawl_scrape
 
 Scrape content from a single URL. The most powerful and reliable scraper tool.
 
@@ -17,6 +17,7 @@ Scrape content from a single URL. The most powerful and reliable scraper tool.
 | mobile | boolean | No | Use mobile viewport |
 
 **Example:**
+
 ```json
 {
   "url": "https://example.com/docs",
@@ -28,7 +29,7 @@ Scrape content from a single URL. The most powerful and reliable scraper tool.
 
 ---
 
-## mcp__firecrawl__firecrawl_search
+## mcp**firecrawl**firecrawl_search
 
 Search the web and optionally extract content from results.
 
@@ -42,6 +43,7 @@ Search the web and optionally extract content from results.
 | tbs | string | No | Time-based search filter |
 
 **Search Operators:**
+
 - `""` - Exact match: `"xterm.js"`
 - `-` - Exclude: `-deprecated`
 - `site:` - Specific site: `site:github.com`
@@ -50,6 +52,7 @@ Search the web and optionally extract content from results.
 - `related:` - Related sites: `related:example.com`
 
 **Example without scraping:**
+
 ```json
 {
   "query": "xterm.js addon tutorial",
@@ -58,6 +61,7 @@ Search the web and optionally extract content from results.
 ```
 
 **Example with scraping:**
+
 ```json
 {
   "query": "VS Code extension API",
@@ -71,7 +75,7 @@ Search the web and optionally extract content from results.
 
 ---
 
-## mcp__firecrawl__firecrawl_map
+## mcp**firecrawl**firecrawl_map
 
 Discover all URLs on a website.
 
@@ -86,6 +90,7 @@ Discover all URLs on a website.
 | sitemap | string | No | Sitemap handling: "include", "skip", "only" |
 
 **Example:**
+
 ```json
 {
   "url": "https://docs.example.com",
@@ -96,7 +101,7 @@ Discover all URLs on a website.
 
 ---
 
-## mcp__firecrawl__firecrawl_crawl
+## mcp**firecrawl**firecrawl_crawl
 
 Crawl a website and extract content from multiple pages.
 
@@ -114,6 +119,7 @@ Crawl a website and extract content from multiple pages.
 **Warning:** Crawl can return large responses. Use small limits.
 
 **Example:**
+
 ```json
 {
   "url": "https://docs.example.com/guide",
@@ -125,7 +131,7 @@ Crawl a website and extract content from multiple pages.
 
 ---
 
-## mcp__firecrawl__firecrawl_check_crawl_status
+## mcp**firecrawl**firecrawl_check_crawl_status
 
 Check status of a crawl job.
 
@@ -136,7 +142,7 @@ Check status of a crawl job.
 
 ---
 
-## mcp__firecrawl__firecrawl_extract
+## mcp**firecrawl**firecrawl_extract
 
 Extract structured data from web pages using LLM.
 
@@ -150,6 +156,7 @@ Extract structured data from web pages using LLM.
 | enableWebSearch | boolean | No | Enable web search for context |
 
 **Example:**
+
 ```json
 {
   "urls": ["https://shop.example.com/product/123"],
@@ -172,12 +179,15 @@ Extract structured data from web pages using LLM.
 ## Recommended Workflows
 
 ### Documentation Research
+
 1. Search: `firecrawl_search({ query: "topic", limit: 5 })`
 2. Scrape relevant: `firecrawl_scrape({ url: "...", formats: ["markdown"] })`
 
 ### Site Discovery
+
 1. Map: `firecrawl_map({ url: "...", search: "api" })`
 2. Scrape specific pages from results
 
 ### Product Data Extraction
+
 1. Extract: `firecrawl_extract({ urls: [...], schema: {...} })`

@@ -26,32 +26,33 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand('myExt.openPanel', () => {
       const panel = vscode.window.createWebviewPanel(
-        'myWebview',           // viewType (unique ID)
-        'My Panel',            // title
+        'myWebview', // viewType (unique ID)
+        'My Panel', // title
         vscode.ViewColumn.One, // editor column
         {
-          enableScripts: true,                    // Allow JS
-          retainContextWhenHidden: true,          // Keep state when hidden
-          localResourceRoots: [                   // Allowed resource paths
-            vscode.Uri.joinPath(context.extensionUri, 'dist')
-          ]
-        }
+          enableScripts: true, // Allow JS
+          retainContextWhenHidden: true, // Keep state when hidden
+          localResourceRoots: [
+            // Allowed resource paths
+            vscode.Uri.joinPath(context.extensionUri, 'dist'),
+          ],
+        },
       );
 
       panel.webview.html = getWebviewContent(panel.webview, context.extensionUri);
 
       // Handle messages from webview
       panel.webview.onDidReceiveMessage(
-        message => handleMessage(message, panel),
+        (message) => handleMessage(message, panel),
         undefined,
-        context.subscriptions
+        context.subscriptions,
       );
 
       // Handle panel disposal
       panel.onDidDispose(() => {
         // Cleanup resources
       });
-    })
+    }),
   );
 }
 ```
@@ -67,18 +68,18 @@ class MyWebviewProvider implements vscode.WebviewViewProvider {
   resolveWebviewView(
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ) {
     this._view = webviewView;
 
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [this.extensionUri]
+      localResourceRoots: [this.extensionUri],
     };
 
     webviewView.webview.html = this.getHtml(webviewView.webview);
 
-    webviewView.webview.onDidReceiveMessage(msg => {
+    webviewView.webview.onDidReceiveMessage((msg) => {
       // Handle messages
     });
   }
@@ -95,7 +96,7 @@ class MyWebviewProvider implements vscode.WebviewViewProvider {
 // Register in activate()
 const provider = new MyWebviewProvider(context.extensionUri);
 context.subscriptions.push(
-  vscode.window.registerWebviewViewProvider('myExt.sidebarView', provider)
+  vscode.window.registerWebviewViewProvider('myExt.sidebarView', provider),
 );
 ```
 
@@ -107,12 +108,8 @@ Always set a strict CSP to prevent XSS attacks.
 
 ```typescript
 function getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri): string {
-  const scriptUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, 'dist', 'webview.js')
-  );
-  const styleUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, 'dist', 'webview.css')
-  );
+  const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'dist', 'webview.js'));
+  const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'dist', 'webview.css'));
 
   // Generate nonce for inline scripts
   const nonce = getNonce();
@@ -151,13 +148,13 @@ function getNonce(): string {
 
 **CSP Directives:**
 
-| Directive | Purpose |
-|-----------|---------|
-| `default-src 'none'` | Block all by default |
-| `script-src 'nonce-xxx'` | Only allow scripts with matching nonce |
-| `style-src ${webview.cspSource}` | Allow extension styles |
-| `font-src ${webview.cspSource}` | Allow extension fonts |
-| `img-src ${webview.cspSource} https:` | Allow extension and HTTPS images |
+| Directive                             | Purpose                                |
+| ------------------------------------- | -------------------------------------- |
+| `default-src 'none'`                  | Block all by default                   |
+| `script-src 'nonce-xxx'`              | Only allow scripts with matching nonce |
+| `style-src ${webview.cspSource}`      | Allow extension styles                 |
+| `font-src ${webview.cspSource}`       | Allow extension fonts                  |
+| `img-src ${webview.cspSource} https:` | Allow extension and HTTPS images       |
 
 ---
 
@@ -168,20 +165,18 @@ Convert local paths to webview URIs:
 ```typescript
 // Extension code
 const scriptUri = webview.asWebviewUri(
-  vscode.Uri.joinPath(extensionUri, 'dist', 'webview', 'index.js')
+  vscode.Uri.joinPath(extensionUri, 'dist', 'webview', 'index.js'),
 );
 
-const imageUri = webview.asWebviewUri(
-  vscode.Uri.joinPath(extensionUri, 'media', 'icon.png')
-);
+const imageUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'icon.png'));
 ```
 
 **In HTML:**
 
 ```html
 <script src="${scriptUri}"></script>
-<img src="${imageUri}">
-<link href="${styleUri}" rel="stylesheet">
+<img src="${imageUri}" />
+<link href="${styleUri}" rel="stylesheet" />
 ```
 
 ---
@@ -202,7 +197,7 @@ panel.webview.postMessage({
 
 ```typescript
 // Extension code
-panel.webview.onDidReceiveMessage(message => {
+panel.webview.onDidReceiveMessage((message) => {
   switch (message.type) {
     case 'save':
       saveData(message.data);
@@ -235,7 +230,7 @@ function sendToExtension(type: string, data: any) {
 }
 
 // Receive messages from extension
-window.addEventListener('message', event => {
+window.addEventListener('message', (event) => {
   const message = event.data;
   switch (message.type) {
     case 'update':
@@ -430,7 +425,7 @@ import './styles.css';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
-  </StrictMode>
+  </StrictMode>,
 );
 ```
 
@@ -453,15 +448,15 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: '[name].js',
-        assetFileNames: '[name].[ext]'
-      }
+        assetFileNames: '[name].[ext]',
+      },
     },
     sourcemap: true,
-    emptyOutDir: true
+    emptyOutDir: true,
   },
   define: {
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
-  }
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+  },
 });
 ```
 
@@ -471,15 +466,15 @@ export default defineConfig({
 <!-- src/webview/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Webview</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="./index.tsx"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webview</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+  </body>
 </html>
 ```
 
@@ -545,7 +540,8 @@ button:hover {
   background-color: var(--vscode-button-hoverBackground);
 }
 
-input, textarea {
+input,
+textarea {
   background-color: var(--vscode-input-background);
   color: var(--vscode-input-foreground);
   border: 1px solid var(--vscode-input-border);
@@ -567,13 +563,13 @@ a {
 
 **Common Variables:**
 
-| Variable | Purpose |
-|----------|---------|
-| `--vscode-editor-background` | Main background |
-| `--vscode-editor-foreground` | Main text |
-| `--vscode-button-background` | Button background |
-| `--vscode-button-foreground` | Button text |
-| `--vscode-input-background` | Input background |
-| `--vscode-input-border` | Input border |
-| `--vscode-focusBorder` | Focus outline |
-| `--vscode-list-activeSelectionBackground` | Selected item |
+| Variable                                  | Purpose           |
+| ----------------------------------------- | ----------------- |
+| `--vscode-editor-background`              | Main background   |
+| `--vscode-editor-foreground`              | Main text         |
+| `--vscode-button-background`              | Button background |
+| `--vscode-button-foreground`              | Button text       |
+| `--vscode-input-background`               | Input background  |
+| `--vscode-input-border`                   | Input border      |
+| `--vscode-focusBorder`                    | Focus outline     |
+| `--vscode-list-activeSelectionBackground` | Selected item     |

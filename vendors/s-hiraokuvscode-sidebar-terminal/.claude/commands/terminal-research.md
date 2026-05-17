@@ -33,21 +33,28 @@ When this command is invoked with a query (e.g., `/terminal-research How does VS
 ## Terminal Research Results: {ARGUMENTS}
 
 ### VS Code Implementation
+
 {vscode-terminal-resolver findings}
+
 - Key patterns
 - Code references (file:line)
 
 ### Current Codebase
+
 {serena-semantic-search findings}
+
 - Existing implementations
 - File references (file:line)
 
 ### Xterm.js Best Practices
+
 {xterm-info-analyzer findings}
+
 - API documentation
 - Configuration recommendations
 
 ### Synthesis & Recommendations
+
 - Compare approaches (VS Code vs current vs xterm.js)
 - Identify gaps or improvements
 - Provide actionable next steps with code references
@@ -72,16 +79,19 @@ When this command is invoked with a query (e.g., `/terminal-research How does VS
 ## Agent Capabilities
 
 **vscode-terminal-resolver**
+
 - Searches microsoft/vscode GitHub repository
 - Focuses on terminal implementation patterns
 - Provides authoritative VS Code source code
 
 **serena-semantic-search**
+
 - Uses Serena MCP for semantic code search
 - Finds similar patterns in current codebase
 - Maps existing architectural decisions
 
 **xterm-info-analyzer**
+
 - Retrieves official xterm.js documentation
 - Explains API usage and configuration
 - Recommends best practices

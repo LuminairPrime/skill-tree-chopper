@@ -10,6 +10,7 @@ synapse list
 ```
 
 **Rich TUI Features:**
+
 - Auto-refresh when agent status changes (via file watcher)
 - Color-coded status display:
   - READY = green (idle, waiting for input)
@@ -25,6 +26,7 @@ synapse list
 - Press `ESC` to clear filter/selection, `q` to exit
 
 **Terminal Jump Supported Terminals:**
+
 - iTerm2 (macOS) - Switches to correct tab/pane
 - Terminal.app (macOS) - Switches to correct tab
 - Ghostty (macOS) - Activates application
@@ -33,6 +35,7 @@ synapse list
 - Zellij - Activates terminal app (direct pane focus not supported via CLI)
 
 **Output columns:**
+
 - **NAME**: Custom name if set, otherwise agent type (e.g., `my-claude` or `claude`)
 - **TYPE**: Agent type (claude, gemini, codex, opencode, copilot)
 - **ID**: Full agent ID (e.g., `synapse-claude-8100`)
@@ -144,6 +147,7 @@ synapse kill my-claude -f
 ```
 
 **Graceful shutdown flow:**
+
 1. Sends `shutdown_request` A2A message to agent
 2. Waits up to 30s (configurable via `shutdown.timeout_seconds` setting)
 3. If no response, sends SIGTERM
@@ -180,6 +184,7 @@ synapse rename my-claude --clear
 ```
 
 **Name vs ID:**
+
 - Custom names are for **display and user-facing operations** (prompts, `synapse list` output)
 - Agent ID (`synapse-claude-8100`) is used **internally** for registry and processing
 - Target resolution: name has highest priority when matching
@@ -187,7 +192,7 @@ synapse rename my-claude --clear
 ### Port Ranges
 
 | Agent    | Ports     |
-|----------|-----------|
+| -------- | --------- |
 | Claude   | 8100-8109 |
 | Gemini   | 8110-8119 |
 | Codex    | 8120-8129 |
@@ -199,6 +204,7 @@ synapse rename my-claude --clear
 When you receive an A2A message, it appears with the `A2A:` prefix:
 
 **Message Formats:**
+
 ```
 A2A: [REPLY EXPECTED] <message>   <- Reply is REQUIRED
 A2A: <message>                    <- Reply is optional (one-way notification)
@@ -219,12 +225,14 @@ synapse reply "<your reply>" --from <your_agent_id>
 ```
 
 **Example - Question received (MUST reply):**
+
 ```
 Received: A2A: [REPLY EXPECTED] What is the project structure?
 Reply:    synapse reply "The project has src/, tests/..."
 ```
 
 **Example - Delegation received (no reply needed):**
+
 ```
 Received: A2A: Run the tests and fix failures
 Action:   Just do the task. No reply needed unless you have questions.
@@ -242,14 +250,15 @@ synapse send <target> "<message>" [--from <sender>] [--priority <1-5>] [--respon
 
 **Target Formats (in priority order):**
 
-| Format | Example | Description |
-|--------|---------|-------------|
-| Custom name | `my-claude` | Highest priority, exact match, case-sensitive |
-| Full ID | `synapse-claude-8100` | Always works, unique identifier |
-| Type-port | `claude-8100` | Use when multiple agents of same type |
-| Agent type | `claude` | Only when single instance exists |
+| Format      | Example               | Description                                   |
+| ----------- | --------------------- | --------------------------------------------- |
+| Custom name | `my-claude`           | Highest priority, exact match, case-sensitive |
+| Full ID     | `synapse-claude-8100` | Always works, unique identifier               |
+| Type-port   | `claude-8100`         | Use when multiple agents of same type         |
+| Agent type  | `claude`              | Only when single instance exists              |
 
 **Parameters:**
+
 - `--from, -f`: Sender agent ID (for reply identification) - **always include this**
 - `--priority, -p`: Priority level 1-5 (default: 3)
   - 1-2: Low priority, background tasks
@@ -265,19 +274,21 @@ synapse send <target> "<message>" [--from <sender>] [--priority <1-5>] [--respon
 **Choosing --response vs --no-response:**
 
 Analyze the message content and determine if a reply is expected:
+
 - If the message expects or benefits from a reply → use `--response`
 - If the message is purely informational with no reply needed → use `--no-response`
 - **If unsure, use `--response`** (safer default)
 
-| Message Type | Flag | Example |
-|--------------|------|---------|
-| Question | `--response` | "What is the status?" |
-| Request for analysis | `--response` | "Please review this code" |
-| Status check | `--response` | "Are you ready?" |
-| Notification | `--no-response` | "FYI: Build completed" |
-| Delegated task | `--no-response` | "Run tests and commit" |
+| Message Type         | Flag            | Example                   |
+| -------------------- | --------------- | ------------------------- |
+| Question             | `--response`    | "What is the status?"     |
+| Request for analysis | `--response`    | "Please review this code" |
+| Status check         | `--response`    | "Are you ready?"          |
+| Notification         | `--no-response` | "FYI: Build completed"    |
+| Delegated task       | `--no-response` | "Run tests and commit"    |
 
 **Examples:**
+
 ```bash
 # Question - needs reply
 synapse send gemini "What is the best approach?" --response --from synapse-codex-8121
@@ -293,6 +304,7 @@ synapse send codex "STOP" --priority 5 --from synapse-claude-8100
 ```
 
 **Sending long messages or files:**
+
 ```bash
 # Send message from file (avoids ARG_MAX shell limits)
 synapse send claude --message-file /tmp/review.txt --no-response
@@ -339,6 +351,7 @@ synapse broadcast "<message>" [--from <sender>] [--priority <1-5>] [--response |
 ```
 
 **Parameters:**
+
 - `message`: Message to broadcast to all cwd agents
 - `--from, -f`: Sender agent ID (for reply identification)
 - `--priority, -p`: Priority level 1-5 (default: 1)
@@ -348,6 +361,7 @@ synapse broadcast "<message>" [--from <sender>] [--priority <1-5>] [--response |
 **Scope:** Only targets agents sharing the same working directory as the sender.
 
 **Examples:**
+
 ```bash
 # Broadcast status check
 synapse broadcast "Status check" --from synapse-claude-8100
@@ -497,6 +511,7 @@ synapse config show --scope project    # Show project settings only
 ```
 
 **TUI Categories:**
+
 - **Environment Variables**: `SYNAPSE_HISTORY_ENABLED`, `SYNAPSE_FILE_SAFETY_ENABLED`, etc.
 - **Instructions**: Agent-specific initial instruction files
 - **Approval Mode**: `required` (prompt before sending) or `auto` (no prompt)
@@ -507,6 +522,7 @@ synapse config show --scope project    # Show project settings only
 ### Settings File Format
 
 `.synapse/settings.json`:
+
 ```json
 {
   "env": {
@@ -534,48 +550,49 @@ synapse config show --scope project    # Show project settings only
 
 **Available Settings:**
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `SYNAPSE_HISTORY_ENABLED` | Enable task history | `true` (v0.3.13+) |
-| `SYNAPSE_FILE_SAFETY_ENABLED` | Enable file safety | `true` |
-| `SYNAPSE_FILE_SAFETY_DB_PATH` | File safety DB path | `.synapse/file_safety.db` |
-| `SYNAPSE_FILE_SAFETY_RETENTION_DAYS` | Lock history retention days | `30` |
-| `SYNAPSE_UDS_DIR` | UDS socket directory | `/tmp/synapse-a2a/` |
-| `SYNAPSE_LONG_MESSAGE_THRESHOLD` | Character threshold for file storage | `200` |
-| `SYNAPSE_LONG_MESSAGE_TTL` | TTL for message files (seconds) | `3600` |
-| `SYNAPSE_LONG_MESSAGE_DIR` | Directory for message files | System temp |
-| `SYNAPSE_TASK_BOARD_ENABLED` | Enable shared task board | `true` |
-| `SYNAPSE_TASK_BOARD_DB_PATH` | Task board DB path | `.synapse/task_board.db` |
-| `SYNAPSE_REGISTRY_DIR` | Local registry directory | `~/.a2a/registry` |
-| `SYNAPSE_EXTERNAL_REGISTRY_DIR` | External registry directory | `~/.a2a/external` |
-| `SYNAPSE_HISTORY_DB_PATH` | History database path | `~/.synapse/history/history.db` |
-| `SYNAPSE_SKILLS_DIR` | Central skill store directory | `~/.synapse/skills` |
+| Variable                             | Description                          | Default                         |
+| ------------------------------------ | ------------------------------------ | ------------------------------- |
+| `SYNAPSE_HISTORY_ENABLED`            | Enable task history                  | `true` (v0.3.13+)               |
+| `SYNAPSE_FILE_SAFETY_ENABLED`        | Enable file safety                   | `true`                          |
+| `SYNAPSE_FILE_SAFETY_DB_PATH`        | File safety DB path                  | `.synapse/file_safety.db`       |
+| `SYNAPSE_FILE_SAFETY_RETENTION_DAYS` | Lock history retention days          | `30`                            |
+| `SYNAPSE_UDS_DIR`                    | UDS socket directory                 | `/tmp/synapse-a2a/`             |
+| `SYNAPSE_LONG_MESSAGE_THRESHOLD`     | Character threshold for file storage | `200`                           |
+| `SYNAPSE_LONG_MESSAGE_TTL`           | TTL for message files (seconds)      | `3600`                          |
+| `SYNAPSE_LONG_MESSAGE_DIR`           | Directory for message files          | System temp                     |
+| `SYNAPSE_TASK_BOARD_ENABLED`         | Enable shared task board             | `true`                          |
+| `SYNAPSE_TASK_BOARD_DB_PATH`         | Task board DB path                   | `.synapse/task_board.db`        |
+| `SYNAPSE_REGISTRY_DIR`               | Local registry directory             | `~/.a2a/registry`               |
+| `SYNAPSE_EXTERNAL_REGISTRY_DIR`      | External registry directory          | `~/.a2a/external`               |
+| `SYNAPSE_HISTORY_DB_PATH`            | History database path                | `~/.synapse/history/history.db` |
+| `SYNAPSE_SKILLS_DIR`                 | Central skill store directory        | `~/.synapse/skills`             |
 
 Deprecated key:
+
 - `delegation` was removed in v0.3.19. Use `synapse send` for inter-agent communication.
 
 **list.columns:**
 
 Configure which columns to display in `synapse list`:
 
-| Column | Description |
-|--------|-------------|
-| `ID` | Agent ID (e.g., `synapse-claude-8100`) |
-| `NAME` | Custom name if set |
-| `TYPE` | Agent type (claude, gemini, etc.) |
-| `ROLE` | Role description |
-| `STATUS` | READY/WAITING/PROCESSING/DONE/SHUTTING_DOWN |
-| `CURRENT` | Current task preview |
-| `TRANSPORT` | UDS/TCP communication status |
-| `WORKING_DIR` | Working directory |
+| Column         | Description                                  |
+| -------------- | -------------------------------------------- |
+| `ID`           | Agent ID (e.g., `synapse-claude-8100`)       |
+| `NAME`         | Custom name if set                           |
+| `TYPE`         | Agent type (claude, gemini, etc.)            |
+| `ROLE`         | Role description                             |
+| `STATUS`       | READY/WAITING/PROCESSING/DONE/SHUTTING_DOWN  |
+| `CURRENT`      | Current task preview                         |
+| `TRANSPORT`    | UDS/TCP communication status                 |
+| `WORKING_DIR`  | Working directory                            |
 | `EDITING_FILE` | Currently locked file (requires file-safety) |
 
 **approvalMode:**
 
-| Value | Description |
-|-------|-------------|
+| Value      | Description                                                        |
+| ---------- | ------------------------------------------------------------------ |
 | `required` | Show approval prompt before sending initial instructions (default) |
-| `auto` | Skip approval prompt, send instructions automatically |
+| `auto`     | Skip approval prompt, send instructions automatically              |
 
 ## Instructions Management
 
@@ -620,6 +637,7 @@ synapse logs codex -n 100
 ```
 
 **Parameters:**
+
 - `profile`: Agent profile name (claude, gemini, codex, opencode, copilot)
 - `-f, --follow`: Follow log output in real-time (like `tail -f`)
 - `-n, --lines`: Number of lines to show (default: 50)
@@ -641,6 +659,7 @@ synapse external add https://agent.example.com --alias myagent
 ```
 
 **Parameters:**
+
 - `url`: Agent URL (must serve `/.well-known/agent.json`)
 - `--alias, -a`: Short alias for the agent (auto-generated from name if not specified)
 
@@ -671,6 +690,7 @@ synapse external send myagent "Process this file" --wait
 ```
 
 **Parameters:**
+
 - `alias`: Agent alias
 - `message`: Message to send
 - `--wait, -w`: Wait for task completion
@@ -710,6 +730,7 @@ synapse auth generate-key -n 3 -e
 ```
 
 **Parameters:**
+
 - `-n, --count`: Number of keys to generate (default: 1)
 - `-e, --export`: Output in `export SYNAPSE_API_KEYS=...` format
 
@@ -738,6 +759,7 @@ synapse reset --scope both -f
 ```
 
 **Parameters:**
+
 - `--scope`: Which settings to reset (`user`, `project`, or `both`)
 - `-f, --force`: Skip confirmation prompt
 
@@ -879,22 +901,22 @@ synapse skills set show <name>
 
 ### Skill Scopes
 
-| Scope | Location | Description |
-|-------|----------|-------------|
-| **Synapse** | `~/.synapse/skills/` | Central store (deploy to agents from here) |
-| **User** | `~/.claude/skills/`, `~/.agents/skills/` | User-wide skills |
-| **Project** | `./.claude/skills/`, `./.agents/skills/` | Project-local skills |
-| **Plugin** | `./plugins/*/skills/` | Read-only plugin skills |
+| Scope       | Location                                 | Description                                |
+| ----------- | ---------------------------------------- | ------------------------------------------ |
+| **Synapse** | `~/.synapse/skills/`                     | Central store (deploy to agents from here) |
+| **User**    | `~/.claude/skills/`, `~/.agents/skills/` | User-wide skills                           |
+| **Project** | `./.claude/skills/`, `./.agents/skills/` | Project-local skills                       |
+| **Plugin**  | `./plugins/*/skills/`                    | Read-only plugin skills                    |
 
 ### Agent Skill Directories
 
-| Agent | Directory |
-|-------|-----------|
-| Claude | `.claude/skills/` |
-| Codex | `.agents/skills/` |
-| Gemini | `.gemini/skills/` |
+| Agent    | Directory         |
+| -------- | ----------------- |
+| Claude   | `.claude/skills/` |
+| Codex    | `.agents/skills/` |
+| Gemini   | `.gemini/skills/` |
 | OpenCode | `.agents/skills/` |
-| Copilot | `.agents/skills/` |
+| Copilot  | `.agents/skills/` |
 
 ## Storage Locations
 

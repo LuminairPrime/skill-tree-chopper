@@ -66,7 +66,7 @@ export class FileBridge {
   private async processExistingCommands() {
     try {
       const files = await fs.promises.readdir(this.commandsDir);
-      for (const file of files.filter(f => f.endsWith('.json'))) {
+      for (const file of files.filter((f) => f.endsWith('.json'))) {
         await this.processCommand(path.join(this.commandsDir, file));
       }
     } catch (e) {
@@ -105,9 +105,9 @@ export class FileBridge {
           status: 'error',
           error: {
             code: 'UNKNOWN_ACTION',
-            message: `No handler registered for action: ${command.action}`
+            message: `No handler registered for action: ${command.action}`,
           },
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
       } else {
         try {
@@ -116,7 +116,7 @@ export class FileBridge {
             id: command.id,
             status: 'success',
             result,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           };
         } catch (e: any) {
           response = {
@@ -124,9 +124,9 @@ export class FileBridge {
             status: 'error',
             error: {
               code: 'HANDLER_ERROR',
-              message: e.message || String(e)
+              message: e.message || String(e),
             },
-            timestamp: Date.now()
+            timestamp: Date.now(),
           };
         }
       }
@@ -144,7 +144,6 @@ export class FileBridge {
       setTimeout(() => {
         this.processedCommands.delete(filename);
       }, 60000);
-
     } catch (e) {
       console.error('Error processing command:', e);
       this.processedCommands.delete(filename);

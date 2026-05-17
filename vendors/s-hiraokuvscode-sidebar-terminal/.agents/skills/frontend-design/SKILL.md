@@ -33,35 +33,54 @@ Avoid overused defaults. Choose typefaces that reinforce the interface's persona
 font-family: 'Inter', 'Roboto', 'Arial', sans-serif;
 
 /* GOOD: Distinctive and paired intentionally */
---font-display: 'Instrument Serif', serif;      /* headings */
---font-body: 'Satoshi', sans-serif;              /* body text */
---font-mono: 'Berkeley Mono', monospace;         /* code */
+--font-display: 'Instrument Serif', serif; /* headings */
+--font-body: 'Satoshi', sans-serif; /* body text */
+--font-mono: 'Berkeley Mono', monospace; /* code */
 ```
 
 ### Typographic Details
 
 ```css
 /* Tabular numbers for aligned columns */
-.data-cell { font-variant-numeric: tabular-nums; }
+.data-cell {
+  font-variant-numeric: tabular-nums;
+}
 
 /* Balanced headings prevent widow words */
-h1, h2, h3 { text-wrap: balance; }
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
 
 /* Proper ellipsis character */
-.truncate::after { content: '\2026'; } /* … not ... */
+.truncate::after {
+  content: '\2026';
+} /* … not ... */
 ```
 
 Handle text overflow deliberately:
 
 ```css
 /* Single line truncation */
-.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* Multi-line clamping */
-.clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
 /* Flex children need min-w-0 for truncation to work */
-.flex-child { min-width: 0; }
+.flex-child {
+  min-width: 0;
+}
 ```
 
 ## Color Systems
@@ -114,11 +133,15 @@ Build on CSS custom properties with clear semantic naming.
 ```css
 /* GOOD: Specific properties, respects user preference */
 .card {
-  transition: transform 200ms ease-out, opacity 150ms ease-out;
+  transition:
+    transform 200ms ease-out,
+    opacity 150ms ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card { transition: none; }
+  .card {
+    transition: none;
+  }
 }
 ```
 
@@ -145,13 +168,19 @@ Skip: random hover effects on every element, scroll-jacking, decorative backgrou
 
 ```css
 /* Fluid typography */
-h1 { font-size: clamp(2rem, 5vw, 4rem); }
+h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+}
 
 /* Container queries for component-level responsiveness */
-.card-container { container-type: inline-size; }
+.card-container {
+  container-type: inline-size;
+}
 
 @container (min-width: 400px) {
-  .card { grid-template-columns: 200px 1fr; }
+  .card {
+    grid-template-columns: 200px 1fr;
+  }
 }
 ```
 
@@ -174,8 +203,7 @@ Build visual depth through layered treatments:
 .hero {
   background:
     radial-gradient(ellipse at 20% 50%, oklch(0.7 0.15 250 / 0.3), transparent 50%),
-    radial-gradient(ellipse at 80% 20%, oklch(0.7 0.2 30 / 0.2), transparent 50%),
-    var(--color-bg);
+    radial-gradient(ellipse at 80% 20%, oklch(0.7 0.2 30 / 0.2), transparent 50%), var(--color-bg);
 }
 ```
 
@@ -199,31 +227,40 @@ Build visual depth through layered treatments:
 
 Every interactive element needs 4 states:
 
-| State | Treatment |
-|-------|-----------|
-| Default | Base appearance |
-| Hover | Increased contrast or subtle shift |
-| Focus | Visible ring via `:focus-visible` |
-| Active/Pressed | Slight scale or color change |
-| Disabled | Reduced opacity + `cursor: not-allowed` |
+| State          | Treatment                               |
+| -------------- | --------------------------------------- |
+| Default        | Base appearance                         |
+| Hover          | Increased contrast or subtle shift      |
+| Focus          | Visible ring via `:focus-visible`       |
+| Active/Pressed | Slight scale or color change            |
+| Disabled       | Reduced opacity + `cursor: not-allowed` |
 
 ```css
 .button {
   background: var(--color-accent);
-  transition: background 150ms ease-out, transform 100ms ease-out;
+  transition:
+    background 150ms ease-out,
+    transform 100ms ease-out;
 }
-.button:hover { background: var(--color-accent-hover); }
-.button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-.button:active { transform: scale(0.98); }
+.button:hover {
+  background: var(--color-accent-hover);
+}
+.button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.button:active {
+  transform: scale(0.98);
+}
 ```
 
 ## Anti-Patterns
 
-| Avoid | Instead |
-|-------|---------|
-| Inter/Roboto/Arial everywhere | Choose distinctive, project-appropriate typefaces |
-| Purple gradient on white | Commit to a specific, cohesive palette |
-| Uniform card grids | Vary sizes, add featured/hero cards |
-| Shadows on everything | Use shadow purposefully for elevation hierarchy |
-| `border-radius: 9999px` on all elements | Match radius to content type and context |
-| Identical hover effects | Tailor interaction feedback to element function |
+| Avoid                                   | Instead                                           |
+| --------------------------------------- | ------------------------------------------------- |
+| Inter/Roboto/Arial everywhere           | Choose distinctive, project-appropriate typefaces |
+| Purple gradient on white                | Commit to a specific, cohesive palette            |
+| Uniform card grids                      | Vary sizes, add featured/hero cards               |
+| Shadows on everything                   | Use shadow purposefully for elevation hierarchy   |
+| `border-radius: 9999px` on all elements | Match radius to content type and context          |
+| Identical hover effects                 | Tailor interaction feedback to element function   |

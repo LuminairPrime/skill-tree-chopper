@@ -87,12 +87,14 @@
 **役割**: VS Code WebviewViewProvider の実装クラス
 
 **責務**:
+
 - WebView HTMLの生成とセキュリティ設定（CSP）
 - Extension ↔ WebView 間の双方向通信ブリッジ
 - VS Code設定の監視と同期
 - WebViewコンテキストの保持（`retainContextWhenHidden: true`）
 
 **主要な依存関係**:
+
 - `TerminalManager`: PTYプロセス管理
 - `WebViewHtmlGenerationService`: HTML生成サービス
 - `PanelLocationService`: パネル配置管理
@@ -105,6 +107,7 @@
 **役割**: 全ターミナルプロセスの中央管理システム（シングルトン）
 
 **責務**:
+
 - node-pty プロセスの生命周期管理
 - ターミナルID リサイクリング（1-5番の固定範囲）
 - アクティブターミナル追跡
@@ -112,28 +115,30 @@
 - CLI Agent検出（Claude Code、GitHub Copilot等）
 
 **主要機能**:
+
 ```typescript
 class TerminalManager {
   // ターミナル作成
-  createTerminal(options): Promise<TerminalInstance>
+  createTerminal(options): Promise<TerminalInstance>;
 
   // データ送信（PTYプロセスへ）
-  sendData(terminalId: string, data: string): void
+  sendData(terminalId: string, data: string): void;
 
   // リサイズ
-  resizeTerminal(terminalId: string, cols: number, rows: number): void
+  resizeTerminal(terminalId: string, cols: number, rows: number): void;
 
   // 削除（原子性保証）
-  deleteTerminal(terminalId: string): Promise<DeleteResult>
+  deleteTerminal(terminalId: string): Promise<DeleteResult>;
 
   // イベント
-  onData: Event<TerminalEvent>
-  onExit: Event<TerminalEvent>
-  onTerminalCreated: Event<TerminalInstance>
+  onData: Event<TerminalEvent>;
+  onExit: Event<TerminalEvent>;
+  onTerminalCreated: Event<TerminalInstance>;
 }
 ```
 
 **パフォーマンス最適化**:
+
 - 通常出力: 8ms間隔（125fps）のバッファリング
 - CLI Agent検出時: 4ms間隔（250fps）の高速モード
 - 最大バッファサイズ: 50メッセージ
@@ -145,12 +150,14 @@ class TerminalManager {
 **役割**: PTYプロセスの生成専門クラス
 
 **責務**:
+
 - node-pty を使用したシェルプロセス起動
 - 作業ディレクトリとシェルのフォールバック処理
 - 環境変数の適切な設定
 - エラーハンドリングと再試行ロジック
 
 **実装例**:
+
 ```typescript
 const ptyProcess = pty.spawn(shell, shellArgs, {
   name: 'xterm-256color',
@@ -168,6 +175,7 @@ const ptyProcess = pty.spawn(shell, shellArgs, {
 **役割**: 実際のシェルプロセス（bash、zsh等）を管理
 
 **主要メソッド**:
+
 - `spawn(shell, args, options)`: プロセス起動
 - `write(data: string)`: シェルに入力を送信
 - `onData(callback)`: シェル出力を受信
@@ -175,6 +183,7 @@ const ptyProcess = pty.spawn(shell, shellArgs, {
 - `kill()`: プロセス終了
 
 **特徴**:
+
 - プラットフォーム依存（Unix: `forkpty`、Windows: `ConPTY`）
 - プロセスID（pid）管理
 - ネイティブバイナリ（プラットフォーム別ビルド）
@@ -187,6 +196,7 @@ const ptyProcess = pty.spawn(shell, shellArgs, {
 **役割**: WebView側の全マネージャーを統括するコーディネーター
 
 **Manager階層構造**:
+
 ```
 TerminalWebviewManager (IManagerCoordinator)
 ├── MessageManager        # Extension通信
@@ -199,6 +209,7 @@ TerminalWebviewManager (IManagerCoordinator)
 ```
 
 **設計思想**:
+
 - Manager-Coordinator パターン
 - 責任分離（Single Responsibility Principle）
 - 疎結合（Loose Coupling）
@@ -211,6 +222,7 @@ TerminalWebviewManager (IManagerCoordinator)
 **役割**: ブラウザでターミナルUIをレンダリング
 
 **主要機能**:
+
 ```typescript
 // インスタンス作成（src/webview/managers/TerminalLifecycleManager.ts:327）
 const terminal = new Terminal({
@@ -236,11 +248,13 @@ terminal.onData((data) => {
 ```
 
 **アドオンシステム**:
+
 - **FitAddon**: コンテナサイズに合わせた自動リサイズ
 - **WebLinksAddon**: URL自動検出とクリック対応
 - **SerializeAddon**: セッション保存用データシリアライズ
 
 **レンダリング特性**:
+
 - Canvas/WebGLベースの高速レンダリング
 - 仮想スクロールバッファ
 - ANSI エスケープシーケンス対応
@@ -271,6 +285,7 @@ terminal.onData((data) => {
 ```
 
 **最適化ポイント**:
+
 - **二段階バッファリング**: Extension側（8ms）+ WebView側（16ms）
 - **CLI Agent検出時の高速化**: 4ms間隔に動的変更
 - **バッチ処理**: 複数メッセージを一括処理
@@ -296,6 +311,7 @@ terminal.onData((data) => {
 ```
 
 **特殊処理**:
+
 - **IME処理**: 日本語・中国語入力の適切な制御
 - **Alt+Click**: VS Code標準設定に準拠したカーソル移動
 - **キーボードショートカット**: Ctrl+C、Ctrl+V等の制御
@@ -414,6 +430,7 @@ terminal.onData((data) => {
 **役割**: シェル統合機能の提供
 
 **機能**:
+
 - シェル初期化スクリプトの注入
 - プロンプト検出とカスタマイズ
 - コマンド実行追跡
@@ -426,6 +443,7 @@ terminal.onData((data) => {
 **役割**: AI CLI エージェント検出
 
 **検出対象**:
+
 - Claude Code
 - GitHub Copilot
 - Gemini CLI
@@ -433,6 +451,7 @@ terminal.onData((data) => {
 - Codex CLI
 
 **機能**:
+
 - リアルタイム検出（正規表現ベース）
 - 視覚的ステータス表示
 - 出力バッファリングの動的調整
@@ -444,6 +463,7 @@ terminal.onData((data) => {
 **役割**: セッション永続化
 
 **機能**:
+
 - 5分間隔の自動保存
 - スクロールバック保存（最大1000行）
 - セッション復元
@@ -456,6 +476,7 @@ terminal.onData((data) => {
 **役割**: パネル配置管理
 
 **機能**:
+
 - サイドバー/パネル/エディタ領域の検出
 - 動的レイアウト変更対応
 - 設定同期
@@ -472,12 +493,13 @@ const csp = [
   `script-src ${webview.cspSource} 'nonce-${nonce}'`,
   `style-src ${webview.cspSource} 'unsafe-inline'`,
   `font-src ${webview.cspSource}`,
-  "img-src data:",
-  "connect-src 'none'"
+  'img-src data:',
+  "connect-src 'none'",
 ].join('; ');
 ```
 
 **特徴**:
+
 - `default-src 'none'`: 全拒否ベース
 - nonce ベーススクリプト制御
 - リソース種別細分化制御
@@ -493,11 +515,11 @@ const csp = [
 
 ### バッファリング戦略
 
-| レイヤー | 間隔 | 目的 |
-|---------|------|------|
-| TerminalManager | 8ms (125fps) | PTY出力の効率的収集 |
+| レイヤー           | 間隔         | 目的                       |
+| ------------------ | ------------ | -------------------------- |
+| TerminalManager    | 8ms (125fps) | PTY出力の効率的収集        |
 | PerformanceManager | 16ms (60fps) | WebView レンダリング最適化 |
-| CLI Agent検出時 | 4ms (250fps) | 高頻度出力対応 |
+| CLI Agent検出時    | 4ms (250fps) | 高頻度出力対応             |
 
 ### メモリ管理
 
@@ -511,21 +533,25 @@ const csp = [
 ### よくある問題と診断方法
 
 **問題1: ターミナルが表示されない**
+
 - WebView初期化確認: 開発者ツールでコンソールエラー確認
 - CSP違反確認: Content Security Policy エラーログ
 - HTML生成確認: `WebViewHtmlGenerationService` のログ
 
 **問題2: 入力が反映されない**
+
 - PTYプロセス状態確認: `TerminalManager.getTerminalInfo()`
 - 通信確認: postMessage ログの確認
 - シェルプロセス確認: プロセスが生存しているか
 
 **問題3: パフォーマンス劣化**
+
 - バッファリング状態: Debug Panel（Ctrl+Shift+D）で確認
 - CLI Agent検出: 高速モードが有効か確認
 - メモリ使用量: スクロールバックサイズ確認
 
 **問題4: プロンプトが表示されない**
+
 - シェル初期化: `initializeShellForTerminal()` 実行確認
 - 環境変数: `PS1`, `PROMPT_COMMAND` 確認
 - ShellIntegration: safe mode設定確認
@@ -533,18 +559,23 @@ const csp = [
 ## 実装の鍵となる設計パターン
 
 ### 1. Singleton Pattern
+
 - **TerminalManager**: 全プロセスを一元管理
 
 ### 2. Manager-Coordinator Pattern
+
 - **TerminalWebviewManager**: 全Managerを統括
 
 ### 3. Observer Pattern
+
 - **Event Emitter**: 各種イベント配信
 
 ### 4. Adapter Pattern
+
 - **node-pty**: プラットフォーム差異の吸収
 
 ### 5. Strategy Pattern
+
 - **バッファリング**: 状況に応じた動的調整
 
 ## 参照ドキュメント

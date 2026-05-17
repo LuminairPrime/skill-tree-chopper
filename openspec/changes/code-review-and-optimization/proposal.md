@@ -12,9 +12,11 @@ The `ai-skill-auditor` extension has rapidly evolved through multiple structural
 ## Capabilities
 
 ### New Capabilities
+
 - `code-quality-assurance`: Establishes the baseline performance and safety metrics for the extension, ensuring robust file operations and non-blocking discovery.
 
 ### Modified Capabilities
+
 <!-- No functional requirement changes, this is an optimization and safety pass. -->
 
 ## Impact

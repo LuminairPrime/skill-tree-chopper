@@ -150,7 +150,7 @@ The AI Agent toggle button (for switching between connected/disconnected agents)
    - The connected agent is already active and doesn't need switching
    - User interaction should focus on the connected terminal
 
-2. **DISCONNECTED Status**: Toggle button is **VISIBLE** 
+2. **DISCONNECTED Status**: Toggle button is **VISIBLE**
    - Allows user to switch from connected agent to this disconnected agent
    - Provides quick access to activate background agents
 

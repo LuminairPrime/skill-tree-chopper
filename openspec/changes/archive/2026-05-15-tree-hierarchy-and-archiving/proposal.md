@@ -12,9 +12,11 @@ The current tree view UI is misrepresenting the hierarchy of AI skills, leading 
 ## Capabilities
 
 ### New Capabilities
+
 <!-- No new net-new capabilities, only modifying existing ones. -->
 
 ### Modified Capabilities
+
 - `skill-tree-view`: Changing the root structural hierarchy and removing file-level leaf nodes.
 - `skill-management`: Changing the disable/enable mechanism from suffix-renaming to `archived` subdirectory moving.
 

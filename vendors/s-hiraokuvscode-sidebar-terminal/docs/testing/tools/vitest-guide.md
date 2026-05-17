@@ -26,12 +26,12 @@ VitestはViteベースの高速テストフレームワークで、VS Code Sideb
 
 ### フレームワーク比較
 
-| フレームワーク | 特徴 | VS Code拡張での使用 |
-|--------------|------|-------------------|
-| Vitest | 高速、TypeScriptネイティブ | ✅ 推奨 |
-| Jest | オールインワン | ⚠️ ESM対応に課題 |
-| Mocha | 柔軟、成熟 | ⚠️ レガシー |
-| Jasmine | 古典的 | ⚠️ 機能が限定的 |
+| フレームワーク | 特徴                       | VS Code拡張での使用 |
+| -------------- | -------------------------- | ------------------- |
+| Vitest         | 高速、TypeScriptネイティブ | ✅ 推奨             |
+| Jest           | オールインワン             | ⚠️ ESM対応に課題    |
+| Mocha          | 柔軟、成熟                 | ⚠️ レガシー         |
+| Jasmine        | 古典的                     | ⚠️ 機能が限定的     |
 
 ---
 
@@ -66,14 +66,14 @@ export default defineConfig({
 
 ### 設定オプションの詳細
 
-| オプション | 説明 | 推奨値 |
-|-----------|------|--------|
-| `include` | テストファイルのパターン | `['src/test/vitest/**/*.test.ts']` |
-| `globals` | グローバルAPIの有効化 | false（明示的importを推奨） |
-| `environment` | テスト環境 | node |
-| `testTimeout` | テストのタイムアウト（ms） | 10000 |
-| `reporters` | レポーターの種類 | verbose |
-| `coverage.provider` | カバレッジプロバイダー | v8 |
+| オプション          | 説明                       | 推奨値                             |
+| ------------------- | -------------------------- | ---------------------------------- |
+| `include`           | テストファイルのパターン   | `['src/test/vitest/**/*.test.ts']` |
+| `globals`           | グローバルAPIの有効化      | false（明示的importを推奨）        |
+| `environment`       | テスト環境                 | node                               |
+| `testTimeout`       | テストのタイムアウト（ms） | 10000                              |
+| `reporters`         | レポーターの種類           | verbose                            |
+| `coverage.provider` | カバレッジプロバイダー     | v8                                 |
 
 ---
 
@@ -217,7 +217,7 @@ it('should handle async operation', async () => {
 
 ```typescript
 it('should handle promise', () => {
-  return asyncOperation().then(result => {
+  return asyncOperation().then((result) => {
     expect(result).toBe('expected');
   });
 });
@@ -439,11 +439,13 @@ npx vitest run src/test/vitest/unit/specific-file.test.ts
 ### タイムアウトエラー
 
 **症状**:
+
 ```text
 Error: Test timed out in 5000ms
 ```
 
 **解決方法**:
+
 ```typescript
 it('slow test', async () => {
   await slowOperation();
@@ -453,11 +455,13 @@ it('slow test', async () => {
 ### テストが見つからない
 
 **症状**:
+
 ```text
 No test files found
 ```
 
 **解決方法**:
+
 1. `vitest.config.ts` の `include` パターンを確認
 2. ファイル名が `*.test.ts` で終わっているか確認
 

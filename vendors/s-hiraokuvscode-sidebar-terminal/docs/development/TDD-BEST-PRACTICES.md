@@ -10,6 +10,7 @@ VS Code Sidebar Terminal プロジェクトでの経験を基に、効果的なT
 ### 1. Red-Green-Refactor サイクル
 
 #### Red Phase: 失敗するテストを書く
+
 ```typescript
 // ❌ 悪い例: 実装を意識したテスト
 it('should call updateSettings method', () => {
@@ -33,13 +34,14 @@ it('should apply font size setting when apply button is clicked', () => {
 ```
 
 #### Green Phase: 最小実装で通す
+
 ```typescript
 // ❌ 悪い例: 過剰な実装
 class SettingsPanel {
   private settings: any = {};
   private cache: Map<string, any> = new Map();
   private listeners: EventListener[] = [];
-  
+
   handleApplyClick() {
     // 複雑なキャッシュロジック
     // 複数のイベント処理
@@ -51,11 +53,11 @@ class SettingsPanel {
 // ✅ 良い例: 最小実装
 class SettingsPanel {
   private appliedSettings: any = {};
-  
+
   handleApplyClick() {
     this.appliedSettings = { fontSize: 16 };
   }
-  
+
   getAppliedSettings() {
     return this.appliedSettings;
   }
@@ -63,6 +65,7 @@ class SettingsPanel {
 ```
 
 #### Refactor Phase: 設計を改善
+
 ```typescript
 // リファクタリング前の重複
 class SettingsPanel {
@@ -71,7 +74,7 @@ class SettingsPanel {
     const value = slider.value;
     this.fontSize = parseInt(value);
   }
-  
+
   handleLineHeightChange() {
     const slider = document.getElementById('line-height-slider');
     const value = slider.value;
@@ -86,11 +89,11 @@ class SettingsPanel {
     const value = parseInt(slider.value);
     this[property] = value;
   }
-  
+
   handleFontSizeChange() {
     this.handleSliderChange('font-size-slider', 'fontSize');
   }
-  
+
   handleLineHeightChange() {
     this.handleSliderChange('line-height-slider', 'lineHeight');
   }
@@ -127,9 +130,9 @@ describe('Font size validation', () => {
     { input: 7, expected: 8, description: 'below minimum (should clamp)' },
     { input: 24, expected: 24, description: 'maximum valid value' },
     { input: 25, expected: 24, description: 'above maximum (should clamp)' },
-    { input: 16, expected: 16, description: 'typical valid value' }
+    { input: 16, expected: 16, description: 'typical valid value' },
   ];
-  
+
   testCases.forEach(({ input, expected, description }) => {
     it(`should handle ${description}`, () => {
       const panel = new SettingsPanel();
@@ -176,16 +179,16 @@ describe('Error handling', () => {
 export const mockVSCodeAPI = {
   workspace: {
     getConfiguration: vi.fn().mockReturnValue({
-      get: vi.fn().mockReturnValue(true)
-    })
+      get: vi.fn().mockReturnValue(true),
+    }),
   },
   window: {
     showInformationMessage: vi.fn(),
-    showErrorMessage: vi.fn()
+    showErrorMessage: vi.fn(),
   },
   commands: {
-    executeCommand: vi.fn().mockResolvedValue(undefined)
-  }
+    executeCommand: vi.fn().mockResolvedValue(undefined),
+  },
 };
 
 // 各テストでの使用
@@ -201,7 +204,7 @@ describe('Webview communication', () => {
   it('should send settings update message to extension', () => {
     const mockPostMessage = vi.fn();
     (global as any).acquireVsCodeApi = () => ({
-      postMessage: mockPostMessage
+      postMessage: mockPostMessage,
     });
 
     const panel = new SettingsPanel();
@@ -209,7 +212,7 @@ describe('Webview communication', () => {
 
     expect(mockPostMessage).toHaveBeenCalledWith({
       command: 'updateSettings',
-      settings: { fontSize: 16 }
+      settings: { fontSize: 16 },
     });
   });
 });
@@ -264,12 +267,12 @@ class QualityGate {
     const metrics = TDDMetrics.getInstance().getCurrentMetrics();
     return metrics.tddComplianceRate >= 0.8;
   }
-  
+
   static checkTestCoverage(): boolean {
     const coverage = CoverageReporter.getCurrentCoverage();
     return coverage.percentage >= 90;
   }
-  
+
   static checkCodeQuality(): boolean {
     const eslintScore = ESLintReporter.getScore();
     const typescriptScore = TypeScriptReporter.getScore();
@@ -288,11 +291,11 @@ describe('Current behavior protection', () => {
   it('should maintain existing functionality during refactoring', () => {
     const panel = new SettingsPanel();
     const originalBehavior = panel.getAllSettings();
-    
+
     // リファクタリング前の状態を記録
     expect(originalBehavior).toEqual({
       fontSize: 14,
-      theme: 'auto'
+      theme: 'auto',
     });
   });
 });
@@ -356,9 +359,9 @@ npm test -- --grep "failing test name" --reporter spec
 it('should debug failing behavior', () => {
   const panel = new SettingsPanel();
   console.log('Before action:', panel.getState());
-  
+
   panel.performAction();
-  
+
   console.log('After action:', panel.getState());
   expect(panel.getState()).toBe('expected');
 });
@@ -412,26 +415,30 @@ it('should test with minimal mocking', () => {
 class TDDReview {
   static generateWeeklyReport() {
     const metrics = TDDMetrics.getInstance().getWeeklyMetrics();
-    
+
     return {
       tddCompliance: metrics.tddComplianceRate,
       testCoverage: metrics.coveragePercentage,
       codeQuality: metrics.qualityScore,
-      recommendations: this.generateRecommendations(metrics)
+      recommendations: this.generateRecommendations(metrics),
     };
   }
-  
+
   private static generateRecommendations(metrics: any) {
     const recommendations = [];
-    
+
     if (metrics.tddComplianceRate < 0.8) {
-      recommendations.push('TDD遵守率が低下しています。Red-Green-Refactorサイクルを意識してください。');
+      recommendations.push(
+        'TDD遵守率が低下しています。Red-Green-Refactorサイクルを意識してください。'
+      );
     }
-    
+
     if (metrics.coveragePercentage < 0.9) {
-      recommendations.push('テストカバレッジが不足しています。エッジケースのテストを追加してください。');
+      recommendations.push(
+        'テストカバレッジが不足しています。エッジケースのテストを追加してください。'
+      );
     }
-    
+
     return recommendations;
   }
 }

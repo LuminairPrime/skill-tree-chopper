@@ -10,6 +10,7 @@ description: This skill enables GitHub repository documentation exploration usin
 DeepWiki provides AI-powered documentation exploration for GitHub repositories. This skill uses the API directly via curl - no MCP server required.
 
 ## Base URL
+
 ```
 https://api.deepwiki.com
 ```
@@ -19,11 +20,13 @@ https://api.deepwiki.com
 Get a list of documentation topics for a repository.
 
 ### Endpoint
+
 ```
 GET https://api.deepwiki.com/wiki/{owner}/{repo}/structure
 ```
 
 ### Usage
+
 ```bash
 curl -s "https://api.deepwiki.com/wiki/microsoft/vscode/structure" \
   -H "Accept: application/json" | jq '.'
@@ -34,11 +37,13 @@ curl -s "https://api.deepwiki.com/wiki/microsoft/vscode/structure" \
 Get full documentation content for a repository.
 
 ### Endpoint
+
 ```
 GET https://api.deepwiki.com/wiki/{owner}/{repo}/contents
 ```
 
 ### Usage
+
 ```bash
 curl -s "https://api.deepwiki.com/wiki/xtermjs/xterm.js/contents" \
   -H "Accept: application/json" | jq '.'
@@ -49,11 +54,13 @@ curl -s "https://api.deepwiki.com/wiki/xtermjs/xterm.js/contents" \
 Ask a question about a repository and get AI-generated answers.
 
 ### Endpoint
+
 ```
 POST https://api.deepwiki.com/wiki/{owner}/{repo}/ask
 ```
 
 ### Usage
+
 ```bash
 curl -s -X POST "https://api.deepwiki.com/wiki/microsoft/vscode/ask" \
   -H "Content-Type: application/json" \
@@ -63,6 +70,7 @@ curl -s -X POST "https://api.deepwiki.com/wiki/microsoft/vscode/ask" \
 ## Common Workflows
 
 ### Research a Library
+
 ```bash
 # Get structure first
 curl -s "https://api.deepwiki.com/wiki/xtermjs/xterm.js/structure" | jq '.topics[]'
@@ -74,6 +82,7 @@ curl -s -X POST "https://api.deepwiki.com/wiki/xtermjs/xterm.js/ask" \
 ```
 
 ### Understand VS Code Patterns
+
 ```bash
 curl -s -X POST "https://api.deepwiki.com/wiki/microsoft/vscode/ask" \
   -H "Content-Type: application/json" \
@@ -81,6 +90,7 @@ curl -s -X POST "https://api.deepwiki.com/wiki/microsoft/vscode/ask" \
 ```
 
 ### Explore Repository Architecture
+
 ```bash
 curl -s -X POST "https://api.deepwiki.com/wiki/anthropics/claude-code/ask" \
   -H "Content-Type: application/json" \

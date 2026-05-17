@@ -118,6 +118,7 @@ When enabled, the `.synapse/proactive.md` instruction file is injected at startu
 **After work:** Unlock files, mark task complete, broadcast completion, post summary to canvas.
 
 **Rules:**
+
 - Never skip task board registration — even for 1-line fixes
 - Always lock files before editing in multi-agent setups
 - Always save useful findings to shared memory
@@ -137,15 +138,16 @@ Distribute Synapse initial instructions via MCP (Model Context Protocol) resourc
 
 **Resources:**
 
-| URI | Description |
-|-----|-------------|
-| `synapse://instructions/default` | Base Synapse bootstrap instructions |
-| `synapse://instructions/file-safety` | File locking rules (if enabled) |
-| `synapse://instructions/shared-memory` | Shared memory conventions (if enabled) |
-| `synapse://instructions/learning` | Learning mode guidance (if enabled) |
-| `synapse://instructions/proactive` | Proactive mode instructions (if enabled) |
+| URI                                    | Description                              |
+| -------------------------------------- | ---------------------------------------- |
+| `synapse://instructions/default`       | Base Synapse bootstrap instructions      |
+| `synapse://instructions/file-safety`   | File locking rules (if enabled)          |
+| `synapse://instructions/shared-memory` | Shared memory conventions (if enabled)   |
+| `synapse://instructions/learning`      | Learning mode guidance (if enabled)      |
+| `synapse://instructions/proactive`     | Proactive mode instructions (if enabled) |
 
 **Tools:**
+
 - `bootstrap_agent` returns runtime context (agent_id, agent_type, port, working_dir, instruction_resources, available_features).
 - `list_agents` lists running Synapse agents with status and connection info.
 - `analyze_task` analyzes a user prompt and suggests team/task splits when the work is large enough (Smart Suggest).
@@ -173,6 +175,7 @@ Shared visual dashboard for agents to post rich content cards rendered in a brow
 **23 card formats:** mermaid, markdown, html, table, json, diff, code, chart, image, log, status, metric, checklist, timeline, alert, file-preview, trace, task-board, progress, terminal, dependency-graph, cost, link-preview.
 
 **Rendering highlights:**
+
 - **Markdown cards**: Enhanced parser supports headings, paragraphs, bold/italic, inline code, code blocks, unordered and ordered lists, tables, blockquotes, horizontal rules, and links. Document content uses Source Sans 3 body font and Source Code Pro monospace font for a polished typographic appearance
 - **Code cards**: Syntax highlighted via highlight.js (set `--lang` for best results)
 - **Chart cards**: Chart.js supports all chart types (bar, line, pie, doughnut, radar, polarArea, scatter, bubble)

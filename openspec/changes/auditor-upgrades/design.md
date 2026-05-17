@@ -5,19 +5,21 @@ We researched existing tools in the ecosystem (`agent-skills-manager` and `skill
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Eliminate startup lag by using a discovery heuristic (stopping at the first valid file) and lazy-loading the global `~` directory.
 - Handle OS-level permission restrictions gracefully (fallback to read-only views or rename-to-disable actions if deletion is blocked).
 - Target Windows, Linux, and macOS simultaneously by relying exclusively on VS Code's cross-platform `vscode.workspace.fs` API.
 
 **Non-Goals:**
+
 - Building the standalone desktop application in v1. This is explicitly deferred to v2 to avoid framework complexity (e.g., Tauri, Electron).
 - Rigorously scanning every single sub-file within a skill directory to validate its contents.
 
 ## Decisions
 
-- **Heuristic File Discovery**: Instead of reading all files inside `.agents/skills/`, we will check for the existence of *any* `.md` file matching our target array (`SKILL.md`, `.cursorrules`, etc.). Once one is found, the parent directory is marked as populated. We skip deep tree traversal.
+- **Heuristic File Discovery**: Instead of reading all files inside `.agents/skills/`, we will check for the existence of _any_ `.md` file matching our target array (`SKILL.md`, `.cursorrules`, etc.). Once one is found, the parent directory is marked as populated. We skip deep tree traversal.
 - **Lazy Loading the Global Tree**: The `SkillTreeProvider` will set `collapsibleState = vscode.TreeItemCollapsibleState.Collapsed` for the global root node (`~`). Children of the global node will only be evaluated/scanned when the user clicks to expand it, preventing unnecessary disk I/O on extension activation.
-- **Graceful Error Handling with `vscode.workspace.fs`**: 
+- **Graceful Error Handling with `vscode.workspace.fs`**:
   - **Read Errors**: Wrap directory reads in a `try/catch`. If an `EACCES` or `EPERM` error occurs, surface the folder node with a lock icon (`ThemeIcon('lock')`) and a tooltip indicating read-only mode.
   - **Delete Errors**: If `fs.delete` fails due to permissions, catch the error and attempt to use `fs.rename` to move it to a `-disabled` folder as a fallback mechanism.
 

@@ -15,14 +15,14 @@ RESPONSE STRUCTURE
 
 Your output MUST follow this structure (include only enabled sections):
 
-  💬 RESPONSE (main answer, always, no section numbering)
+💬 RESPONSE (main answer, always, no section numbering)
 {{#learning_mode}}
-  [*] 🛠 PROMPT IMPROVEMENT          ← learning feedback
+[*] 🛠 PROMPT IMPROVEMENT ← learning feedback
 {{/learning_mode}}
 {{#learning_translation}}
-  [*] 📘 JP → EN LEARNING            ← learning feedback
+[*] 📘 JP → EN LEARNING ← learning feedback
 {{/learning_translation}}
-  [*] 💡 TIPS                         ← learning feedback (always)
+[*] 💡 TIPS ← learning feedback (always)
 
 Number only the learning feedback sections sequentially based on which are active.
 Template formatting rules in this file apply ONLY to learning feedback sections
@@ -42,10 +42,9 @@ learning mode — use whatever formatting naturally fits the answer (plain text,
 code blocks, markdown, etc.). The structured formatting below is ONLY for the
 learning feedback sections (🛠 / 📘 / 💡).
 
-{{#learning_mode}}
-================================================================================
-🛠 PROMPT IMPROVEMENT
-================================================================================
+# {{#learning_mode}}
+
+# 🛠 PROMPT IMPROVEMENT
 
 Analyze the user's prompt and provide concrete, actionable improvement guidance.
 
@@ -55,26 +54,30 @@ Format:
 🛠 PROMPT IMPROVEMENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Goal: [1-line summary of what to improve]
+
 - Problem: [What's vague, missing, or too broad in the original prompt]
 - Fix: [Specific dimensions to add — viewpoint / output format / scope / audience]
 
 ✅ Recommended rewrite
 [The improved prompt the user can copy-paste directly.
- Write in the same language the user used.]
+Write in the same language the user used.]
 
 🧩 What changed
+
 - [Change 1: what was vague → what it became]
 - [Change 2]
 - [Change 3]
 
 🎛 Options (by detail level)
-- Minimal:     [short version — good enough for quick tasks]
+
+- Minimal: [short version — good enough for quick tasks]
 - Recommended: [balanced version — the sweet spot]
-- Precise:     [detailed version — maximum control over output]
+- Precise: [detailed version — maximum control over output]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Rules:
+
 - Goal must be ONE line
 - Problem/Fix must be concrete and specific to THIS prompt
 - Recommended rewrite: write in the user's language. If the user wrote in
@@ -84,12 +87,11 @@ Rules:
   so the user can pick the right level of detail for their situation
 - If the prompt is already good (no major issues), write:
   "✅ Good prompt — no major improvements needed." and skip the rest
-{{/learning_mode}}
+  {{/learning_mode}}
 
-{{#learning_translation}}
-================================================================================
-📘 JP → EN LEARNING (Prompt Writing Practice)
-================================================================================
+# {{#learning_translation}}
+
+# 📘 JP → EN LEARNING (Prompt Writing Practice)
 
 Show this section ONLY when the user's input contains Japanese.
 If the input is already in English, skip this section entirely.
@@ -103,24 +105,25 @@ Format:
 📘 JP → EN LEARNING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1) English pattern
-[A reusable template with <slots> that the user can apply to similar prompts]
-Example: Explain <X>, focusing on <Y>. Output as <format>. Assume <audience>.
+1. English pattern
+   [A reusable template with <slots> that the user can apply to similar prompts]
+   Example: Explain <X>, focusing on <Y>. Output as <format>. Assume <audience>.
 
-2) Slot mapping (JP → slots)
-<X> = [what the Japanese prompt is about]
-<Y> = [what focus/viewpoint]
-<format> = [output format]
-<audience> = [assumed knowledge level, if relevant]
+2. Slot mapping (JP → slots)
+   <X> = [what the Japanese prompt is about]
+   <Y> = [what focus/viewpoint]
+   <format> = [output format]
+   <audience> = [assumed knowledge level, if relevant]
 
-3) Build it (assembled English prompt)
-EN draft:
-[The complete English prompt assembled from the slots above]
-JP 意訳:
-[上の英文が日本語で何を言っているかの自然な意訳。
- 直訳ではなく、英語の構造・ニュアンスが伝わるように訳す。]
+3. Build it (assembled English prompt)
+   EN draft:
+   [The complete English prompt assembled from the slots above]
+   JP 意訳:
+   [上の英文が日本語で何を言っているかの自然な意訳。
+   直訳ではなく、英語の構造・ニュアンスが伝わるように訳す。]
 
-4) Quick alternatives (vocab cheat sheet)
+4. Quick alternatives (vocab cheat sheet)
+
 - [日本語の表現]: [English alternative 1] / [alternative 2]
 - [日本語の表現]: [English alternative 1] / [alternative 2]
 - [日本語の表現]: [English alternative 1] / [alternative 2]
@@ -129,6 +132,7 @@ JP 意訳:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Rules:
+
 - English pattern: provide a reusable TEMPLATE with named <slots>, not just
   one translation. The user should be able to reuse this pattern for similar
   future prompts.
@@ -143,7 +147,7 @@ Rules:
   - There are multiple valid English options with different nuances
   - Japanese speakers commonly make mistakes
 - Keep the entire section concise and scannable
-{{/learning_translation}}
+  {{/learning_translation}}
 
 ================================================================================
 💡 TIPS
@@ -158,16 +162,18 @@ Format:
 💡 TIPS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {{#learning_translation}}
+
 - [Tip in Japanese]
 - [Tip in Japanese]
 - [Tip in Japanese]
-{{/learning_translation}}
+  {{/learning_translation}}
 - [Tip in English]
 - [Tip in English]
 - [Tip in English]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Tip catalog (select from these or create situation-specific ones):
+
 - Decide on a "noun" first: not "overview" but "architecture" / "data flow" /
   "setup" / "API design"
 - When in doubt, specify output format: bullets / steps / table / mermaid
@@ -179,7 +185,8 @@ Tip catalog (select from these or create situation-specific ones):
 
 {{#learning_translation}}
 Rules:
+
 - Write tips in BOTH Japanese and English
 - Japanese tips come first, then English equivalents
 - Keep each tip to one line
-{{/learning_translation}}
+  {{/learning_translation}}

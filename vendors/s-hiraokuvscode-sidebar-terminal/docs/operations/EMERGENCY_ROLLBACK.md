@@ -42,11 +42,13 @@ npm run rollback:to 0.1.95
 ### Phase 2: ロールバック実行 (5-15分)
 
 1. **現在状態のバックアップ**
+
    ```bash
    npm run rollback:backup
    ```
 
 2. **ロールバック実行**
+
    ```bash
    # 自動的に前バージョンにロールバック
    npm run rollback:emergency
@@ -63,11 +65,13 @@ npm run rollback:to 0.1.95
 ### Phase 3: リリース・通知 (15-30分)
 
 1. **ロールバック版のパッケージ作成**
+
    ```bash
    npm run vsce:package
    ```
 
 2. **マーケットプレースへの公開**
+
    ```bash
    npm run vsce:publish
    ```
@@ -113,15 +117,18 @@ npm run release:patch
 ## 📞 緊急連絡先・エスカレーション
 
 ### レベル1: 自動対応
+
 - ロールバックスクリプトの実行
 - 基本的な動作確認
 
 ### レベル2: 開発チーム対応
+
 - 根本原因の分析
 - 修正実装とテスト
 - 段階的リリース
 
 ### レベル3: エスカレーション
+
 - VS Code Marketplace サポート
 - コミュニティへの告知
 - 外部依存関係の確認
@@ -131,6 +138,7 @@ npm run release:patch
 ### ロールバックが失敗する場合
 
 1. **Git履歴が不完全**
+
    ```bash
    # 手動でpackage.jsonを復元
    git show v0.1.95:package.json > package.json
@@ -139,6 +147,7 @@ npm run release:patch
    ```
 
 2. **依存関係の競合**
+
    ```bash
    # 依存関係のクリーンインストール
    rm -rf node_modules package-lock.json
@@ -186,22 +195,27 @@ npm run vsce:publish
 # インシデントレポート
 
 ## 発生日時
+
 YYYY-MM-DD HH:MM:SS
 
 ## 問題の概要
+
 - 影響したバージョン: v0.1.98
 - 報告された問題: [問題の詳細]
 - 影響範囲: [ユーザー数、機能範囲]
 
 ## 対応履歴
+
 - XX:XX ロールバック実行
 - XX:XX 動作確認完了
 - XX:XX 修正版リリース
 
 ## 根本原因
+
 [技術的な原因の詳細]
 
 ## 再発防止策
+
 - テストケースの追加
 - チェック項目の見直し
 - リリースプロセスの改善

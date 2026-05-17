@@ -33,6 +33,7 @@ The extension has been enhanced to meet [Web Content Accessibility Guidelines (W
 ### 1. ARIA Attributes (50+ attributes)
 
 #### Terminal Tab List (`TerminalTabList.ts`)
+
 - `role="navigation"` - Marks container as navigation landmark
 - `role="tablist"` - Identifies tab group
 - `role="tab"` - Individual tab elements
@@ -43,6 +44,7 @@ The extension has been enhanced to meet [Web Content Accessibility Guidelines (W
 - `tabindex` - Manages keyboard focus (0 for active, -1 for inactive)
 
 #### Settings Panel (`SettingsPanel.ts`)
+
 - `role="dialog"` - Modal dialog role
 - `aria-modal="true"` - Prevents interaction with background
 - `aria-labelledby` - References dialog title
@@ -50,6 +52,7 @@ The extension has been enhanced to meet [Web Content Accessibility Guidelines (W
 - `aria-label` - Descriptive labels for buttons and groups
 
 #### Profile Selector (`ProfileSelector.ts`)
+
 - `role="dialog"` - Dialog modal
 - `role="listbox"` - List selection component
 - `role="option"` - Individual profile items
@@ -58,6 +61,7 @@ The extension has been enhanced to meet [Web Content Accessibility Guidelines (W
 - `tabindex="0"` - Makes items focusable
 
 #### WebView HTML (`WebViewHtmlGenerationService.ts`)
+
 - `role="main"` - Main content landmark
 - `role="status"` - Screen reader announcement regions
 - `role="alert"` - Urgent announcements
@@ -70,6 +74,7 @@ The extension has been enhanced to meet [Web Content Accessibility Guidelines (W
 All interactive elements support keyboard navigation:
 
 #### Global Shortcuts
+
 - **Tab** - Navigate forward through focusable elements
 - **Shift+Tab** - Navigate backward
 - **Enter** - Activate buttons and links
@@ -77,24 +82,29 @@ All interactive elements support keyboard navigation:
 - **Escape** - Close dialogs and panels
 
 #### Terminal Tabs
+
 - **Arrow Left/Right** - Navigate between tabs
 - **Home** - First tab
 - **End** - Last tab
 - **Delete/Backspace** - Close closable tab
 
 #### Profile Selector
+
 - **Arrow Up/Down** - Navigate profiles
 - **Enter** - Select profile
 - **Escape** - Cancel selection
 - **Type** - Filter profiles
 
 #### Settings Panel
+
 - **Tab** - Navigate controls
 - **Enter** - Activate buttons
 - **Escape** - Close panel
 
 #### Panel Navigation Mode (Zellij-style)
+
 Provides a high-efficiency alternative for switching between split terminals without leaving the home row:
+
 - **Ctrl+P** - Toggle navigation mode (Cmd+P is reserved for VS Code Quick Open on macOS)
 - **h / j / k / l** - Switch terminal (vim-style)
 - **Arrow keys** - Switch terminal
@@ -107,6 +117,7 @@ Provides a high-efficiency alternative for switching between split terminals wit
 #### Accessibility Utilities (`AccessibilityUtils.ts`)
 
 ##### ScreenReaderAnnouncer
+
 ```typescript
 // Initialize announcement regions
 ScreenReaderAnnouncer.initialize();
@@ -117,6 +128,7 @@ ScreenReaderAnnouncer.announce('Error occurred', 'assertive');
 ```
 
 ##### FocusManager
+
 ```typescript
 // Get focusable elements
 const elements = FocusManager.getFocusableElements(container);
@@ -129,11 +141,12 @@ FocusManager.setFocus(element, true);
 ```
 
 ##### AriaHelper
+
 ```typescript
 // Set ARIA attributes
 AriaHelper.setAttributes(element, {
   'aria-label': 'Terminal tabs',
-  'aria-required': 'true'
+  'aria-required': 'true',
 });
 
 // Manage state
@@ -143,13 +156,11 @@ AriaHelper.setDisabled(element, false);
 ```
 
 ##### KeyboardNavigationHelper
+
 ```typescript
 // Arrow key navigation
-KeyboardNavigationHelper.handleArrowKeys(
-  event,
-  items,
-  currentIndex,
-  (newIndex) => selectItem(newIndex)
+KeyboardNavigationHelper.handleArrowKeys(event, items, currentIndex, (newIndex) =>
+  selectItem(newIndex)
 );
 
 // Setup shortcuts
@@ -173,6 +184,7 @@ Two live regions are available for screen reader announcements:
 All color combinations meet WCAG AA standards (4.5:1 ratio):
 
 #### Utilities
+
 ```typescript
 // Check contrast
 const ratio = ColorContrastValidator.getContrastRatio('#fff', '#000');
@@ -181,12 +193,15 @@ const meetsAAA = ColorContrastValidator.meetsWCAG_AAA('#fff', '#000'); // true
 ```
 
 #### VSCode Theme Colors
+
 The extension uses VSCode theme colors that are already accessibility-compliant:
+
 - `--vscode-foreground` / `--vscode-editor-background`
 - `--vscode-button-foreground` / `--vscode-button-background`
 - `--vscode-focusBorder` (2px outline for focus indication)
 
 #### Focus Indicators
+
 ```css
 *:focus-visible {
   outline: 2px solid var(--vscode-focusBorder, #007acc);
@@ -289,7 +304,7 @@ import { AriaHelper } from './utils/AccessibilityUtils';
 // Set multiple attributes
 AriaHelper.setAttributes(button, {
   'aria-label': 'Close dialog',
-  'aria-pressed': 'false'
+  'aria-pressed': 'false',
 });
 
 // Update state
@@ -304,15 +319,10 @@ import { KeyboardNavigationHelper } from './utils/AccessibilityUtils';
 
 // Arrow key navigation
 this.container.addEventListener('keydown', (e) => {
-  KeyboardNavigationHelper.handleArrowKeys(
-    e,
-    this.items,
-    this.currentIndex,
-    (newIndex) => {
-      this.currentIndex = newIndex;
-      this.selectItem(newIndex);
-    }
-  );
+  KeyboardNavigationHelper.handleArrowKeys(e, this.items, this.currentIndex, (newIndex) => {
+    this.currentIndex = newIndex;
+    this.selectItem(newIndex);
+  });
 });
 
 // Custom shortcuts

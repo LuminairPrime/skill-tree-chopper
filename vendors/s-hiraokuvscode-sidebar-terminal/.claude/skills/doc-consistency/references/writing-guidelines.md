@@ -11,6 +11,7 @@ Documentation must accurately reflect the current implementation. Outdated docum
 ### 2. User-Centric Approach
 
 Write from the user's perspective:
+
 - What problem does this solve?
 - How do I use this feature?
 - What should I expect?
@@ -35,28 +36,35 @@ Be concise without sacrificing clarity. Users skim documentation.
 [Hero Image]
 
 ## Quick Start
+
 - Installation (numbered steps)
 - First use (numbered steps)
 
 ## Key Features
+
 - Organized in tables or bullet points
 - Group related features
 
 ## Keyboard Shortcuts
+
 - Table format with Shortcut | Action columns
 - Platform-specific (Mac/Win/Linux)
 
 ## Configuration
+
 - JSON code blocks with comments
 - Group related settings
 
 ## Troubleshooting
+
 - Common issues with solutions
 
 ## Development
+
 - Build/test commands
 
 ## Links
+
 - Marketplace, GitHub, Changelog
 ```
 
@@ -71,13 +79,15 @@ Be concise without sacrificing clarity. Users skim documentation.
 ### Feature Descriptions
 
 Good:
+
 ```markdown
-| Feature | Description |
-|---------|-------------|
+| Feature                 | Description                                            |
+| ----------------------- | ------------------------------------------------------ |
 | **Session Persistence** | Auto-save/restore sessions with 1,000 lines scrollback |
 ```
 
 Avoid:
+
 ```markdown
 - Session Persistence: The extension saves sessions automatically and can restore them later with up to 1000 lines of scrollback history being preserved.
 ```
@@ -94,27 +104,34 @@ Avoid:
 ## [X.Y.Z] - YYYY-MM-DD
 
 ### Added
+
 - New features
 
 ### Changed
+
 - Changes in existing functionality
 
 ### Fixed
+
 - Bug fixes
 
 ### Deprecated
+
 - Soon-to-be removed features
 
 ### Removed
+
 - Removed features
 
 ### Security
+
 - Security fixes
 ```
 
 ### Entry Style
 
 Good:
+
 ```markdown
 ### Fixed
 
@@ -124,6 +141,7 @@ Good:
 ```
 
 Avoid:
+
 ```markdown
 ### Fixed
 
@@ -148,27 +166,35 @@ Guide AI assistants and developers working on the codebase.
 
 ```markdown
 ## Development Flow (Mandatory)
+
 [Required workflow]
 
 ## Essential Development Commands
+
 [Frequently used commands with examples]
 
 ## Architecture Overview
+
 [High-level system design]
 
 ## Development Guidelines
+
 [Best practices, patterns]
 
 ## Known Issues & Workarounds
+
 [Common problems and solutions]
 
 ## Performance Optimization
+
 [Settings, benchmarks]
 
 ## Testing Strategy
+
 [Test commands, TDD workflow]
 
 ## Emergency Response
+
 [Rollback procedures]
 ```
 
@@ -182,21 +208,25 @@ Guide AI assistants and developers working on the codebase.
 
 ### Critical Information Highlighting
 
-```markdown
+````markdown
 **NEVER delete or discard uncommitted local changes without explicit user permission.**
 
 > **Note**: This is important information users should know.
 
 ### ❌ Don't
+
 ```typescript
 // Bad pattern
 ```
+````
 
 ### ✅ Do
+
 ```typescript
 // Good pattern
 ```
-```
+
+````
 
 ## Domain-Specific CLAUDE.md (src/*/CLAUDE.md)
 
@@ -229,16 +259,16 @@ Focus on:
 | Column 1 | Column 2 | Column 3 |
 |----------|----------|----------|
 | Value 1  | Value 2  | Value 3  |
-```
+````
 
 ### Aligned Values
 
 ```markdown
-| Metric              | Value           |
-|---------------------|-----------------|
-| Build Size          | ~790 KiB        |
-| Buffer Interval     | 16ms            |
-| Session Save        | 5 minutes       |
+| Metric          | Value     |
+| --------------- | --------- |
+| Build Size      | ~790 KiB  |
+| Buffer Interval | 16ms      |
+| Session Save    | 5 minutes |
 ```
 
 ## Code Examples
@@ -254,7 +284,7 @@ npm run compile
 
 ```json
 {
-  "settingName": "value",  // Comment if needed
+  "settingName": "value", // Comment if needed
   "anotherSetting": true
 }
 ```

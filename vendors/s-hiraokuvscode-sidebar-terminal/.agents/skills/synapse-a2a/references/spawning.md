@@ -10,12 +10,12 @@ Spawning is sub-agent delegation. The parent spawns child agents to offload subt
 
 ## When to Spawn vs. Reuse
 
-| Situation | Action | Why |
-|-----------|--------|-----|
-| Task is small or within your expertise | **Do it yourself** | No overhead, fastest path |
-| Another agent is already running and READY | **`synapse send` to existing agent** | Reusing avoids startup cost, instruction injection, and readiness wait |
-| Task is large and would consume your context | **`synapse spawn` a new agent** | Offloads work so your context stays clean |
-| Task has independent parallel subtasks | **`synapse spawn` N agents** | Each agent focuses on one subtask; total time is max(subtask times) instead of sum |
+| Situation                                    | Action                               | Why                                                                                |
+| -------------------------------------------- | ------------------------------------ | ---------------------------------------------------------------------------------- |
+| Task is small or within your expertise       | **Do it yourself**                   | No overhead, fastest path                                                          |
+| Another agent is already running and READY   | **`synapse send` to existing agent** | Reusing avoids startup cost, instruction injection, and readiness wait             |
+| Task is large and would consume your context | **`synapse spawn` a new agent**      | Offloads work so your context stays clean                                          |
+| Task has independent parallel subtasks       | **`synapse spawn` N agents**         | Each agent focuses on one subtask; total time is max(subtask times) instead of sum |
 
 **Rule of thumb:** Spawn when delegating would be faster, more precise, or prevent your context from being consumed by a large subtask.
 
@@ -106,13 +106,13 @@ unattended runs. OpenCode is the exception here: `--agent build` selects the
 build agent profile, while approval behavior still depends on OpenCode
 permission config.
 
-| CLI | Args | Notes |
-|-----|------|-------|
-| **Claude Code** | `--dangerously-skip-permissions` | Skips all permission prompts |
-| **Gemini CLI** | `--approval-mode=yolo` | Yolo mode -- auto-approve all actions |
-| **Codex CLI** | `--full-auto` | Sandboxed auto-approve (`-a on-request --sandbox workspace-write`) |
-| **OpenCode** | `--agent build` | Selects the build agent profile; approval behavior still depends on OpenCode permission config |
-| **Copilot CLI** | `--allow-all-tools` | Allow all tools without prompts |
+| CLI             | Args                             | Notes                                                                                          |
+| --------------- | -------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Claude Code** | `--dangerously-skip-permissions` | Skips all permission prompts                                                                   |
+| **Gemini CLI**  | `--approval-mode=yolo`           | Yolo mode -- auto-approve all actions                                                          |
+| **Codex CLI**   | `--full-auto`                    | Sandboxed auto-approve (`-a on-request --sandbox workspace-write`)                             |
+| **OpenCode**    | `--agent build`                  | Selects the build agent profile; approval behavior still depends on OpenCode permission config |
+| **Copilot CLI** | `--allow-all-tools`              | Allow all tools without prompts                                                                |
 
 ```bash
 # Spawn with automation args
@@ -194,12 +194,12 @@ Team Start via API (`POST /team/start`):
 
 ### When to Use Worktrees
 
-| Situation | Action |
-|-----------|--------|
-| Multiple agents may edit the same files | Use `--worktree` to avoid conflicts |
-| Coordinator + Worker pattern (Worker edits code) | Worker gets `--worktree` |
-| Read-only tasks (investigation, analysis, review) | Worktree not needed |
-| Single agent working alone | Worktree not needed |
+| Situation                                         | Action                              |
+| ------------------------------------------------- | ----------------------------------- |
+| Multiple agents may edit the same files           | Use `--worktree` to avoid conflicts |
+| Coordinator + Worker pattern (Worker edits code)  | Worker gets `--worktree`            |
+| Read-only tasks (investigation, analysis, review) | Worktree not needed                 |
+| Single agent working alone                        | Worktree not needed                 |
 
 ### Usage
 
@@ -222,10 +222,10 @@ Agents running in worktrees show a `[WT]` prefix in the WORKING_DIR column of `s
 
 Environment variables set automatically for worktree agents:
 
-| Variable | Description |
-|----------|-------------|
-| `SYNAPSE_WORKTREE_PATH` | Absolute path to the worktree directory |
-| `SYNAPSE_WORKTREE_BRANCH` | Branch name of the worktree |
+| Variable                       | Description                                                                                                                                                                               |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SYNAPSE_WORKTREE_PATH`        | Absolute path to the worktree directory                                                                                                                                                   |
+| `SYNAPSE_WORKTREE_BRANCH`      | Branch name of the worktree                                                                                                                                                               |
 | `SYNAPSE_WORKTREE_BASE_BRANCH` | Base branch the worktree was created from (e.g., `origin/main`). Used for change detection during cleanup. Determined via 3-step fallback: `git symbolic-ref` -> `origin/main` -> `HEAD`. |
 
 ### Caveats

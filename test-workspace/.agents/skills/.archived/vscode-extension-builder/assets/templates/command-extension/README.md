@@ -19,6 +19,7 @@ This is a simple command-based VS Code extension template.
 ### Add More Commands
 
 1. Register the command in `package.json`:
+
 ```json
 {
   "contributes": {
@@ -34,19 +35,18 @@ This is a simple command-based VS Code extension template.
 ```
 
 2. Implement the command in `extension.ts`:
+
 ```typescript
-let myCommandDisposable = vscode.commands.registerCommand(
-  'extension.myNewCommand',
-  () => {
-    // Your command logic here
-  }
-);
+let myCommandDisposable = vscode.commands.registerCommand('extension.myNewCommand', () => {
+  // Your command logic here
+});
 context.subscriptions.push(myCommandDisposable);
 ```
 
 ### Add Keyboard Shortcuts
 
 In `package.json`:
+
 ```json
 {
   "contributes": {
@@ -81,4 +81,3 @@ command-extension/
 ├── package.json      # Extension manifest
 └── README.md        # This file
 ```
-

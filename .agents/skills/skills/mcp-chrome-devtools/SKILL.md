@@ -30,26 +30,31 @@ This skill enables browser debugging and automation using Chrome DevTools throug
 ### Page Management
 
 **list_pages** - Get all open pages
+
 ```
 mcp__chrome-devtools__list_pages({})
 ```
 
 **select_page** - Select a page for operations
+
 ```
 mcp__chrome-devtools__select_page({ pageIdx: 0 })
 ```
 
 **new_page** - Create a new page
+
 ```
 mcp__chrome-devtools__new_page({ url: "https://example.com" })
 ```
 
 **close_page** - Close a page
+
 ```
 mcp__chrome-devtools__close_page({ pageIdx: 1 })
 ```
 
 **navigate_page** - Navigate the selected page
+
 ```
 mcp__chrome-devtools__navigate_page({ type: "url", url: "https://example.com" })
 mcp__chrome-devtools__navigate_page({ type: "back" })
@@ -59,11 +64,13 @@ mcp__chrome-devtools__navigate_page({ type: "reload", ignoreCache: true })
 ### Snapshots and Screenshots
 
 **take_snapshot** - Get accessibility tree (preferred for interaction)
+
 ```
 mcp__chrome-devtools__take_snapshot({})
 ```
 
 **take_screenshot** - Capture visual screenshot
+
 ```
 mcp__chrome-devtools__take_screenshot({
   format: "png",
@@ -75,17 +82,20 @@ mcp__chrome-devtools__take_screenshot({
 ### Element Interaction
 
 **click** - Click an element
+
 ```
 mcp__chrome-devtools__click({ uid: "element-uid" })
 mcp__chrome-devtools__click({ uid: "element-uid", dblClick: true })
 ```
 
 **fill** - Fill input or select option
+
 ```
 mcp__chrome-devtools__fill({ uid: "input-uid", value: "text" })
 ```
 
 **fill_form** - Fill multiple form elements
+
 ```
 mcp__chrome-devtools__fill_form({
   elements: [
@@ -96,11 +106,13 @@ mcp__chrome-devtools__fill_form({
 ```
 
 **hover** - Hover over an element
+
 ```
 mcp__chrome-devtools__hover({ uid: "element-uid" })
 ```
 
 **drag** - Drag and drop
+
 ```
 mcp__chrome-devtools__drag({ from_uid: "source", to_uid: "target" })
 ```
@@ -108,23 +120,27 @@ mcp__chrome-devtools__drag({ from_uid: "source", to_uid: "target" })
 ### Debugging Tools
 
 **list_console_messages** - Get console messages
+
 ```
 mcp__chrome-devtools__list_console_messages({})
 mcp__chrome-devtools__list_console_messages({ types: ["error", "warn"] })
 ```
 
 **get_console_message** - Get specific message details
+
 ```
 mcp__chrome-devtools__get_console_message({ msgid: 1 })
 ```
 
 **list_network_requests** - Get network requests
+
 ```
 mcp__chrome-devtools__list_network_requests({})
 mcp__chrome-devtools__list_network_requests({ resourceTypes: ["fetch", "xhr"] })
 ```
 
 **get_network_request** - Get request details
+
 ```
 mcp__chrome-devtools__get_network_request({ reqid: 1 })
 ```
@@ -132,6 +148,7 @@ mcp__chrome-devtools__get_network_request({ reqid: 1 })
 ### Performance Tools
 
 **performance_start_trace** - Start performance trace
+
 ```
 mcp__chrome-devtools__performance_start_trace({
   reload: true,
@@ -140,11 +157,13 @@ mcp__chrome-devtools__performance_start_trace({
 ```
 
 **performance_stop_trace** - Stop performance trace
+
 ```
 mcp__chrome-devtools__performance_stop_trace({})
 ```
 
 **performance_analyze_insight** - Analyze performance insight
+
 ```
 mcp__chrome-devtools__performance_analyze_insight({
   insightSetId: "insight-set-id",
@@ -155,6 +174,7 @@ mcp__chrome-devtools__performance_analyze_insight({
 ### Advanced Tools
 
 **evaluate_script** - Execute JavaScript
+
 ```
 mcp__chrome-devtools__evaluate_script({
   function: "() => document.title"
@@ -162,12 +182,14 @@ mcp__chrome-devtools__evaluate_script({
 ```
 
 **press_key** - Press keyboard key
+
 ```
 mcp__chrome-devtools__press_key({ key: "Enter" })
 mcp__chrome-devtools__press_key({ key: "Control+A" })
 ```
 
 **emulate** - Emulate conditions
+
 ```
 mcp__chrome-devtools__emulate({
   networkConditions: "Slow 3G",
@@ -176,11 +198,13 @@ mcp__chrome-devtools__emulate({
 ```
 
 **handle_dialog** - Handle browser dialog
+
 ```
 mcp__chrome-devtools__handle_dialog({ action: "accept" })
 ```
 
 **wait_for** - Wait for text
+
 ```
 mcp__chrome-devtools__wait_for({ text: "Loading complete" })
 ```

@@ -1,6 +1,6 @@
 # DeepWiki MCP Tools Reference
 
-## mcp__deepwiki__read_wiki_structure
+## mcp**deepwiki**read_wiki_structure
 
 Get a list of documentation topics for a GitHub repository.
 
@@ -13,7 +13,7 @@ Get a list of documentation topics for a GitHub repository.
 
 ---
 
-## mcp__deepwiki__read_wiki_contents
+## mcp**deepwiki**read_wiki_contents
 
 View documentation about a GitHub repository.
 
@@ -26,7 +26,7 @@ View documentation about a GitHub repository.
 
 ---
 
-## mcp__deepwiki__ask_question
+## mcp**deepwiki**ask_question
 
 Ask any question about a GitHub repository.
 
@@ -43,6 +43,7 @@ Ask any question about a GitHub repository.
 ## Common Repository Queries
 
 ### VS Code Terminal Implementation
+
 ```
 mcp__deepwiki__ask_question({
   repoName: "microsoft/vscode",
@@ -51,6 +52,7 @@ mcp__deepwiki__ask_question({
 ```
 
 ### xterm.js Addon System
+
 ```
 mcp__deepwiki__ask_question({
   repoName: "xtermjs/xterm.js",
@@ -59,6 +61,7 @@ mcp__deepwiki__ask_question({
 ```
 
 ### React Hooks Implementation
+
 ```
 mcp__deepwiki__ask_question({
   repoName: "facebook/react",

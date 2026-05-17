@@ -7,14 +7,16 @@ The current file discovery algorithm uses overly permissive glob patterns (`**`)
 - **BREAKING**: Constrain the discovery algorithm to strictly look at known global and workspace agent paths (e.g. `.claude/skills/`, `.cursor/rules/`). It will only go one folder deep to look for a `skill.md` file. It will no longer recursively search `**`.
 - **BREAKING**: Rename the archive folder from `archived` to `.archived` to clearly signal it as a hidden, managed state folder.
 - Add an intermediate "skills" node in the tree (between the Agent node and the Skill folders) that includes a checkbox. Toggling this checkbox will en-masse move all child skill folders into or out of the `.archived` directory.
-- Update the archive move logic to rigorously verify that the source folder *actually contains* a `skill.md` file before invoking any file system rename commands, ensuring we do not accidentally move unrelated folders.
+- Update the archive move logic to rigorously verify that the source folder _actually contains_ a `skill.md` file before invoking any file system rename commands, ensuring we do not accidentally move unrelated folders.
 
 ## Capabilities
 
 ### New Capabilities
+
 <!-- No brand new specs -->
 
 ### Modified Capabilities
+
 - `skill-discovery`: The algorithm is changing from deep recursive globs to strict path-joining with a 1-level depth check.
 - `skill-tree-view`: The tree hierarchy is being updated to include the intermediate `skills`/`rules` folder which will have its own mass-toggle checkbox.
 - `skill-management`: The archive target is renamed to `.archived` and the move commands will incorporate strict validation checks.

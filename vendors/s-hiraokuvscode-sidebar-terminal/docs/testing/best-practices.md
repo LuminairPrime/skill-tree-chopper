@@ -78,7 +78,7 @@ it('should be disposed after disposal', () => {
 it('should restore terminal session from globalState', async () => {
   // Given: 保存されたセッションデータが存在する
   const savedSession = {
-    terminals: [{ id: 1, scrollback: ['line1', 'line2'] }]
+    terminals: [{ id: 1, scrollback: ['line1', 'line2'] }],
   };
   await globalState.update('sessions', savedSession);
 
@@ -171,11 +171,12 @@ it('should save terminal data asynchronously', async () => {
 ```typescript
 // ✅ 良い例: Promiseを返す
 it('should handle async errors', () => {
-  return sessionManager.invalidOperation()
+  return sessionManager
+    .invalidOperation()
     .then(() => {
       throw new Error('Should have rejected');
     })
-    .catch(error => {
+    .catch((error) => {
       expect(error.message).to.include('Invalid operation');
     });
 });
@@ -290,23 +291,23 @@ it('should call callback function', () => {
 
 ```typescript
 // ❌ 悪い例: 曖昧
-it('works', () => { });
-it('test1', () => { });
-it('should do stuff', () => { });
+it('works', () => {});
+it('test1', () => {});
+it('should do stuff', () => {});
 
 // ✅ 良い例: 具体的
-it('should create terminal with specified shell', () => { });
-it('should throw error when terminal limit exceeded', () => { });
-it('should preserve scrollback on session save', () => { });
+it('should create terminal with specified shell', () => {});
+it('should throw error when terminal limit exceeded', () => {});
+it('should preserve scrollback on session save', () => {});
 ```
 
 ### should で始める
 
 ```typescript
 describe('TerminalManager', () => {
-  it('should create new terminal instance', () => { });
-  it('should delete terminal by ID', () => { });
-  it('should return all active terminals', () => { });
+  it('should create new terminal instance', () => {});
+  it('should delete terminal by ID', () => {});
+  it('should return all active terminals', () => {});
 });
 ```
 
@@ -314,10 +315,10 @@ describe('TerminalManager', () => {
 
 ```typescript
 describe('Terminal Deletion', () => {
-  it('should delete terminal successfully', () => { });
-  it('should handle deletion of non-existent terminal', () => { });
-  it('should prevent deletion when only one terminal remains', () => { });
-  it('should throw error when deleting already deleted terminal', () => { });
+  it('should delete terminal successfully', () => {});
+  it('should handle deletion of non-existent terminal', () => {});
+  it('should prevent deletion when only one terminal remains', () => {});
+  it('should throw error when deleting already deleted terminal', () => {});
 });
 ```
 
@@ -417,9 +418,7 @@ it('should throw TypeError for null argument', () => {
 
 ```typescript
 it('should reject with error message', async () => {
-  await expect(
-    sessionManager.loadInvalidSession()
-  ).rejects.toThrow('Session not found');
+  await expect(sessionManager.loadInvalidSession()).rejects.toThrow('Session not found');
 });
 
 it('should handle async rejection', async () => {
@@ -438,7 +437,7 @@ it('should handle async rejection', async () => {
 it('should process data quickly', () => {
   const mockStorage = {
     save: vi.fn().mockResolvedValue(undefined),
-    load: vi.fn().mockResolvedValue(mockData)
+    load: vi.fn().mockResolvedValue(mockData),
   };
 
   const processor = new DataProcessor(mockStorage);
@@ -462,13 +461,13 @@ it('should save to disk', async () => {
 // ❌ 悪い例: 不要なsleep
 it('should process eventually', async () => {
   processor.start();
-  await new Promise(resolve => setTimeout(resolve, 1000)); // 1秒待機
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // 1秒待機
   expect(processor.isComplete).to.be.true;
 });
 
 // ✅ 良い例: イベント駆動
 it('should complete processing', async () => {
-  const promise = new Promise(resolve => {
+  const promise = new Promise((resolve) => {
     processor.on('complete', resolve);
   });
 
@@ -493,14 +492,14 @@ function createTestTerminal(overrides = {}) {
     name: 'Test Terminal',
     isActive: true,
     scrollback: [],
-    ...overrides
+    ...overrides,
   };
 }
 
 it('should handle custom terminal data', () => {
   const terminal = createTestTerminal({
     name: 'Custom Terminal',
-    scrollback: ['line1', 'line2']
+    scrollback: ['line1', 'line2'],
   });
 
   expect(terminal.name).to.equal('Custom Terminal');
@@ -527,9 +526,7 @@ it('should limit terminals to MAX_TERMINALS', () => {
     manager.createTerminal();
   }
 
-  expect(() => manager.createTerminal()).to.throw(
-    `Cannot exceed ${MAX_TERMINALS} terminals`
-  );
+  expect(() => manager.createTerminal()).to.throw(`Cannot exceed ${MAX_TERMINALS} terminals`);
 });
 ```
 

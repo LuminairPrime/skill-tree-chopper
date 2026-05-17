@@ -44,14 +44,14 @@ Define commands that users can execute.
 
 **Properties:**
 
-| Property | Description |
-|----------|-------------|
-| `command` | Unique command ID (required) |
-| `title` | Display name in Command Palette (required) |
-| `category` | Groups commands (shown as "Category: Title") |
-| `icon` | Icon for toolbar buttons (`$(icon-name)` or `{ "light": "...", "dark": "..." }`) |
-| `enablement` | When clause to enable/disable command |
-| `shortTitle` | Shorter title for menus |
+| Property     | Description                                                                      |
+| ------------ | -------------------------------------------------------------------------------- |
+| `command`    | Unique command ID (required)                                                     |
+| `title`      | Display name in Command Palette (required)                                       |
+| `category`   | Groups commands (shown as "Category: Title")                                     |
+| `icon`       | Icon for toolbar buttons (`$(icon-name)` or `{ "light": "...", "dark": "..." }`) |
+| `enablement` | When clause to enable/disable command                                            |
+| `shortTitle` | Shorter title for menus                                                          |
 
 ---
 
@@ -111,17 +111,17 @@ Place commands in menus and toolbars.
 
 **Menu Locations:**
 
-| Menu | Location |
-|------|----------|
-| `commandPalette` | Command Palette (Ctrl+Shift+P) |
-| `editor/context` | Right-click in editor |
-| `editor/title` | Editor tab toolbar |
-| `editor/title/context` | Right-click editor tab |
-| `explorer/context` | Right-click in file explorer |
-| `view/title` | Tree view title bar |
-| `view/item/context` | Right-click tree view item |
-| `scm/title` | Source control title bar |
-| `terminal/context` | Right-click in terminal |
+| Menu                   | Location                       |
+| ---------------------- | ------------------------------ |
+| `commandPalette`       | Command Palette (Ctrl+Shift+P) |
+| `editor/context`       | Right-click in editor          |
+| `editor/title`         | Editor tab toolbar             |
+| `editor/title/context` | Right-click editor tab         |
+| `explorer/context`     | Right-click in file explorer   |
+| `view/title`           | Tree view title bar            |
+| `view/item/context`    | Right-click tree view item     |
+| `scm/title`            | Source control title bar       |
+| `terminal/context`     | Right-click in terminal        |
 
 **Groups (determine order):**
 
@@ -192,11 +192,7 @@ Define extension settings.
           "type": "string",
           "default": "auto",
           "enum": ["auto", "manual", "disabled"],
-          "enumDescriptions": [
-            "Automatically detect mode",
-            "Manual mode",
-            "Disable feature"
-          ],
+          "enumDescriptions": ["Automatically detect mode", "Manual mode", "Disable feature"],
           "description": "Operation mode"
         },
         "myExt.paths": {
@@ -324,10 +320,7 @@ Register custom editors for file types.
       {
         "viewType": "myExt.myEditor",
         "displayName": "My Editor",
-        "selector": [
-          { "filenamePattern": "*.myext" },
-          { "filenamePattern": "*.custom" }
-        ],
+        "selector": [{ "filenamePattern": "*.myext" }, { "filenamePattern": "*.custom" }],
         "priority": "default"
       }
     ]
@@ -457,16 +450,16 @@ Define when your extension activates.
 
 **Common Events:**
 
-| Event | Activates When |
-|-------|----------------|
-| `onCommand:commandId` | Command is executed |
-| `onLanguage:langId` | File of that language opens |
-| `onView:viewId` | View is expanded |
-| `workspaceContains:glob` | Workspace contains matching file |
-| `onFileSystem:scheme` | File with URI scheme is accessed |
-| `onCustomEditor:viewType` | Custom editor opens |
-| `onUri` | Extension URI is opened |
-| `*` | VS Code starts (avoid if possible) |
+| Event                     | Activates When                     |
+| ------------------------- | ---------------------------------- |
+| `onCommand:commandId`     | Command is executed                |
+| `onLanguage:langId`       | File of that language opens        |
+| `onView:viewId`           | View is expanded                   |
+| `workspaceContains:glob`  | Workspace contains matching file   |
+| `onFileSystem:scheme`     | File with URI scheme is accessed   |
+| `onCustomEditor:viewType` | Custom editor opens                |
+| `onUri`                   | Extension URI is opened            |
+| `*`                       | VS Code starts (avoid if possible) |
 
 **Note:** As of VS Code 1.74, many activation events are implicit. Commands, views, and custom editors auto-activate.
 
@@ -478,38 +471,38 @@ Use in `when` properties for conditional visibility.
 
 **Editor Contexts:**
 
-| Context | Description |
-|---------|-------------|
-| `editorFocus` | Editor has focus |
-| `editorTextFocus` | Editor text area has focus |
-| `editorHasSelection` | Text is selected |
-| `editorReadonly` | Editor is read-only |
-| `editorLangId` | Editor language ID |
+| Context              | Description                |
+| -------------------- | -------------------------- |
+| `editorFocus`        | Editor has focus           |
+| `editorTextFocus`    | Editor text area has focus |
+| `editorHasSelection` | Text is selected           |
+| `editorReadonly`     | Editor is read-only        |
+| `editorLangId`       | Editor language ID         |
 
 **Resource Contexts:**
 
-| Context | Description |
-|---------|-------------|
-| `resourceScheme` | URI scheme (file, untitled, etc.) |
-| `resourceExtname` | File extension (.js, .ts, etc.) |
-| `resourceFilename` | File name |
-| `resourcePath` | Full file path |
-| `resourceLangId` | Language ID of file |
+| Context            | Description                       |
+| ------------------ | --------------------------------- |
+| `resourceScheme`   | URI scheme (file, untitled, etc.) |
+| `resourceExtname`  | File extension (.js, .ts, etc.)   |
+| `resourceFilename` | File name                         |
+| `resourcePath`     | Full file path                    |
+| `resourceLangId`   | Language ID of file               |
 
 **Workspace Contexts:**
 
-| Context | Description |
-|---------|-------------|
-| `workspaceFolderCount` | Number of workspace folders |
-| `workbenchState` | `empty`, `folder`, or `workspace` |
+| Context                | Description                       |
+| ---------------------- | --------------------------------- |
+| `workspaceFolderCount` | Number of workspace folders       |
+| `workbenchState`       | `empty`, `folder`, or `workspace` |
 
 **View Contexts:**
 
-| Context | Description |
-|---------|-------------|
-| `view` | Current view ID |
-| `viewItem` | Context value of tree item |
-| `focusedView` | ID of focused view |
+| Context       | Description                |
+| ------------- | -------------------------- |
+| `view`        | Current view ID            |
+| `viewItem`    | Context value of tree item |
+| `focusedView` | ID of focused view         |
 
 **Operators:** `==`, `!=`, `<`, `>`, `<=`, `>=`, `=~` (regex), `&&`, `||`, `!`, `in`
 

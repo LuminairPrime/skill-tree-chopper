@@ -56,20 +56,21 @@ bash <skill-path>/scripts/poll_pr_status.sh
 
 This returns a JSON object with these fields:
 
-| Field               | Type    | Meaning                                       |
-|---------------------|---------|-----------------------------------------------|
-| `branch`            | string  | Current branch name                           |
-| `pr_number`         | int     | PR number                                     |
-| `checks_total`      | int     | Total CI checks (excludes CodeRabbit)         |
-| `checks_passed`     | int     | CI checks that passed                         |
-| `checks_failed`     | int     | CI checks that failed                         |
-| `checks_running`    | int     | CI checks still in progress                   |
-| `has_conflict`      | bool    | Merge conflicts detected                      |
-| `coderabbit_check`  | string  | CodeRabbit check status: `none`/`pending`/`pass`/`fail` |
-| `coderabbit_comments` | int   | Number of CodeRabbit inline comments          |
-| `all_green`         | bool    | True when everything passes (including CodeRabbit) |
+| Field                 | Type   | Meaning                                                 |
+| --------------------- | ------ | ------------------------------------------------------- |
+| `branch`              | string | Current branch name                                     |
+| `pr_number`           | int    | PR number                                               |
+| `checks_total`        | int    | Total CI checks (excludes CodeRabbit)                   |
+| `checks_passed`       | int    | CI checks that passed                                   |
+| `checks_failed`       | int    | CI checks that failed                                   |
+| `checks_running`      | int    | CI checks still in progress                             |
+| `has_conflict`        | bool   | Merge conflicts detected                                |
+| `coderabbit_check`    | string | CodeRabbit check status: `none`/`pending`/`pass`/`fail` |
+| `coderabbit_comments` | int    | Number of CodeRabbit inline comments                    |
+| `all_green`           | bool   | True when everything passes (including CodeRabbit)      |
 
 **Important**: `all_green` is only true when ALL of these hold:
+
 - No merge conflicts
 - No CI failures
 - No CI checks still running
@@ -163,14 +164,15 @@ time to run after a fix push before the next poll.
 
 ## Configuration
 
-| Flag               | Default | Description                        |
-|--------------------|---------|------------------------------------|
-| `--interval`       | 5       | Minutes between polls              |
-| `--max-iterations` | 20      | Max cycles before giving up        |
+| Flag               | Default | Description                 |
+| ------------------ | ------- | --------------------------- |
+| `--interval`       | 5       | Minutes between polls       |
+| `--max-iterations` | 20      | Max cycles before giving up |
 
 ## Exit messages
 
 **Success:**
+
 ```
 [PR Guardian] All checks green! PR #42 is ready.
   CI: 6/6 passed | Conflicts: none | CodeRabbit: pass, 0 comments
@@ -178,6 +180,7 @@ time to run after a fix push before the next poll.
 ```
 
 **Max iterations:**
+
 ```
 [PR Guardian] Reached 20 cycles without all-green.
   Remaining issues:
@@ -187,6 +190,7 @@ time to run after a fix push before the next poll.
 ```
 
 **Repeated failure:**
+
 ```
 [PR Guardian] Same CI failure persisted after 3 fix attempts.
   Failing check: tests

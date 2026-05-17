@@ -18,9 +18,11 @@ This is a webview-based VS Code extension template with two-way communication be
 ## Features Demonstrated
 
 ### Send Message to Extension
+
 Click "Send Alert to Extension" to send a message from webview to the extension, which shows an information message.
 
 ### Get Data from Extension
+
 Click "Get Data from Extension" to request data from the extension, which responds with data displayed in the webview.
 
 ## Customization
@@ -45,15 +47,13 @@ private _getHtmlForWebview(webview: vscode.Webview): string {
 In `extension.ts`, add new message handlers:
 
 ```typescript
-this._panel.webview.onDidReceiveMessage(
-  message => {
-    switch (message.command) {
-      case 'yourCommand':
-        // Handle your command
-        return;
-    }
+this._panel.webview.onDidReceiveMessage((message) => {
+  switch (message.command) {
+    case 'yourCommand':
+      // Handle your command
+      return;
   }
-);
+});
 ```
 
 In the webview HTML, send messages:
@@ -61,7 +61,9 @@ In the webview HTML, send messages:
 ```javascript
 vscode.postMessage({
   command: 'yourCommand',
-  data: { /* your data */ }
+  data: {
+    /* your data */
+  },
 });
 ```
 
@@ -74,9 +76,7 @@ To load CSS or JS files from your extension:
 3. Load them in the webview:
 
 ```typescript
-const scriptUri = webview.asWebviewUri(
-  vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js')
-);
+const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js'));
 ```
 
 ## Development
@@ -131,19 +131,16 @@ const previousState = vscode.getState();
 ```typescript
 this._panel.webview.postMessage({
   command: 'update',
-  data: newData
+  data: newData,
 });
 ```
 
 ### Handle Panel Events
 
 ```typescript
-this._panel.onDidChangeViewState(
-  e => {
-    if (e.webviewPanel.visible) {
-      // Panel became visible
-    }
+this._panel.onDidChangeViewState((e) => {
+  if (e.webviewPanel.visible) {
+    // Panel became visible
   }
-);
+});
 ```
-

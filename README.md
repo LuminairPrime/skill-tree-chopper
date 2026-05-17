@@ -33,6 +33,7 @@ For local or pre-release installs:
 The extension currently monitors these exact locations:
 
 ### Global Paths (in your Home Directory `~`)
+
 - `~/.cursor/skills` (and its `.archived` counterpart)
 - `~/.claude/skills`
 - `~/.agents/skills`
@@ -40,6 +41,7 @@ The extension currently monitors these exact locations:
 - `~/.forge/skills`
 
 ### Workspace Paths (in your current open project)
+
 - The exact same folder structure as above, but located at the root of your VS Code workspace (e.g. `[WorkspaceRoot]/.cursor/skills`).
 
 ## Limitations
@@ -68,18 +70,18 @@ This project uses [mise](https://mise.jdx.dev/) as a task runner to manage build
 
 ### Publishing to the VS Code Marketplace
 
-This extension is published under the `LuminairPrime` namespace. 
+This extension is published under the `LuminairPrime` namespace.
 
-1. **Create an Azure DevOps Personal Access Token (PAT):** 
-   You must have a PAT with the `Marketplace (Manage)` scope. 
+1. **Create an Azure DevOps Personal Access Token (PAT):**
+   You must have a PAT with the `Marketplace (Manage)` scope.
 2. **Login:** Run `mise run login` and paste your PAT when prompted.
-3. **Publish an Update:** 
+3. **Publish an Update:**
    The VS Code Marketplace **does not allow overwriting existing versions**. If you try to publish a version number that is already live, the Marketplace will reject it. You must bump the version for every new release.
 
    To automatically handle versioning, building, and publishing, run one of the following commands:
-   * **`mise run publish`** (or `publish:patch`) — Auto-bumps the **patch** version (e.g., `1.0.0` -> `1.0.1`) for bug fixes. This is the safest and most common default.
-   * **`mise run publish:minor`** — Auto-bumps the **minor** version (e.g., `1.0.1` -> `1.1.0`) for new features.
-   * **`mise run publish:major`** — Auto-bumps the **major** version (e.g., `1.1.0` -> `2.0.0`) for breaking changes.
+   - **`mise run publish`** (or `publish:patch`) — Auto-bumps the **patch** version (e.g., `1.0.0` -> `1.0.1`) for bug fixes. This is the safest and most common default.
+   - **`mise run publish:minor`** — Auto-bumps the **minor** version (e.g., `1.0.1` -> `1.1.0`) for new features.
+   - **`mise run publish:major`** — Auto-bumps the **major** version (e.g., `1.1.0` -> `2.0.0`) for breaking changes.
 
    **What happens under the hood when you run these?**
    1. **Version Bump & Git Tag:** The underlying `vsce` tool automatically increments the version in `package.json`, creates a Git commit, and tags the commit.

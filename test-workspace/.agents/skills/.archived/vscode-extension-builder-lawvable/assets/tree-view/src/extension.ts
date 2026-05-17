@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Register tree data provider
   const treeView = vscode.window.createTreeView('myTreeView', {
     treeDataProvider: treeProvider,
-    showCollapseAll: true
+    showCollapseAll: true,
   });
 
   // Register commands
@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('myExtension.addItem', async () => {
       const name = await vscode.window.showInputBox({
         prompt: 'Enter item name',
-        placeHolder: 'New Item'
+        placeHolder: 'New Item',
       });
 
       if (name) {
@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('myExtension.deleteItem', (item: MyTreeItem) => {
       treeProvider.deleteItem(item);
       vscode.window.showInformationMessage(`Deleted: ${item.label}`);
-    })
+    }),
   );
 }
 

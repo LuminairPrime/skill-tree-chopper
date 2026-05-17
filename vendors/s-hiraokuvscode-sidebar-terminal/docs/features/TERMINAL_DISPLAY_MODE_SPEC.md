@@ -26,13 +26,13 @@ manager manipulating DOM nodes independently, resulting in divergent state.
 
 ## 3. Requirements
 
-| ID | Requirement | Notes |
-|----|-------------|-------|
-| R1 | All terminal containers and wrappers must be registered through one manager. | Prevents “orphaned” nodes. |
-| R2 | Display mode transitions must hide or remove non-active containers during fullscreen. | Visible area must be exclusive. |
-| R3 | Split layout artefacts (wrappers, resizers) must be created and destroyed via the same service. | Avoid stale DOM. |
-| R4 | Mode changes should be expressible as high-level intents (no direct DOM operations). | Enables unit testing. |
-| R5 | Managers must expose state snapshots for diagnostics and automated tests. | Supports regression detection. |
+| ID  | Requirement                                                                                     | Notes                           |
+| --- | ----------------------------------------------------------------------------------------------- | ------------------------------- |
+| R1  | All terminal containers and wrappers must be registered through one manager.                    | Prevents “orphaned” nodes.      |
+| R2  | Display mode transitions must hide or remove non-active containers during fullscreen.           | Visible area must be exclusive. |
+| R3  | Split layout artefacts (wrappers, resizers) must be created and destroyed via the same service. | Avoid stale DOM.                |
+| R4  | Mode changes should be expressible as high-level intents (no direct DOM operations).            | Enables unit testing.           |
+| R5  | Managers must expose state snapshots for diagnostics and automated tests.                       | Supports regression detection.  |
 
 ## 4. Current-State Analysis
 
@@ -60,13 +60,13 @@ manager manipulating DOM nodes independently, resulting in divergent state.
 
 ### 5.1 Manager Roles
 
-| Manager | Responsibility After Refactor |
-|---------|------------------------------|
-| **TerminalContainerManager** | Sole registry of containers (primary and split). Provides `applyDisplayState` to manipulate DOM. |
-| **DisplayModeManager** | Computes desired mode and active terminal; delegates DOM changes to `TerminalContainerManager`. |
-| **SplitManager** | Computes layout metrics (counts, heights) and requests container transformations via `TerminalContainerManager`. |
-| **TerminalTabManager** | Signals mode changes; no DOM logic. |
-| **TerminalLifecycleManager** | Continues as container creator and registrar. |
+| Manager                      | Responsibility After Refactor                                                                                    |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **TerminalContainerManager** | Sole registry of containers (primary and split). Provides `applyDisplayState` to manipulate DOM.                 |
+| **DisplayModeManager**       | Computes desired mode and active terminal; delegates DOM changes to `TerminalContainerManager`.                  |
+| **SplitManager**             | Computes layout metrics (counts, heights) and requests container transformations via `TerminalContainerManager`. |
+| **TerminalTabManager**       | Signals mode changes; no DOM logic.                                                                              |
+| **TerminalLifecycleManager** | Continues as container creator and registrar.                                                                    |
 
 ### 5.2 Data Contracts
 
@@ -109,6 +109,7 @@ logger channel `display` for ease of filtering.
 ## 6. Implementation Roadmap
 
 ### Phase 1 – Registry Consolidation
+
 1. Extend `TerminalContainerManager` with wrapper registration methods and a centralized
    DOM mutation utility (`applyDisplayState`).
 2. Update `SplitManager` to request wrapper creation via the manager instead of direct DOM
@@ -116,6 +117,7 @@ logger channel `display` for ease of filtering.
 3. Migrate `DisplayModeManager` to emit intents and rely on `TerminalContainerManager`.
 
 ### Phase 2 – CSS Refactor
+
 1. Introduce semantic classes:
    - `.terminal-container--hidden`
    - `.terminal-container--fullscreen`
@@ -123,6 +125,7 @@ logger channel `display` for ease of filtering.
 2. Remove conflicting inline styles, except for computed heights during split.
 
 ### Phase 3 – Instrumentation & Tests
+
 1. Implement `getDisplaySnapshot()` and unit tests covering:
    - normal → fullscreen → normal
    - normal → split → fullscreen → split
@@ -140,11 +143,11 @@ logger channel `display` for ease of filtering.
 
 ## 8. Risks & Mitigations
 
-| Risk | Mitigation |
-|------|------------|
-| DOM churn causing flicker | Batch DOM mutations inside `requestAnimationFrame` in `applyDisplayState`. |
-| Legacy code still mutates DOM directly | Add TypeScript interfaces restricting exposed methods; run grep-based lint check. |
-| Tests become flaky due to timers | Use synchronous layout updates; gate timeouts behind optional parameters for tests. |
+| Risk                                   | Mitigation                                                                          |
+| -------------------------------------- | ----------------------------------------------------------------------------------- |
+| DOM churn causing flicker              | Batch DOM mutations inside `requestAnimationFrame` in `applyDisplayState`.          |
+| Legacy code still mutates DOM directly | Add TypeScript interfaces restricting exposed methods; run grep-based lint check.   |
+| Tests become flaky due to timers       | Use synchronous layout updates; gate timeouts behind optional parameters for tests. |
 
 ## 9. Glossary
 
@@ -152,4 +155,3 @@ logger channel `display` for ease of filtering.
 - **Wrapper**: Split-specific parent element that groups a container with splitter controls.
 - **Display Intent**: High-level command describing the desired terminal layout state.
 - **Display State**: Concrete, fully-resolved layout configuration applied to the DOM.
-

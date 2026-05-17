@@ -42,10 +42,10 @@ To make the extension searchable directly within the VS Code Extension tab:
    ```bash
    vsce login <your-publisher-name>
    ```
-   *(When prompted, paste your Personal Access Token).*
+   _(When prompted, paste your Personal Access Token)._
 5. **Publish the Extension:**
    ```bash
    vsce publish
    ```
-   
+
 After publishing, the extension will undergo a virus scan and will be publicly available in the VS Code Marketplace shortly after.

@@ -43,6 +43,7 @@ The script reads environment variables set by Synapse at startup (`SYNAPSE_AGENT
 ## How It Works
 
 The script:
+
 1. Reads Synapse environment variables (set at agent startup, survives `/clear`)
 2. Looks up your name/role from the agent registry
 3. Loads your instruction template from `.synapse/settings.json`

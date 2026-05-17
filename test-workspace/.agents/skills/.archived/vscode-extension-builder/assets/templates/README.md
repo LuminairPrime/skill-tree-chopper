@@ -7,16 +7,19 @@ This directory contains starter templates for common VS Code extension patterns.
 ### 1. Command Extension (`command-extension/`)
 
 A simple command-based extension demonstrating:
+
 - Command registration
 - User input with validation
 - Basic extension lifecycle
 
 **Use when:**
+
 - Building command-based extensions
 - Need simple user interactions
 - Want a minimal starting point
 
 **Files:**
+
 - `package.json` - Extension manifest
 - `extension.ts` - Main extension code
 - `README.md` - Template documentation
@@ -24,17 +27,20 @@ A simple command-based extension demonstrating:
 ### 2. Webview Extension (`webview-extension/`)
 
 A webview-based extension demonstrating:
+
 - Webview panel creation
 - Two-way messaging between extension and webview
 - Singleton pattern for panel management
 - Content Security Policy setup
 
 **Use when:**
+
 - Need custom UI beyond VS Code's built-in components
 - Building dashboards or visualizations
 - Requiring rich HTML/CSS/JS interactions
 
 **Files:**
+
 - `package.json` - Extension manifest
 - `extension.ts` - Main extension code with WebviewPanel class
 - `README.md` - Template documentation
@@ -52,6 +58,7 @@ npm install
 ### Option 2: Let Claude Copy for You
 
 Just tell Claude which template you want:
+
 - "Use the command extension template"
 - "Start with the webview template"
 
@@ -60,12 +67,14 @@ Claude will copy the appropriate template files to your project.
 ## Customizing Templates
 
 Each template includes:
+
 - ✅ Working code ready to run
 - ✅ Comments explaining key concepts
 - ✅ README with customization guidance
 - ✅ Basic TypeScript configuration
 
 To customize:
+
 1. Update `package.json` with your extension name and details
 2. Modify `extension.ts` to implement your features
 3. Add additional files as needed
@@ -76,11 +85,13 @@ To customize:
 After copying a template:
 
 1. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Open in VS Code**
+
    ```bash
    code .
    ```
@@ -130,7 +141,7 @@ To add a new template:
 ## Related Documentation
 
 See the skill's reference files for more details:
+
 - `references/extension-anatomy.md` - Complete extension structure
 - `references/common-apis.md` - VS Code API examples
 - `references/best-practices.md` - Quality and UX guidelines
-

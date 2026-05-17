@@ -24,16 +24,19 @@ MCP servers provide specialized capabilities to agents, enabling faster research
 ### 1. Locate Configuration File
 
 **macOS**:
+
 ```bash
 ~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
 **Linux**:
+
 ```bash
 ~/.config/Claude/claude_desktop_config.json
 ```
 
 **Windows**:
+
 ```
 %APPDATA%\Claude\claude_desktop_config.json
 ```
@@ -67,11 +70,7 @@ Edit `claude_desktop_config.json`:
     },
     "filesystem": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/path/to/your/project"
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/project"]
     },
     "npm": {
       "command": "npx",
@@ -113,17 +112,20 @@ Edit `claude_desktop_config.json`:
 ### 4. Get Required API Keys
 
 **GitHub Personal Access Token**:
+
 1. Go to https://github.com/settings/tokens
 2. Click "Generate new token (classic)"
 3. Select scopes: `repo`, `read:org`
 4. Copy token and paste into config
 
 **Brave Search API Key** (optional):
+
 1. Go to https://brave.com/search/api/
 2. Sign up for free tier
 3. Copy API key
 
 **Firecrawl API Key** (optional):
+
 1. Go to https://firecrawl.dev/
 2. Create account
 3. Copy API key
@@ -154,6 +156,7 @@ Replace `/path/to/your/project` with your actual project path:
 ### 7. Verify MCPs Loaded
 
 Check Claude Code logs for MCP initialization messages:
+
 ```
 MCP server 'github' initialized
 MCP server 'filesystem' initialized
@@ -170,6 +173,7 @@ MCP server 'npm' initialized
 **Model Context Protocol (MCP)** is a protocol that allows AI assistants to access external tools and services through standardized servers.
 
 **Benefits**:
+
 - **Faster Research**: Direct API access vs web scraping
 - **Reliable Operations**: Structured data vs text parsing
 - **Extended Capabilities**: Access to specialized tools
@@ -186,6 +190,7 @@ AI Agent → Claude Code → MCP Client → MCP Server → External Service
 ```
 
 **Example**: `vscode-terminal-resolver` agent
+
 1. Agent requests VS Code source code
 2. Claude Code calls MCP client
 3. MCP client communicates with GitHub MCP server
@@ -205,11 +210,13 @@ These MCPs are essential for OpenSpec workflow:
 **Purpose**: Access GitHub repositories (especially VS Code source code)
 
 **Used by**:
+
 - `vscode-terminal-resolver` (research VS Code patterns)
 - `vscode-api-validator` (fetch VS Code API docs)
 - Generated implementation agents
 
 **Setup**:
+
 ```json
 "github": {
   "command": "npx",
@@ -221,6 +228,7 @@ These MCPs are essential for OpenSpec workflow:
 ```
 
 **Get Token**:
+
 ```bash
 # 1. Go to https://github.com/settings/tokens
 # 2. Generate new token (classic)
@@ -237,11 +245,13 @@ These MCPs are essential for OpenSpec workflow:
 **Purpose**: Safe file operations for refactoring and scaffolding
 
 **Used by**:
+
 - `openspec-scaffolder` (create OpenSpec files)
 - `similarity-based-refactoring` (bulk file edits)
 - Generated implementation agents
 
 **Setup**:
+
 ```json
 "filesystem": {
   "command": "npx",
@@ -272,10 +282,12 @@ These MCPs are essential for OpenSpec workflow:
 **Purpose**: Query npm registry for package information
 
 **Used by**:
+
 - `vscode-api-validator` (check dependency versions)
 - Research agents (find package docs)
 
 **Setup**:
+
 ```json
 "npm": {
   "command": "npx",
@@ -286,6 +298,7 @@ These MCPs are essential for OpenSpec workflow:
 **No API key required**
 
 **Capabilities**:
+
 - Package version lookup
 - Dependency tree analysis
 - Documentation links
@@ -301,10 +314,12 @@ These MCPs enhance specific workflows:
 **Purpose**: Query GitHub repository documentation
 
 **Used by**:
+
 - `xterm-info-analyzer` (xterm.js docs)
 - Research agents (library documentation)
 
 **Setup**:
+
 ```json
 "deepwiki": {
   "command": "npx",
@@ -313,6 +328,7 @@ These MCPs enhance specific workflows:
 ```
 
 **Examples**:
+
 ```bash
 # Get xterm.js documentation
 deepwiki: "xtermjs/xterm.js"
@@ -328,11 +344,13 @@ deepwiki: "microsoft/vscode"
 **Purpose**: Browser automation for E2E testing
 
 **Used by**:
+
 - `playwright-test-planner` (create test scenarios)
 - `playwright-test-generator` (implement tests)
 - `playwright-test-healer` (debug tests)
 
 **Setup**:
+
 ```json
 "playwright": {
   "command": "npx",
@@ -341,6 +359,7 @@ deepwiki: "microsoft/vscode"
 ```
 
 **First-time setup** (installs browsers):
+
 ```bash
 npx playwright install
 ```
@@ -352,10 +371,12 @@ npx playwright install
 **Purpose**: Chrome DevTools protocol for performance profiling
 
 **Used by**:
+
 - `terminal-performance-analyzer` (performance profiling)
 - `webview-stability-investigator` (debugging)
 
 **Setup**:
+
 ```json
 "chrome-devtools": {
   "command": "npx",
@@ -372,10 +393,12 @@ npx playwright install
 **Purpose**: Web search for documentation
 
 **Used by**:
+
 - Research agents (find documentation)
 - `xterm-info-analyzer` (search for xterm.js examples)
 
 **Setup**:
+
 ```json
 "brave-search": {
   "command": "npx",
@@ -387,6 +410,7 @@ npx playwright install
 ```
 
 **Get API Key**:
+
 ```bash
 # 1. Go to https://brave.com/search/api/
 # 2. Sign up (free tier: 2000 queries/month)
@@ -400,10 +424,12 @@ npx playwright install
 **Purpose**: Web scraping for documentation
 
 **Used by**:
+
 - Research agents (scrape documentation sites)
 - `xterm-info-analyzer` (extract xterm.js docs)
 
 **Setup**:
+
 ```json
 "firecrawl": {
   "command": "npx",
@@ -415,6 +441,7 @@ npx playwright install
 ```
 
 **Get API Key**:
+
 ```bash
 # 1. Go to https://firecrawl.dev/
 # 2. Create account
@@ -442,11 +469,7 @@ Save this as your `claude_desktop_config.json`:
     },
     "filesystem": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        ""
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", ""]
     },
     "npm": {
       "command": "npx",
@@ -486,6 +509,7 @@ Save this as your `claude_desktop_config.json`:
 ```
 
 **Fill in**:
+
 1. `GITHUB_PERSONAL_ACCESS_TOKEN` - Required
 2. Filesystem path - Required (absolute path to project)
 3. `BRAVE_API_KEY` - Optional
@@ -509,18 +533,21 @@ After restarting Claude Desktop, MCPs should initialize:
 ### 2. Test Individual MCPs
 
 **Test github MCP**:
+
 ```bash
 Task(vscode-terminal-resolver): "Fetch VS Code TerminalInstance.ts:100-150"
 # Should return VS Code source code quickly
 ```
 
 **Test filesystem MCP**:
+
 ```bash
 Task(openspec-scaffolder): "Create test OpenSpec change: test-mcp-setup"
 # Should create files in openspec/changes/
 ```
 
 **Test npm MCP**:
+
 ```bash
 # Ask about a package
 "What's the latest version of xterm?"
@@ -530,12 +557,14 @@ Task(openspec-scaffolder): "Create test OpenSpec change: test-mcp-setup"
 ### 3. Verify MCP Status
 
 **Expected behavior**:
+
 - Agents complete tasks faster
 - No "MCP server not available" errors
 - Source code fetching works (github MCP)
 - File operations succeed (filesystem MCP)
 
 **If MCPs not working**:
+
 - See [Troubleshooting](#troubleshooting) section
 
 ---
@@ -545,6 +574,7 @@ Task(openspec-scaffolder): "Create test OpenSpec change: test-mcp-setup"
 ### Issue: MCP servers not initializing
 
 **Symptoms**:
+
 - No MCP initialization messages
 - Agents can't access MCPs
 - Errors: "MCP server not available"
@@ -552,6 +582,7 @@ Task(openspec-scaffolder): "Create test OpenSpec change: test-mcp-setup"
 **Solutions**:
 
 1. **Check JSON syntax**:
+
 ```bash
 # Validate JSON
 cat ~/Library/Application\ Support/Claude/claude_desktop_config.json | python -m json.tool
@@ -559,18 +590,21 @@ cat ~/Library/Application\ Support/Claude/claude_desktop_config.json | python -m
 ```
 
 2. **Check file permissions**:
+
 ```bash
 # macOS/Linux
 chmod 644 ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
 
 3. **Restart Claude Desktop**:
+
 ```bash
 # Quit completely (not just close window)
 # Restart
 ```
 
 4. **Check npx is available**:
+
 ```bash
 npx --version
 # Should output version number
@@ -584,12 +618,14 @@ npx --version
 ### Issue: GitHub MCP failing
 
 **Symptoms**:
+
 - Error: "GitHub authentication failed"
 - vscode-terminal-resolver returns errors
 
 **Solutions**:
 
 1. **Check token is valid**:
+
 ```bash
 # Test token with curl
 curl -H "Authorization: token YOUR_TOKEN" https://api.github.com/user
@@ -597,10 +633,12 @@ curl -H "Authorization: token YOUR_TOKEN" https://api.github.com/user
 ```
 
 2. **Check token scopes**:
+
 - Token must have `repo` and `read:org` scopes
 - Regenerate token if scopes missing
 
 3. **Check token format**:
+
 ```json
 // ✅ Correct
 "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_1234567890abcdefghijklmnopqrstuvwxyz"
@@ -614,12 +652,14 @@ curl -H "Authorization: token YOUR_TOKEN" https://api.github.com/user
 ### Issue: Filesystem MCP path not found
 
 **Symptoms**:
+
 - Error: "Path not found" or "Access denied"
 - openspec-scaffolder can't create files
 
 **Solutions**:
 
 1. **Use absolute path**:
+
 ```json
 // ❌ Wrong
 "args": ["...", "./for-publish"]
@@ -630,6 +670,7 @@ curl -H "Authorization: token YOUR_TOKEN" https://api.github.com/user
 ```
 
 2. **Check path exists**:
+
 ```bash
 # macOS/Linux
 ls -la /path/you/specified
@@ -640,6 +681,7 @@ dir "C:\path\you\specified"
 ```
 
 3. **Check permissions**:
+
 ```bash
 # macOS/Linux
 chmod 755 /path/to/project
@@ -651,12 +693,14 @@ chmod 755 /path/to/project
 ### Issue: npx commands failing
 
 **Symptoms**:
+
 - Error: "npx: command not found"
 - MCPs not starting
 
 **Solutions**:
 
 1. **Install Node.js**:
+
 ```bash
 # Check if Node.js is installed
 node --version
@@ -668,6 +712,7 @@ npm --version
 ```
 
 2. **Check PATH**:
+
 ```bash
 # macOS/Linux
 echo $PATH | grep node
@@ -678,6 +723,7 @@ export PATH="/usr/local/bin:$PATH"
 ```
 
 3. **Update npm**:
+
 ```bash
 npm install -g npm@latest
 ```
@@ -687,6 +733,7 @@ npm install -g npm@latest
 ### Issue: Playwright browsers not installed
 
 **Symptoms**:
+
 - Error: "Browser not found"
 - Playwright tests fail immediately
 
@@ -707,6 +754,7 @@ sudo npx playwright install
 ### Environment Variables
 
 **Load from .env file**:
+
 ```json
 "github": {
   "command": "npx",
@@ -718,6 +766,7 @@ sudo npx playwright install
 ```
 
 Create `.env` file:
+
 ```bash
 # ~/.config/Claude/.env
 GITHUB_TOKEN=ghp_your_token_here
@@ -730,6 +779,7 @@ FIRECRAWL_API_KEY=fc_your_key_here
 ### Multiple Filesystem Paths
 
 **Access multiple projects**:
+
 ```json
 "filesystem-project1": {
   "command": "npx",
@@ -746,6 +796,7 @@ FIRECRAWL_API_KEY=fc_your_key_here
 ### Custom MCP Servers
 
 **Run custom MCP server**:
+
 ```json
 "custom-mcp": {
   "command": "node",
@@ -787,12 +838,14 @@ FIRECRAWL_API_KEY=fc_your_key_here
 ### API Keys
 
 **Store securely**:
+
 - ✅ In `claude_desktop_config.json` (file permissions: 644)
 - ✅ In environment variables
 - ❌ Don't commit to git
 - ❌ Don't share publicly
 
 **Rotate regularly**:
+
 - GitHub tokens: Rotate every 90 days
 - API keys: Rotate when compromised
 
@@ -801,6 +854,7 @@ FIRECRAWL_API_KEY=fc_your_key_here
 ### Filesystem Access
 
 **Limit scope**:
+
 ```json
 // ✅ Good: Specific project directory
 "args": ["...", "/path/to/specific/project"]

@@ -17,7 +17,7 @@ const path = require('path');
 // Size budgets in bytes (Issue #239)
 const SIZE_BUDGETS = {
   'extension.js': 1024 * 1024, // 1MB
-  'webview.js': 800 * 1024,    // 800KB
+  'webview.js': 800 * 1024, // 800KB
 };
 
 const DIST_DIR = path.join(__dirname, '..', 'dist');
@@ -83,7 +83,7 @@ function checkBundleSizes() {
   }
 
   console.log(`📊 Total bundle size: ${formatBytes(totalSize)}`);
-  console.log(`🎯 Target: < 2 MB (${(totalSize / (2 * 1024 * 1024) * 100).toFixed(1)}%)\n`);
+  console.log(`🎯 Target: < 2 MB (${((totalSize / (2 * 1024 * 1024)) * 100).toFixed(1)}%)\n`);
 
   if (hasFailures) {
     console.error('❌ Bundle size check failed!');

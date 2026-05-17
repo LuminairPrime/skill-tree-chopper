@@ -14,9 +14,11 @@ The current discovery algorithm and file operations in `ai-skill-auditor` suffer
 ## Capabilities
 
 ### New Capabilities
+
 - `unified-architectural-optimization`: Establishes the baseline for non-blocking I/O, error visibility, and secure sequential file manipulation.
 
 ### Modified Capabilities
+
 <!-- No modified requirements for existing capabilities, just foundational architectural upgrades. -->
 
 ## Impact

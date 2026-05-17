@@ -4,9 +4,9 @@ This guide explains the terminal-related slash commands and agents available in 
 
 ## Commands Overview
 
-| Command | Purpose | Agents Used | Output |
-|---------|---------|-------------|--------|
-| `/terminal-research` | Research only | 3 research agents | Research report |
+| Command               | Purpose                   | Agents Used                   | Output               |
+| --------------------- | ------------------------- | ----------------------------- | -------------------- |
+| `/terminal-research`  | Research only             | 3 research agents             | Research report      |
 | `/terminal-implement` | Research + Implementation | 3 research + 1 implementation | Working code + tests |
 
 ## Available Agents
@@ -39,32 +39,38 @@ This guide explains the terminal-related slash commands and agents available in 
 ## Quick Start
 
 ### Research a Terminal Feature
+
 ```bash
 /terminal-research How does VS Code handle IME composition?
 ```
 
 **What happens:**
+
 1. Launches 3 research agents in parallel
 2. Aggregates findings from VS Code, current codebase, and xterm.js
 3. Provides comprehensive research report
 
 **Use when:**
+
 - Planning a feature
 - Understanding implementation patterns
 - Debugging complex issues
 - Learning VS Code patterns
 
 ### Implement a Terminal Feature
+
 ```bash
 /terminal-implement Add terminal tab completion support
 ```
 
 **What happens:**
+
 1. **Phase 1**: Launches 3 research agents in parallel
 2. **Phase 2**: Uses research to implement feature with TDD
 3. Produces working code with tests
 
 **Use when:**
+
 - Adding new terminal features
 - Fixing terminal bugs
 - Optimizing performance
@@ -143,17 +149,20 @@ This guide explains the terminal-related slash commands and agents available in 
 ### When to use `/terminal-research`
 
 **Pros:**
+
 - Faster (no implementation time)
 - Good for planning and understanding
 - Provides comprehensive context
 - Useful for architectural decisions
 
 **Cons:**
+
 - No code produced
 - Manual implementation needed
 - Requires follow-up work
 
 **Example scenarios:**
+
 ```bash
 # Planning phase
 /terminal-research What patterns does VS Code use for terminal lifecycle?
@@ -168,17 +177,20 @@ This guide explains the terminal-related slash commands and agents available in 
 ### When to use `/terminal-implement`
 
 **Pros:**
+
 - Complete solution (research + code)
 - TDD compliance guaranteed
 - Production-ready implementation
 - Immediate testing possible
 
 **Cons:**
+
 - Takes longer (research + implementation)
 - May require refinement for complex features
 - Consumes more tokens
 
 **Example scenarios:**
+
 ```bash
 # Feature development
 /terminal-implement Add terminal split view support
@@ -193,6 +205,7 @@ This guide explains the terminal-related slash commands and agents available in 
 ## Agent Invocation Patterns
 
 ### Research Phase (Parallel)
+
 ```typescript
 // Claude will invoke all 3 agents simultaneously:
 Task(vscode-terminal-resolver, query)
@@ -201,15 +214,16 @@ Task(xterm-info-analyzer, query)     } 3 parallel tasks
 ```
 
 ### Implementation Phase (Sequential)
+
 ```typescript
 // After research completes:
 const research = {
   vscode: await vscode_terminal_resolver_result,
   codebase: await serena_semantic_search_result,
-  xterm: await xterm_info_analyzer_result
+  xterm: await xterm_info_analyzer_result,
 };
 
-Task(terminal-implementer, { query, research })
+Task(terminal - implementer, { query, research });
 ```
 
 ## Quality Standards
@@ -217,6 +231,7 @@ Task(terminal-implementer, { query, research })
 All implementations via `terminal-implementer` must meet:
 
 ### ✅ Required Standards
+
 - TDD compliance (Red → Green → Refactor)
 - Type safety (no `any` types)
 - Dispose handlers for all managers
@@ -226,12 +241,14 @@ All implementations via `terminal-implementer` must meet:
 - File:line references in code
 
 ### ✅ Testing Requirements
+
 - Unit tests passing
 - Integration tests if applicable
 - TDD compliance verified
 - Edge cases covered
 
 ### ✅ Documentation
+
 - Inline comments with VS Code references
 - CLAUDE.md updates for architecture changes
 - Usage examples provided
@@ -239,26 +256,34 @@ All implementations via `terminal-implementer` must meet:
 ## Troubleshooting
 
 ### Research agents return no results
+
 **Solution**: Feature might not exist in VS Code or codebase
+
 - Proceed with xterm.js docs and general best practices
 - Document in implementation that specific patterns not found
 
 ### Type errors after implementation
+
 **Solution**:
+
 ```bash
 npm run compile  # Check TypeScript errors
 # Fix type issues manually or re-run with corrected types
 ```
 
 ### Tests failing
+
 **Solution**:
+
 ```bash
 npm run test:unit  # Run unit tests
 # Review test failures and fix implementation
 ```
 
 ### Performance regression
+
 **Solution**:
+
 ```bash
 # Profile the change
 # Compare buffering intervals
@@ -268,6 +293,7 @@ npm run test:unit  # Run unit tests
 ## Advanced Features
 
 ### Chaining Commands
+
 ```bash
 # Research first, then implement
 /terminal-research Terminal session persistence patterns
@@ -276,6 +302,7 @@ npm run test:unit  # Run unit tests
 ```
 
 ### Incremental Development
+
 ```bash
 # Start with core feature
 /terminal-implement Add basic terminal split view
@@ -288,6 +315,7 @@ npm run test:unit  # Run unit tests
 ```
 
 ### Pattern Exploration
+
 ```bash
 # Understand multiple patterns
 /terminal-research VS Code terminal process lifecycle
@@ -301,18 +329,21 @@ npm run test:unit  # Run unit tests
 ## Integration with Development Workflow
 
 ### 1. Feature Planning
+
 ```bash
 /terminal-research <feature concept>
 # Review research, refine requirements
 ```
 
 ### 2. Implementation
+
 ```bash
 /terminal-implement <refined feature>
 # Produces working code with tests
 ```
 
 ### 3. Testing
+
 ```bash
 npm run test:unit     # Verify tests pass
 npm run compile       # Check types
@@ -320,6 +351,7 @@ npm run lint          # Code quality
 ```
 
 ### 4. Manual Validation
+
 ```bash
 # Launch VS Code extension
 # Test feature manually
@@ -327,6 +359,7 @@ npm run lint          # Code quality
 ```
 
 ### 5. Commit
+
 ```bash
 git add .
 git commit -m "feat: <feature description>"
@@ -337,18 +370,21 @@ git commit -m "feat: <feature description>"
 ### Writing Good Queries
 
 **Good (Specific):**
+
 ```bash
 /terminal-implement Add Ctrl+K shortcut to clear terminal output
 /terminal-research How does VS Code handle terminal IME composition events?
 ```
 
 **Less Effective (Too Broad):**
+
 ```bash
 /terminal-implement Make terminals better
 /terminal-research How do terminals work?
 ```
 
 ### Query Structure
+
 ```
 /terminal-[command] [Action] + [Specific Component] + [Context]
 
@@ -358,6 +394,7 @@ Examples:
 ```
 
 ### Leveraging Research
+
 ```bash
 # Research complex patterns first
 /terminal-research VS Code terminal addon architecture
@@ -384,6 +421,7 @@ Examples:
 ## Getting Help
 
 ### Command not working?
+
 ```bash
 # Check if command exists
 ls .claude/commands/terminal-*.md
@@ -396,10 +434,12 @@ ls .claude/agents/xterm-info-analyzer.md
 ```
 
 ### Need more details?
+
 - See `.claude/commands/TERMINAL_RESEARCH_GUIDE.md` for in-depth research command guide
 - See `.claude/agents/terminal-implementer.md` for implementation standards
 
 ### Issues or feedback?
+
 - Report at: https://github.com/s-hiraoku/vscode-sidebar-terminal/issues
 - Include command used and expected vs actual behavior
 

@@ -38,41 +38,41 @@ Agents are specialized AI assistants designed for specific development tasks. Th
 
 ### Research & Analysis
 
-| Agent | Purpose | Use When |
-|-------|---------|----------|
+| Agent                      | Purpose                      | Use When                                            |
+| -------------------------- | ---------------------------- | --------------------------------------------------- |
 | `vscode-terminal-resolver` | VS Code source code analysis | Need authoritative terminal implementation patterns |
-| `serena-semantic-search` | Semantic code search | Finding similar patterns in codebase |
-| `xterm-info-analyzer` | Xterm.js documentation | Terminal rendering and API questions |
-| `Explore` | Fast codebase exploration | Quick file/pattern discovery |
+| `serena-semantic-search`   | Semantic code search         | Finding similar patterns in codebase                |
+| `xterm-info-analyzer`      | Xterm.js documentation       | Terminal rendering and API questions                |
+| `Explore`                  | Fast codebase exploration    | Quick file/pattern discovery                        |
 
 ### Implementation
 
-| Agent | Purpose | Use When |
-|-------|---------|----------|
-| `terminal-implementer` | Production terminal code | Implementing terminal features |
-| `lsmc-coding-agent` | Language server features | Working with LSP/MCP protocols |
-| `general-purpose` | Complex multi-step tasks | Tasks not covered by specialized agents |
+| Agent                  | Purpose                  | Use When                                |
+| ---------------------- | ------------------------ | --------------------------------------- |
+| `terminal-implementer` | Production terminal code | Implementing terminal features          |
+| `lsmc-coding-agent`    | Language server features | Working with LSP/MCP protocols          |
+| `general-purpose`      | Complex multi-step tasks | Tasks not covered by specialized agents |
 
 ### Quality & Testing
 
-| Agent | Purpose | Use When |
-|-------|---------|----------|
-| `tdd-quality-engineer` | TDD test creation | Need comprehensive test coverage |
-| `playwright-test-generator` | E2E browser tests | Testing WebView UI |
-| `playwright-test-healer` | Fix failing tests | Tests broken after changes |
-| `playwright-test-planner` | Test planning | Planning comprehensive test scenarios |
+| Agent                       | Purpose           | Use When                              |
+| --------------------------- | ----------------- | ------------------------------------- |
+| `tdd-quality-engineer`      | TDD test creation | Need comprehensive test coverage      |
+| `playwright-test-generator` | E2E browser tests | Testing WebView UI                    |
+| `playwright-test-healer`    | Fix failing tests | Tests broken after changes            |
+| `playwright-test-planner`   | Test planning     | Planning comprehensive test scenarios |
 
 ### Refactoring
 
-| Agent | Purpose | Use When |
-|-------|---------|----------|
-| `similarity-based-refactoring` | Pattern consolidation | Finding duplicate code patterns |
-| `serena-mcp-refactoring` | Structural improvements | Improving code architecture |
+| Agent                          | Purpose                 | Use When                        |
+| ------------------------------ | ----------------------- | ------------------------------- |
+| `similarity-based-refactoring` | Pattern consolidation   | Finding duplicate code patterns |
+| `serena-mcp-refactoring`       | Structural improvements | Improving code architecture     |
 
 ### Meta-Agents
 
-| Agent | Purpose | Use When |
-|-------|---------|----------|
+| Agent                            | Purpose                     | Use When                   |
+| -------------------------------- | --------------------------- | -------------------------- |
 | `webview-stability-investigator` | WebView issue investigation | WebView stability problems |
 
 ## Common Workflows
@@ -218,16 +218,19 @@ What is your task?
 ### When to Use Multiple Agents
 
 **Parallel Execution** (Fastest):
+
 - Independent research tasks
 - Multiple testing strategies
 - Simultaneous analysis from different perspectives
 
 **Sequential Execution** (Most Common):
+
 - Research → Implementation → Testing
 - Analysis → Refactoring → Validation
 - Investigation → Fix → Regression tests
 
 **Combined Approach** (Most Efficient):
+
 - Parallel research + Sequential implementation
 - Parallel testing + Sequential validation
 
@@ -276,6 +279,7 @@ Task(similarity-based-refactoring): "Identify duplicate [pattern] code"
 ### Common Mistakes
 
 ❌ **Don't do this** (Sequential when parallel is possible):
+
 ```bash
 # Slow - each task waits for previous
 Task(vscode-terminal-resolver): "Research..."
@@ -286,6 +290,7 @@ Task(xterm-info-analyzer): "Get docs..."
 ```
 
 ✅ **Do this instead** (Parallel execution):
+
 ```bash
 # Fast - all execute simultaneously
 Task(vscode-terminal-resolver): "Research..."
@@ -305,6 +310,7 @@ When implementing features that integrate with TerminalManager:
 4. **Test**: `tdd-quality-engineer` for lifecycle scenarios
 
 **Critical Considerations**:
+
 - ID recycling (1-5)
 - Atomic operations
 - Dispose handlers
@@ -320,6 +326,7 @@ When implementing features in WebView managers:
 4. **Test**: `tdd-quality-engineer` + `playwright-test-generator` (parallel)
 
 **Critical Considerations**:
+
 - Manager-Coordinator pattern
 - Message passing
 - DOM manipulation
@@ -336,6 +343,7 @@ When implementing keyboard or IME features:
 5. **Test**: `tdd-quality-engineer` for composition events
 
 **Critical Considerations**:
+
 - Composition events
 - Key binding conflicts
 - Platform differences (Windows/macOS/Linux)
@@ -352,6 +360,7 @@ When optimizing terminal performance:
 5. **Validate**: `tdd-quality-engineer` for performance tests
 
 **Critical Considerations**:
+
 - Buffer flush intervals (16ms = 60fps)
 - CLI agent detection (4ms = 250fps)
 - Session save interval (5 minutes)
@@ -362,11 +371,13 @@ When optimizing terminal performance:
 ### Optimize Agent Prompts
 
 **Bad Prompt** (Vague):
+
 ```
 "Help me with terminal stuff"
 ```
 
 **Good Prompt** (Specific):
+
 ```
 "How does VS Code implement terminal process lifecycle management, specifically focusing on creation, disposal, and cleanup in TerminalProcessManager (src/vs/workbench/contrib/terminal/node/)? Provide file:line references."
 ```
@@ -374,6 +385,7 @@ When optimizing terminal performance:
 ### Provide Context
 
 Always include:
+
 - Specific files or directories
 - Current problem/requirement
 - Relevant research findings (for implementation agents)
@@ -382,6 +394,7 @@ Always include:
 ### Use Agent Strengths
 
 Match task to agent expertise:
+
 - Terminal patterns → `vscode-terminal-resolver`
 - Semantic search → `serena-semantic-search`
 - Implementation → `terminal-implementer`
@@ -390,6 +403,7 @@ Match task to agent expertise:
 ### Maximize Parallelism
 
 Identify independent tasks and run agents simultaneously:
+
 - Research agents (usually parallel)
 - Testing agents (usually parallel)
 - Analysis agents (sometimes parallel)
@@ -399,11 +413,13 @@ Identify independent tasks and run agents simultaneously:
 ### Problem: Agent Returns Incomplete Results
 
 **Symptoms**:
+
 - Missing file references
 - Vague recommendations
 - Incomplete code snippets
 
 **Solutions**:
+
 1. **Increase specificity**: Provide more detailed prompts
 2. **Narrow scope**: Break complex queries into smaller parts
 3. **Provide context**: Include relevant file paths and code
@@ -412,10 +428,12 @@ Identify independent tasks and run agents simultaneously:
 ### Problem: Conflicting Agent Recommendations
 
 **Symptoms**:
+
 - Different agents suggest different approaches
 - Unclear which pattern to follow
 
 **Solutions**:
+
 1. **Prioritize sources**:
    - VS Code patterns (most authoritative)
    - Xterm.js official docs
@@ -426,10 +444,12 @@ Identify independent tasks and run agents simultaneously:
 ### Problem: Slow Agent Execution
 
 **Symptoms**:
+
 - Agents take longer than expected
 - Timeout errors
 
 **Solutions**:
+
 1. **Run in parallel**: Use simultaneous execution
 2. **Reduce scope**: Limit files/directories to search
 3. **Simplify query**: Break into multiple focused tasks
@@ -438,11 +458,13 @@ Identify independent tasks and run agents simultaneously:
 ### Problem: Implementation Doesn't Match Project Patterns
 
 **Symptoms**:
+
 - Generated code violates architecture
 - TypeScript errors
 - Test failures
 
 **Solutions**:
+
 1. **Review CLAUDE.md**: Ensure agent understands project patterns
 2. **Provide examples**: Show existing code that follows patterns
 3. **Manual adaptation**: Adjust agent output to fit architecture
@@ -451,11 +473,13 @@ Identify independent tasks and run agents simultaneously:
 ### Problem: Tests Fail After Implementation
 
 **Symptoms**:
+
 - Unit tests fail
 - Integration tests fail
 - TDD compliance issues
 
 **Solutions**:
+
 1. **Review TDD workflow**: Ensure Red → Green → Refactor
 2. **Check atomic operations**: Verify no race conditions
 3. **Validate dispose handlers**: Ensure cleanup implemented
@@ -493,6 +517,7 @@ Identify independent tasks and run agents simultaneously:
 **Implementation**: `src/webview/managers/cli-agent-detector.ts`
 
 **Agent Workflow Used**:
+
 1. Research: VS Code terminal detection patterns
 2. Search: Existing detection code in codebase
 3. Implement: Following security patterns (regex not includes())
@@ -505,6 +530,7 @@ Identify independent tasks and run agents simultaneously:
 **Implementation**: `src/services/session/SessionManager.ts`
 
 **Agent Workflow Used**:
+
 1. Research: VS Code terminal storage service
 2. Search: Existing persistence patterns
 3. Implement: Session save/restore with atomic operations
@@ -517,6 +543,7 @@ Identify independent tasks and run agents simultaneously:
 **Implementation**: `src/webview/managers/PerformanceManager.ts`
 
 **Agent Workflow Used**:
+
 1. Benchmark: Manual profiling (60ms → 16ms target)
 2. Research: VS Code buffering strategies
 3. Analyze: Bottlenecks in output handling

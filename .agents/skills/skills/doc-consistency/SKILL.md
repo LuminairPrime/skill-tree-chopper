@@ -23,15 +23,15 @@ This skill ensures project documentation accurately reflects the current impleme
 
 After code changes, determine which documentation needs updates:
 
-| Change Type | Documents to Update |
-|-------------|---------------------|
-| New feature | README.md, CHANGELOG.md |
-| Bug fix | CHANGELOG.md |
-| Config change | README.md (Configuration), CHANGELOG.md |
-| Shortcut change | README.md (Keyboard Shortcuts), CHANGELOG.md |
-| Architecture change | CLAUDE.md, possibly domain CLAUDE.md files |
-| WebView change | src/webview/CLAUDE.md, CLAUDE.md |
-| Test pattern change | src/test/CLAUDE.md |
+| Change Type         | Documents to Update                          |
+| ------------------- | -------------------------------------------- |
+| New feature         | README.md, CHANGELOG.md                      |
+| Bug fix             | CHANGELOG.md                                 |
+| Config change       | README.md (Configuration), CHANGELOG.md      |
+| Shortcut change     | README.md (Keyboard Shortcuts), CHANGELOG.md |
+| Architecture change | CLAUDE.md, possibly domain CLAUDE.md files   |
+| WebView change      | src/webview/CLAUDE.md, CLAUDE.md             |
+| Test pattern change | src/test/CLAUDE.md                           |
 
 ### 2. Update Documentation in Order
 
@@ -152,13 +152,16 @@ grep -q "## \[$VERSION\]" CHANGELOG.md && echo "Version documented" || echo "Ver
 ## [X.Y.Z] - YYYY-MM-DD
 
 ### Added
+
 - **Feature Name**: Description (#issue-number)
 
 ### Fixed
+
 - **Bug Name**: Fix description (#issue-number)
   - Technical detail if helpful
 
 ### Changed
+
 - **Component Name**: What changed
 ```
 
@@ -179,17 +182,18 @@ grep -q "## \[$VERSION\]" CHANGELOG.md && echo "Version documented" || echo "Ver
 
 For detailed information, read the following reference files:
 
-| Reference | Use When |
-|-----------|----------|
+| Reference                               | Use When                                   |
+| --------------------------------------- | ------------------------------------------ |
 | `references/documentation-structure.md` | Understanding project documentation layout |
-| `references/verification-checklist.md` | Running consistency checks |
-| `references/writing-guidelines.md` | Writing or improving documentation |
+| `references/verification-checklist.md`  | Running consistency checks                 |
+| `references/writing-guidelines.md`      | Writing or improving documentation         |
 
 ## Common Issues and Solutions
 
 ### Issue: Feature in code but not documented
 
 **Solution**:
+
 1. Add feature description to README.md Key Features table
 2. Add CHANGELOG.md entry under appropriate section
 3. If architecture changed, update CLAUDE.md
@@ -197,6 +201,7 @@ For detailed information, read the following reference files:
 ### Issue: Configuration default changed
 
 **Solution**:
+
 1. Update README.md Configuration section
 2. Add CHANGELOG.md entry under Changed
 3. Verify package.json description matches
@@ -204,6 +209,7 @@ For detailed information, read the following reference files:
 ### Issue: Keyboard shortcut modified
 
 **Solution**:
+
 1. Update README.md Keyboard Shortcuts table
 2. Include both Mac and Win/Linux bindings
 3. Add CHANGELOG.md entry
@@ -211,6 +217,7 @@ For detailed information, read the following reference files:
 ### Issue: Japanese docs out of sync
 
 **Solution**:
+
 1. Compare README.md with docs/README_ja.md
 2. Update Japanese version with new content
 3. Consider whether domain CLAUDE.md files should be translated

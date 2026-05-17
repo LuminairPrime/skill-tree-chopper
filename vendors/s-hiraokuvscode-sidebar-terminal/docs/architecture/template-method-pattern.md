@@ -47,6 +47,7 @@ src/core/initialization/
 **Purpose**: Defines a standardized 7-phase initialization workflow.
 
 **Phases**:
+
 1. **Pre-Initialization**: Performance tracking, duplicate guards
 2. **Core Setup**: View references, manager instantiation
 3. **Configuration**: Settings loading/application
@@ -68,9 +69,7 @@ class MyWebViewProvider extends WebViewInitializationTemplate {
   }
 
   protected async registerMessageHandlers(): Promise<void> {
-    webviewView.webview.onDidReceiveMessage(
-      (message) => this.handleMessage(message)
-    );
+    webviewView.webview.onDidReceiveMessage((message) => this.handleMessage(message));
   }
 
   protected async initializeContent(): Promise<void> {
@@ -101,6 +100,7 @@ await provider.initialize();
 **Purpose**: Consolidates message handler registration patterns.
 
 **Features**:
+
 - Command-to-handler mapping
 - Duplicate handler detection
 - Handler validation
@@ -123,14 +123,12 @@ class MyMessageRegistry extends MessageHandlerRegistryBase<
 > {
   protected registerCoreHandlers(): void {
     // Register handlers for core commands
-    this.register(
-      ['init', 'output', 'terminalCreated'],
-      (message, coordinator) => this.lifecycleHandler.handleMessage(message, coordinator)
+    this.register(['init', 'output', 'terminalCreated'], (message, coordinator) =>
+      this.lifecycleHandler.handleMessage(message, coordinator)
     );
 
-    this.register(
-      ['settingsResponse', 'openSettings'],
-      (message, coordinator) => this.settingsHandler.handleMessage(message, coordinator)
+    this.register(['settingsResponse', 'openSettings'], (message, coordinator) =>
+      this.settingsHandler.handleMessage(message, coordinator)
     );
   }
 
@@ -159,6 +157,7 @@ await registry.dispatch(message, coordinator);
 **Purpose**: Manages lifecycle of multiple managers/services.
 
 **Features**:
+
 - Centralized manager instantiation
 - Coordinator relationship setup
 - Initialization ordering
@@ -169,11 +168,7 @@ await registry.dispatch(message, coordinator);
 ```typescript
 import { ManagerCoordinatorBase, IManager } from '../core/initialization';
 
-type ManagerKey =
-  | 'webViewApi'
-  | 'split'
-  | 'terminalLifecycle'
-  | 'settings';
+type ManagerKey = 'webViewApi' | 'split' | 'terminalLifecycle' | 'settings';
 
 class MyManagerCoordinator extends ManagerCoordinatorBase<ManagerKey> {
   protected async createCoreManagers(): Promise<void> {
@@ -221,6 +216,7 @@ coordinator.disposeAllManagers();
 The base classes are now available for use. New code should adopt these patterns.
 
 **For new WebView providers:**
+
 ```typescript
 // OLD (without template)
 class NewProvider {
@@ -234,15 +230,22 @@ class NewProvider {
 
 // NEW (with template)
 class NewProvider extends WebViewInitializationTemplate {
-  protected async setupViewReference(): Promise<void> { /* ... */ }
-  protected async registerMessageHandlers(): Promise<void> { /* ... */ }
-  protected async initializeContent(): Promise<void> { /* ... */ }
+  protected async setupViewReference(): Promise<void> {
+    /* ... */
+  }
+  protected async registerMessageHandlers(): Promise<void> {
+    /* ... */
+  }
+  protected async initializeContent(): Promise<void> {
+    /* ... */
+  }
 }
 ```
 
 ### Phase 2: Refactor Existing Code (Future)
 
 **Priority Order:**
+
 1. ✅ **Create base classes** (Completed in this PR)
 2. ⏳ **Refactor SecondaryTerminalProvider** (Future PR)
 3. ⏳ **Refactor LightweightTerminalWebviewManager** (Future PR)
@@ -274,8 +277,8 @@ import { WebViewInitializationTemplate } from '../core/initialization';
 
 export class SecondaryTerminalProvider
   extends WebViewInitializationTemplate
-  implements vscode.WebviewViewProvider {
-
+  implements vscode.WebviewViewProvider
+{
   public resolveWebviewView(webviewView: vscode.WebviewView): void {
     this._webviewView = webviewView;
 
@@ -326,6 +329,7 @@ export class SecondaryTerminalProvider
 ```
 
 **Benefits of refactored code:**
+
 - ✅ 70% reduction in initialization code (150 lines → ~50 lines)
 - ✅ Consistent initialization order guaranteed by template
 - ✅ Centralized error handling
@@ -360,11 +364,7 @@ describe('WebViewInitializationTemplate', () => {
     const provider = new TestProvider();
     await provider.initialize();
 
-    expect(order).toEqual([
-      'setupViewReference',
-      'registerMessageHandlers',
-      'initializeContent',
-    ]);
+    expect(order).toEqual(['setupViewReference', 'registerMessageHandlers', 'initializeContent']);
   });
 
   it('should skip initialization when shouldSkipInitialization returns true', async () => {
@@ -466,24 +466,26 @@ describe('SecondaryTerminalProvider (Refactored)', () => {
 
 ### Benchmarks
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Lines of duplicated code | ~420 | ~170 | 60% reduction |
-| Initialization files | 4 separate implementations | 1 template + 4 concrete | Consistency ↑ |
-| Error handling patterns | 4 different approaches | 1 standardized pattern | Maintainability ↑ |
-| Performance tracking | Only in SecondaryTerminalProvider | Available everywhere | Observability ↑ |
+| Metric                   | Before                            | After                   | Improvement       |
+| ------------------------ | --------------------------------- | ----------------------- | ----------------- |
+| Lines of duplicated code | ~420                              | ~170                    | 60% reduction     |
+| Initialization files     | 4 separate implementations        | 1 template + 4 concrete | Consistency ↑     |
+| Error handling patterns  | 4 different approaches            | 1 standardized pattern  | Maintainability ↑ |
+| Performance tracking     | Only in SecondaryTerminalProvider | Available everywhere    | Observability ↑   |
 
 ## Best Practices
 
 ### When to Use WebViewInitializationTemplate
 
 ✅ **Use when:**
+
 - Creating a new WebView provider
 - Initialization has multiple phases (3+)
 - You need duplicate initialization prevention
 - You want automatic performance tracking
 
 ❌ **Don't use when:**
+
 - Initialization is trivial (1-2 steps)
 - You need complete control over initialization order
 - The initialization pattern is unique and not reusable
@@ -491,22 +493,26 @@ describe('SecondaryTerminalProvider (Refactored)', () => {
 ### When to Use MessageHandlerRegistryBase
 
 ✅ **Use when:**
+
 - You have 5+ message handlers
 - You need command-to-handler mapping
 - You want centralized error handling for messages
 
 ❌ **Don't use when:**
+
 - You have 1-2 simple message handlers
 - Message handling is tightly coupled to business logic
 
 ### When to Use ManagerCoordinatorBase
 
 ✅ **Use when:**
+
 - You manage 3+ specialized managers
 - Managers need coordinator references
 - You need coordinated initialization/disposal
 
 ❌ **Don't use when:**
+
 - You have 1-2 simple services
 - Services are completely independent
 
@@ -519,6 +525,7 @@ describe('SecondaryTerminalProvider (Refactored)', () => {
 ## Changelog
 
 ### v1.0.0 (Current PR)
+
 - ✅ Created `WebViewInitializationTemplate` base class
 - ✅ Created `MessageHandlerRegistryBase` base class
 - ✅ Created `ManagerCoordinatorBase` base class
@@ -526,6 +533,7 @@ describe('SecondaryTerminalProvider (Refactored)', () => {
 - ✅ Exported via `src/core/initialization/index.ts`
 
 ### Future Releases
+
 - ⏳ Refactor `SecondaryTerminalProvider` to use template
 - ⏳ Refactor `LightweightTerminalWebviewManager` to use template
 - ⏳ Add unit tests for base classes

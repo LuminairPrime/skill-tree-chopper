@@ -14,6 +14,7 @@ AI programming tools and IDEs (Cursor, Windsurf, Cline, Copilot, etc.) scatter s
 ## Capabilities
 
 ### New Capabilities
+
 - `skill-discovery`: Discovers AI skill folders across global (`~`) and workspace scopes using a predefined schema of known agent paths.
 - `skill-tree-view`: Displays the discovered skill directories and files in a native VS Code TreeView, grouping them by root and skill folders.
 - `skill-management`: Allows enabling/disabling skills via checkboxes (folder renaming) and deleting skills via a context menu.

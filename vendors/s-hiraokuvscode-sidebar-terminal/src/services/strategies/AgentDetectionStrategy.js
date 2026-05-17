@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * Agent Detection Strategy Interface
  *
@@ -6,5 +6,5 @@
  * Each CLI agent (Claude, Gemini, Codex, GitHub Copilot, OpenCode) implements this interface
  * to provide specialized detection logic for input commands and output patterns.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 //# sourceMappingURL=AgentDetectionStrategy.js.map

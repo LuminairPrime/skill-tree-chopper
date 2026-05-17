@@ -21,79 +21,79 @@ This document tracks performance improvements from the RenderingOptimizer implem
 
 ### Terminal Creation Performance
 
-| Metric | Before Optimization |
-|--------|---------------------|
-| Draw Calls per Creation | 5-7 calls |
-| Initial Rendering Time | ~250-350ms |
-| Resize Operations per Second | 8-10 ops/sec |
-| Memory Footprint per Terminal | ~12MB |
+| Metric                        | Before Optimization |
+| ----------------------------- | ------------------- |
+| Draw Calls per Creation       | 5-7 calls           |
+| Initial Rendering Time        | ~250-350ms          |
+| Resize Operations per Second  | 8-10 ops/sec        |
+| Memory Footprint per Terminal | ~12MB               |
 
 ### Resize Performance (ResizeManager)
 
-| Metric | Before Optimization |
-|--------|---------------------|
-| Debounce Delay | 100ms (ResizeManager) |
-| Dimension Validation | None (all resizes processed) |
-| Observer Type | ResizeObserver via ResizeManager |
-| Invalid Resize Handling | Processed (causing flickering) |
+| Metric                  | Before Optimization              |
+| ----------------------- | -------------------------------- |
+| Debounce Delay          | 100ms (ResizeManager)            |
+| Dimension Validation    | None (all resizes processed)     |
+| Observer Type           | ResizeObserver via ResizeManager |
+| Invalid Resize Handling | Processed (causing flickering)   |
 
 ### Rendering Performance
 
-| Metric | Before Optimization |
-|--------|---------------------|
-| WebGL Renderer | Manual enablement, no fallback |
-| DOM Renderer Fallback | Manual intervention required |
-| Smooth Scrolling | Fixed 0ms (all devices) |
-| Scroll Performance | Inconsistent trackpad vs mouse |
+| Metric                | Before Optimization            |
+| --------------------- | ------------------------------ |
+| WebGL Renderer        | Manual enablement, no fallback |
+| DOM Renderer Fallback | Manual intervention required   |
+| Smooth Scrolling      | Fixed 0ms (all devices)        |
+| Scroll Performance    | Inconsistent trackpad vs mouse |
 
 ## Phase 2: Optimized Measurements (After RenderingOptimizer)
 
 ### Terminal Creation Performance
 
-| Metric | After Optimization | Improvement |
-|--------|-------------------|-------------|
-| Draw Calls per Creation | 2-3 calls | **40-50% reduction** ✅ |
-| Initial Rendering Time | ~150-200ms | **33-43% improvement** ✅ |
-| Resize Operations per Second | 10-12 ops/sec | **20-25% improvement** ✅ |
-| Memory Footprint per Terminal | ~10MB | **17% reduction** ✅ |
+| Metric                        | After Optimization | Improvement               |
+| ----------------------------- | ------------------ | ------------------------- |
+| Draw Calls per Creation       | 2-3 calls          | **40-50% reduction** ✅   |
+| Initial Rendering Time        | ~150-200ms         | **33-43% improvement** ✅ |
+| Resize Operations per Second  | 10-12 ops/sec      | **20-25% improvement** ✅ |
+| Memory Footprint per Terminal | ~10MB              | **17% reduction** ✅      |
 
 ### Resize Performance (RenderingOptimizer)
 
-| Metric | After Optimization | Improvement |
-|--------|-------------------|-------------|
-| Debounce Delay | 100ms (RenderingOptimizer) | Same (expected) |
-| Dimension Validation | ≤50px filtered | **Prevents invalid renders** ✅ |
-| Observer Type | Direct ResizeObserver | **Reduced abstraction overhead** ✅ |
-| Invalid Resize Handling | Skipped (no flickering) | **Better UX** ✅ |
+| Metric                  | After Optimization         | Improvement                         |
+| ----------------------- | -------------------------- | ----------------------------------- |
+| Debounce Delay          | 100ms (RenderingOptimizer) | Same (expected)                     |
+| Dimension Validation    | ≤50px filtered             | **Prevents invalid renders** ✅     |
+| Observer Type           | Direct ResizeObserver      | **Reduced abstraction overhead** ✅ |
+| Invalid Resize Handling | Skipped (no flickering)    | **Better UX** ✅                    |
 
 ### Rendering Performance
 
-| Metric | After Optimization | Improvement |
-|--------|-------------------|-------------|
-| WebGL Renderer | Auto-enabled with fallback | **Automatic optimization** ✅ |
-| DOM Renderer Fallback | Automatic on context loss | **100% uptime** ✅ |
-| Smooth Scrolling | 0ms (trackpad), 125ms (mouse) | **Device-optimized** ✅ |
-| Scroll Performance | Consistent across devices | **VS Code parity** ✅ |
+| Metric                | After Optimization            | Improvement                   |
+| --------------------- | ----------------------------- | ----------------------------- |
+| WebGL Renderer        | Auto-enabled with fallback    | **Automatic optimization** ✅ |
+| DOM Renderer Fallback | Automatic on context loss     | **100% uptime** ✅            |
+| Smooth Scrolling      | 0ms (trackpad), 125ms (mouse) | **Device-optimized** ✅       |
+| Scroll Performance    | Consistent across devices     | **VS Code parity** ✅         |
 
 ## GPU Utilization Metrics
 
 ### WebGL Renderer Enabled
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| GPU Utilization | Manual ~40% | Auto ~50-60% | **25-50% increase** ✅ |
-| Frame Rate (FPS) | ~55 FPS | ~60 FPS | **9% improvement** ✅ |
-| CPU Utilization | ~25% | ~15% | **40% reduction** ✅ |
-| Power Consumption | Higher | Lower | **GPU offloading** ✅ |
+| Metric            | Before      | After        | Improvement            |
+| ----------------- | ----------- | ------------ | ---------------------- |
+| GPU Utilization   | Manual ~40% | Auto ~50-60% | **25-50% increase** ✅ |
+| Frame Rate (FPS)  | ~55 FPS     | ~60 FPS      | **9% improvement** ✅  |
+| CPU Utilization   | ~25%        | ~15%         | **40% reduction** ✅   |
+| Power Consumption | Higher      | Lower        | **GPU offloading** ✅  |
 
 ### DOM Renderer Fallback
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| GPU Utilization | 0% | Expected (CPU rendering) |
-| Frame Rate (FPS) | ~50 FPS | Still acceptable |
-| CPU Utilization | ~30% | Higher than WebGL |
-| Fallback Trigger Time | <50ms | Immediate recovery ✅ |
+| Metric                | Value   | Notes                    |
+| --------------------- | ------- | ------------------------ |
+| GPU Utilization       | 0%      | Expected (CPU rendering) |
+| Frame Rate (FPS)      | ~50 FPS | Still acceptable         |
+| CPU Utilization       | ~30%    | Higher than WebGL        |
+| Fallback Trigger Time | <50ms   | Immediate recovery ✅    |
 
 ## Detailed Performance Analysis
 
@@ -146,12 +146,12 @@ This document tracks performance improvements from the RenderingOptimizer implem
 
 **Result: VS Code parity achieved ✅**
 
-| Device | Before | After | Notes |
-|--------|--------|-------|-------|
-| Trackpad | 0ms (fixed) | 0ms (detected) | Instant scrolling maintained |
-| Mouse Wheel | 0ms (incorrect) | 125ms (detected) | Smooth scrolling added |
-| Device Switching | Manual | Automatic | Real-time detection |
-| Event Listeners | Standard | Passive | Better performance |
+| Device           | Before          | After            | Notes                        |
+| ---------------- | --------------- | ---------------- | ---------------------------- |
+| Trackpad         | 0ms (fixed)     | 0ms (detected)   | Instant scrolling maintained |
+| Mouse Wheel      | 0ms (incorrect) | 125ms (detected) | Smooth scrolling added       |
+| Device Switching | Manual          | Automatic        | Real-time detection          |
+| Event Listeners  | Standard        | Passive          | Better performance           |
 
 ## Benchmark Test Procedures
 
@@ -250,12 +250,12 @@ jobs:
 
 ## Summary of Achievements
 
-| Target | Result | Status |
-|--------|--------|--------|
-| **Draw calls reduced by 30%+** | 40-50% reduction | ✅ EXCEEDED |
-| **Initial rendering time improved** | 33-43% improvement | ✅ ACHIEVED |
-| **GPU utilization increased** | 25-50% increase | ✅ ACHIEVED |
-| **Benchmark results documented** | This document | ✅ COMPLETED |
+| Target                              | Result             | Status       |
+| ----------------------------------- | ------------------ | ------------ |
+| **Draw calls reduced by 30%+**      | 40-50% reduction   | ✅ EXCEEDED  |
+| **Initial rendering time improved** | 33-43% improvement | ✅ ACHIEVED  |
+| **GPU utilization increased**       | 25-50% increase    | ✅ ACHIEVED  |
+| **Benchmark results documented**    | This document      | ✅ COMPLETED |
 
 ## Next Steps
 

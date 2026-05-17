@@ -12,9 +12,11 @@ While the foundational AI Skill Auditor successfully maps and manages scattered 
 ## Capabilities
 
 ### New Capabilities
+
 - `cross-platform-architecture`: Establishes the cross-platform constraints (Windows/Linux/macOS) and explicitly defers the standalone GUI app for v2.
 
 ### Modified Capabilities
+
 - `skill-discovery`: Replacing deep scanning with a fast heuristic (checking for a single skill file presence) and handling read-permission degradation.
 - `skill-tree-view`: Adding lazy loading/default-collapsed state for the global skills folder to improve initial load latency.
 - `skill-management`: Adding a graceful fallback mechanism to rename/disable folders if deletion permissions are restricted.

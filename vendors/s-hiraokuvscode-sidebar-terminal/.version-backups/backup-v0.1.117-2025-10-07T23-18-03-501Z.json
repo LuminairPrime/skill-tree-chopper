@@ -8,10 +8,7 @@
     "vscode": "^1.74.0",
     "node": ">=18.0.0"
   },
-  "categories": [
-    "Other",
-    "Debuggers"
-  ],
+  "categories": ["Other", "Debuggers"],
   "keywords": [
     "terminal",
     "sidebar",
@@ -65,10 +62,7 @@
   "qna": "https://github.com/s-hiraoku/vscode-sidebar-terminal/discussions",
   "preview": false,
   "main": "./dist/extension.js",
-  "activationEvents": [
-    "onView:secondaryTerminal",
-    "onCommand:secondaryTerminal.focusTerminal"
-  ],
+  "activationEvents": ["onView:secondaryTerminal", "onCommand:secondaryTerminal.focusTerminal"],
   "contributes": {
     "viewsContainers": {
       "activitybar": [
@@ -298,11 +292,7 @@
         "secondaryTerminal.theme": {
           "type": "string",
           "default": "auto",
-          "enum": [
-            "auto",
-            "dark",
-            "light"
-          ],
+          "enum": ["auto", "dark", "light"],
           "description": "Terminal theme. Auto follows VS Code theme."
         },
         "secondaryTerminal.defaultDirectory": {
@@ -446,11 +436,7 @@
         "secondaryTerminal.persistentSessionReviveProcess": {
           "type": "string",
           "default": "onExitAndWindowClose",
-          "enum": [
-            "never",
-            "onExit",
-            "onExitAndWindowClose"
-          ],
+          "enum": ["never", "onExit", "onExitAndWindowClose"],
           "enumDescriptions": [
             "Never save terminal sessions",
             "Save sessions when VS Code exits",
@@ -461,11 +447,7 @@
         "secondaryTerminal.hideOnStartup": {
           "type": "string",
           "default": "never",
-          "enum": [
-            "never",
-            "whenEmpty",
-            "always"
-          ],
+          "enum": ["never", "whenEmpty", "always"],
           "enumDescriptions": [
             "Never hide the terminal view on startup",
             "Hide terminal when no sessions are restored",
@@ -488,37 +470,13 @@
         "secondaryTerminal.fontWeight": {
           "type": "string",
           "default": "normal",
-          "enum": [
-            "normal",
-            "bold",
-            "100",
-            "200",
-            "300",
-            "400",
-            "500",
-            "600",
-            "700",
-            "800",
-            "900"
-          ],
+          "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"],
           "description": "The font weight to use within the terminal for non-bold text. Accepts normal and bold keywords or numbers between 1 and 1000."
         },
         "secondaryTerminal.fontWeightBold": {
           "type": "string",
           "default": "bold",
-          "enum": [
-            "normal",
-            "bold",
-            "100",
-            "200",
-            "300",
-            "400",
-            "500",
-            "600",
-            "700",
-            "800",
-            "900"
-          ],
+          "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"],
           "description": "The font weight to use within the terminal for bold text. Accepts normal and bold keywords or numbers between 1 and 1000."
         },
         "secondaryTerminal.lineHeight": {
@@ -545,11 +503,7 @@
         "secondaryTerminal.cursorStyle": {
           "type": "string",
           "default": "block",
-          "enum": [
-            "block",
-            "underline",
-            "bar"
-          ],
+          "enum": ["block", "underline", "bar"],
           "description": "Controls the style of terminal cursor."
         },
         "secondaryTerminal.cursorWidth": {
@@ -587,26 +541,17 @@
           "description": "The macOS terminal profiles to present when creating a new terminal via the terminal dropdown. Set to null to exclude a profile from the list, for example: \"secondaryTerminal.profiles.osx\": { \"bash\": null }."
         },
         "secondaryTerminal.defaultProfile.windows": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "default": null,
           "description": "The default profile used on Windows. This setting will currently be ignored if either terminal.external.windowsExec or terminal.integrated.shell.windows are set."
         },
         "secondaryTerminal.defaultProfile.linux": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "default": null,
           "description": "The default profile used on Linux. This setting will currently be ignored if either terminal.external.linuxExec or terminal.integrated.shell.linux are set."
         },
         "secondaryTerminal.defaultProfile.osx": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "default": null,
           "description": "The default profile used on macOS. This setting will currently be ignored if either terminal.external.osxExec or terminal.integrated.shell.osx are set."
         },
@@ -647,11 +592,7 @@
         "secondaryTerminal.panelLocation": {
           "type": "string",
           "default": "auto",
-          "enum": [
-            "auto",
-            "sidebar",
-            "panel"
-          ],
+          "enum": ["auto", "sidebar", "panel"],
           "enumDescriptions": [
             "Automatically detect panel location",
             "Force sidebar location for split direction calculation",
@@ -990,10 +931,6 @@
     "@xterm/xterm": "^5.5.0",
     "process": "^0.11.10"
   },
-  "bundledDependencies": [
-    "@homebridge/node-pty-prebuilt-multiarch"
-  ],
-  "bundleDependencies": [
-    "@homebridge/node-pty-prebuilt-multiarch"
-  ]
+  "bundledDependencies": ["@homebridge/node-pty-prebuilt-multiarch"],
+  "bundleDependencies": ["@homebridge/node-pty-prebuilt-multiarch"]
 }

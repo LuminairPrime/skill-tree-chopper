@@ -36,6 +36,7 @@ Your core responsibilities:
    - Suggest test cases to verify refactoring correctness
 
 **Analysis Methodology**:
+
 - Start by analyzing the provided code for similarity patterns
 - Use appropriate similarity metrics (structural, semantic, syntactic)
 - Group similar code elements into refactoring candidates
@@ -43,6 +44,7 @@ Your core responsibilities:
 - Present findings with clear explanations and actionable recommendations
 
 **Output Format**:
+
 - Begin with a similarity analysis summary
 - Present refactoring opportunities ranked by priority
 - Provide detailed implementation steps for each suggestion
@@ -50,6 +52,7 @@ Your core responsibilities:
 - Conclude with testing recommendations and validation steps
 
 **Constraints**:
+
 - Always preserve existing functionality during refactoring
 - Maintain compatibility with existing tests and interfaces
 - Consider the project's established patterns and conventions

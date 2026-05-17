@@ -17,12 +17,12 @@ VS Code Sidebar Terminal拡張機能のパフォーマンステストでは、�
 
 ### テストの分類
 
-| 種類 | 目的 | 測定指標 | 実行頻度 |
-|------|------|---------|---------|
-| メモリリーク | リソース解放の検証 | ヒープサイズ、GC回数 | CI/CD |
-| バッファ性能 | データ処理速度 | スループット、レイテンシ | 週次 |
-| 負荷テスト | システム限界の把握 | CPU、メモリ、応答時間 | リリース前 |
-| ベンチマーク | 性能劣化の検出 | 実行時間、相対性能 | PR毎 |
+| 種類         | 目的               | 測定指標                 | 実行頻度   |
+| ------------ | ------------------ | ------------------------ | ---------- |
+| メモリリーク | リソース解放の検証 | ヒープサイズ、GC回数     | CI/CD      |
+| バッファ性能 | データ処理速度     | スループット、レイテンシ | 週次       |
+| 負荷テスト   | システム限界の把握 | CPU、メモリ、応答時間    | リリース前 |
+| ベンチマーク | 性能劣化の検出     | 実行時間、相対性能       | PR毎       |
 
 ---
 
@@ -38,7 +38,6 @@ import { TerminalManager } from '../../../terminal/TerminalManager';
 describe('Performance: Memory Leak Detection', () => {
   describe('Terminal Lifecycle', () => {
     it('should not leak memory on terminal creation and deletion', async () => {
-
       const manager = new TerminalManager();
       const iterations = 100;
       const measurements: number[] = [];
@@ -86,7 +85,6 @@ describe('Performance: Memory Leak Detection', () => {
 
   describe('Event Listener Cleanup', () => {
     it('should remove all event listeners on dispose', async () => {
-
       const manager = new TerminalManager();
       const terminal = manager.createTerminal();
 
@@ -156,7 +154,6 @@ import { ScrollbackBuffer } from '../../../buffer/ScrollbackBuffer';
 describe('Performance: Scrollback Buffer', () => {
   describe('Write Performance', () => {
     it('should handle rapid writes efficiently', async () => {
-
       const buffer = new ScrollbackBuffer({ maxLines: 10000 });
       const iterations = 10000;
       const lineLength = 100;
@@ -196,10 +193,9 @@ describe('Performance: Scrollback Buffer', () => {
     }, 10000); // 10秒タイムアウト
 
     it('should handle line wrapping efficiently', async () => {
-
       const buffer = new ScrollbackBuffer({
         maxLines: 5000,
-        columns: 80
+        columns: 80,
       });
 
       const longLine = 'x'.repeat(500); // 80列を超える長い行
@@ -224,7 +220,6 @@ describe('Performance: Scrollback Buffer', () => {
 
   describe('Read Performance', () => {
     it('should retrieve lines efficiently', async () => {
-
       const buffer = new ScrollbackBuffer({ maxLines: 10000 });
 
       // バッファにデータを書き込み
@@ -253,7 +248,6 @@ describe('Performance: Scrollback Buffer', () => {
 
   describe('Search Performance', () => {
     it('should search through buffer efficiently', async () => {
-
       const buffer = new ScrollbackBuffer({ maxLines: 10000 });
 
       // テストデータを準備
@@ -265,7 +259,7 @@ describe('Performance: Scrollback Buffer', () => {
       const searchTerms = ['Line', 'random', 'text', 'nonexistent'];
       const startTime = process.hrtime.bigint();
 
-      searchTerms.forEach(term => {
+      searchTerms.forEach((term) => {
         buffer.search(term);
       });
 
@@ -296,7 +290,6 @@ import { TerminalManager } from '../../../terminal/TerminalManager';
 describe('Performance: Load Testing', () => {
   describe('Concurrent Terminals', () => {
     it('should handle multiple terminals simultaneously', async () => {
-
       const manager = new TerminalManager();
       const terminalCount = 50;
       const terminals: any[] = [];
@@ -308,7 +301,7 @@ describe('Performance: Load Testing', () => {
       // 複数のターミナルを作成
       for (let i = 0; i < terminalCount; i++) {
         const terminal = await manager.createTerminal({
-          name: `Terminal ${i}`
+          name: `Terminal ${i}`,
         });
         terminals.push(terminal);
       }
@@ -320,7 +313,7 @@ describe('Performance: Load Testing', () => {
         for (let i = 0; i < 100; i++) {
           terminal.write(`Terminal ${index}: Line ${i}\n`);
           // 少し待機してリアルな使用をシミュレート
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
         }
       });
 
@@ -346,7 +339,6 @@ describe('Performance: Load Testing', () => {
     }, 60000); // 60秒タイムアウト
 
     it('should handle rapid terminal creation and deletion', async () => {
-
       const manager = new TerminalManager();
       const iterations = 100;
 
@@ -383,7 +375,6 @@ describe('Performance: Load Testing', () => {
 ```typescript
 describe('Performance: Message Throughput', () => {
   it('should handle high message rate', async () => {
-
     const messageHandler = new MessageHandler();
     const messageCount = 10000;
 
@@ -395,7 +386,7 @@ describe('Performance: Message Throughput', () => {
       promises.push(
         messageHandler.handleMessage({
           command: 'write',
-          data: `Message ${i}\n`
+          data: `Message ${i}\n`,
         })
       );
     }
@@ -458,7 +449,6 @@ describe('Performance: Benchmarks', () => {
 
   describe('Buffer Implementations', () => {
     it('should compare circular buffer vs array buffer', async () => {
-
       const iterations = 10000;
       const maxSize = 1000;
 
@@ -523,11 +513,10 @@ import { performance } from 'perf_hooks';
 
 describe('Performance: CPU Profiling', () => {
   it('should profile heavy operations', async () => {
-
     const operations = {
       parsing: 0,
       rendering: 0,
-      calculation: 0
+      calculation: 0,
     };
 
     for (let i = 0; i < 1000; i++) {
@@ -549,9 +538,9 @@ describe('Performance: CPU Profiling', () => {
 
     console.log('  CPU Time Distribution:');
     const total = operations.parsing + operations.rendering + operations.calculation;
-    console.log(`    Parsing: ${(operations.parsing / total * 100).toFixed(1)}%`);
-    console.log(`    Rendering: ${(operations.rendering / total * 100).toFixed(1)}%`);
-    console.log(`    Calculation: ${(operations.calculation / total * 100).toFixed(1)}%`);
+    console.log(`    Parsing: ${((operations.parsing / total) * 100).toFixed(1)}%`);
+    console.log(`    Rendering: ${((operations.rendering / total) * 100).toFixed(1)}%`);
+    console.log(`    Calculation: ${((operations.calculation / total) * 100).toFixed(1)}%`);
   }, 10000); // 10秒タイムアウト
 });
 ```

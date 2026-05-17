@@ -5,6 +5,14 @@
 description = "Compile the TypeScript code"
 run = "npm run compile"
 
+[tasks.lint]
+description = "Run ESLint to check for code issues"
+run = "npx eslint ."
+
+[tasks.format]
+description = "Run Prettier to format the codebase"
+run = "npx prettier --write ."
+
 [tasks.test]
 description = "Run unit tests"
 run = "npx vitest run"

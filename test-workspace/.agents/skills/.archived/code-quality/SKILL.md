@@ -26,9 +26,11 @@ This skill runs code quality tools (ruff, mypy, pytest) and optionally simplifie
 ### Step 1: Identify Target Files
 
 If `--all` flag is provided:
+
 - Target all files in `synapse/` directory
 
 Otherwise:
+
 - Run `git diff --name-only HEAD~1` to get recently modified files
 - Filter to only `.py` files in `synapse/` or `tests/`
 
@@ -39,6 +41,7 @@ ruff check [files]
 ```
 
 If `--fix` flag is provided:
+
 ```bash
 ruff check --fix [files]
 ```
@@ -62,6 +65,7 @@ pytest
 ```
 
 For running specific tests related to modified files:
+
 ```bash
 pytest tests/ -v
 ```
@@ -84,6 +88,7 @@ and improve readability while maintaining all functionality.
 ### Step 6: Report Results
 
 Summarize:
+
 - Number of files checked
 - Ruff status (pass/fail, errors fixed if --fix)
 - Mypy status (pass/fail)
@@ -101,31 +106,37 @@ When errors are found:
 ## Examples
 
 ### Basic check on recent changes
+
 ```
 /code-quality
 ```
 
 ### Check all files with auto-fix
+
 ```
 /code-quality --all --fix
 ```
 
 ### Full quality check with tests
+
 ```
 /code-quality --full
 ```
 
 ### Run with tests only
+
 ```
 /code-quality --test
 ```
 
 ### Skip code simplification
+
 ```
 /code-quality --no-simplify
 ```
 
 ### Shorthand
+
 ```
 /lint          # Same as /code-quality (includes simplification)
 /check         # Same as /code-quality
@@ -140,17 +151,20 @@ When errors are found:
 This project uses the following configurations (from pyproject.toml):
 
 ### Ruff
+
 - Target: Python 3.10
 - Line length: 88
 - Rules: E, F, I, UP, B, SIM
 - Ignored: E501, B008
-- Excluded: synapse/proto/a2a_pb2*.py
+- Excluded: synapse/proto/a2a_pb2\*.py
 
 ### Mypy
+
 - Strict mode with disallow_untyped_defs
 - Tests have relaxed rules (ignore_errors)
 - Proto files excluded
 
 ### Pytest
+
 - asyncio_mode: auto
 - Run with: `pytest` or `pytest tests/ -v`

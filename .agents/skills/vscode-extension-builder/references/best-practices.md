@@ -7,6 +7,7 @@ Comprehensive guide to building high-quality VS Code extensions with excellent U
 ### Command Design
 
 **Clear Names:**
+
 ```json
 // ❌ BAD: Vague names
 "commands": [{
@@ -22,6 +23,7 @@ Comprehensive guide to building high-quality VS Code extensions with excellent U
 ```
 
 **Use Categories:**
+
 ```json
 "commands": [{
   "command": "extension.formatJson",
@@ -33,6 +35,7 @@ Comprehensive guide to building high-quality VS Code extensions with excellent U
 Shows as "JSON Tools: Format JSON" in Command Palette.
 
 **Command Naming Convention:**
+
 - Format: `publisher.commandName`
 - Example: `myPublisher.formatJson`
 - Prevents conflicts with other extensions
@@ -51,22 +54,25 @@ async function processFiles() {
 
 // ✅ GOOD: Shows progress
 async function processFiles() {
-  await vscode.window.withProgress({
-    location: vscode.ProgressLocation.Notification,
-    title: 'Processing files',
-    cancellable: true
-  }, async (progress, token) => {
-    for (let i = 0; i < files.length; i++) {
-      if (token.isCancellationRequested) {
-        break;
+  await vscode.window.withProgress(
+    {
+      location: vscode.ProgressLocation.Notification,
+      title: 'Processing files',
+      cancellable: true,
+    },
+    async (progress, token) => {
+      for (let i = 0; i < files.length; i++) {
+        if (token.isCancellationRequested) {
+          break;
+        }
+        progress.report({
+          increment: 100 / files.length,
+          message: `${i + 1}/${files.length}: ${files[i]}`,
+        });
+        await process(files[i]);
       }
-      progress.report({
-        increment: (100 / files.length),
-        message: `${i + 1}/${files.length}: ${files[i]}`
-      });
-      await process(files[i]);
-    }
-  });
+    },
+  );
 }
 ```
 
@@ -80,22 +86,19 @@ vscode.window.showErrorMessage('Error');
 
 // ✅ GOOD: Specific, actionable
 vscode.window.showErrorMessage(
-  'Failed to format JSON: Invalid syntax on line 42. ' +
-  'Please check the syntax and try again.'
+  'Failed to format JSON: Invalid syntax on line 42. ' + 'Please check the syntax and try again.',
 );
 
 // ✅ EVEN BETTER: With actions
-vscode.window.showErrorMessage(
-  'Failed to parse JSON',
-  'Open File',
-  'View Logs'
-).then(selection => {
-  if (selection === 'Open File') {
-    vscode.window.showTextDocument(uri);
-  } else if (selection === 'View Logs') {
-    outputChannel.show();
-  }
-});
+vscode.window
+  .showErrorMessage('Failed to parse JSON', 'Open File', 'View Logs')
+  .then((selection) => {
+    if (selection === 'Open File') {
+      vscode.window.showTextDocument(uri);
+    } else if (selection === 'View Logs') {
+      outputChannel.show();
+    }
+  });
 ```
 
 ### Input Validation
@@ -114,7 +117,7 @@ const value = await vscode.window.showInputBox({
       return 'Port must be between 1 and 65535';
     }
     return undefined; // Valid
-  }
+  },
 });
 ```
 
@@ -131,6 +134,7 @@ Use Codicons for consistency:
 ```
 
 **Common icons:**
+
 - `$(add)` - Add/create
 - `$(remove)` - Delete/remove
 - `$(refresh)` - Refresh/reload
@@ -224,14 +228,14 @@ async function processLargeFile(file: string) {
 
 ```typescript
 // ❌ BAD: Updates on every change
-vscode.workspace.onDidChangeTextDocument(event => {
+vscode.workspace.onDidChangeTextDocument((event) => {
   updateDiagnostics(event.document); // Called on every keystroke!
 });
 
 // ✅ GOOD: Debounced updates
 let timeout: NodeJS.Timeout | undefined;
 
-vscode.workspace.onDidChangeTextDocument(event => {
+vscode.workspace.onDidChangeTextDocument((event) => {
   if (timeout) {
     clearTimeout(timeout);
   }
@@ -250,11 +254,11 @@ export function activate(context: vscode.ExtensionContext) {
   // File watcher
   const watcher = vscode.workspace.createFileSystemWatcher('**/*.ts');
   context.subscriptions.push(watcher);
-  
+
   // Status bar item
   const statusBar = vscode.window.createStatusBarItem();
   context.subscriptions.push(statusBar);
-  
+
   // Event listener
   const disposable = vscode.workspace.onDidSaveTextDocument(() => {
     // Handle save
@@ -270,17 +274,17 @@ export function activate(context: vscode.ExtensionContext) {
 ```typescript
 class MyProvider {
   private cache = new Map<string, any>();
-  
+
   async getData(key: string) {
     if (this.cache.has(key)) {
       return this.cache.get(key);
     }
-    
+
     const data = await expensiveOperation(key);
     this.cache.set(key, data);
     return data;
   }
-  
+
   clearCache() {
     this.cache.clear();
   }
@@ -304,6 +308,7 @@ Use esbuild or webpack:
 ```
 
 Benefits:
+
 - Smaller package size
 - Faster activation
 - Better startup performance
@@ -317,7 +322,7 @@ Benefits:
 ```typescript
 // ❌ BAD: Direct execution
 const command = await vscode.window.showInputBox({
-  prompt: 'Enter command'
+  prompt: 'Enter command',
 });
 exec(command); // Dangerous!
 
@@ -330,7 +335,7 @@ const command = await vscode.window.showInputBox({
       return 'Invalid command';
     }
     return undefined;
-  }
+  },
 });
 ```
 
@@ -416,7 +421,7 @@ async function doSomething() {
     await riskyOperation();
   } catch (error) {
     vscode.window.showErrorMessage(
-      `Operation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Operation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
     );
     console.error(error);
   }
@@ -453,7 +458,7 @@ suite('Extension Test Suite', () => {
     const commands = await vscode.commands.getCommands();
     assert.ok(commands.includes('extension.myCommand'));
   });
-  
+
   test('Command executes', async () => {
     await vscode.commands.executeCommand('extension.myCommand');
     // Assert expected behavior
@@ -495,8 +500,8 @@ Brief description
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable extension
-* `myExtension.timeout`: Timeout in milliseconds
+- `myExtension.enable`: Enable/disable extension
+- `myExtension.timeout`: Timeout in milliseconds
 
 ## Known Issues
 
@@ -517,7 +522,7 @@ Initial release
 ```typescript
 /**
  * Formats a JSON string with proper indentation.
- * 
+ *
  * @param json - The JSON string to format
  * @param indent - Number of spaces for indentation (default: 2)
  * @returns Formatted JSON string
@@ -557,14 +562,8 @@ export function formatJson(json: string, indent: number = 2): string {
     "type": "git",
     "url": "https://github.com/username/extension"
   },
-  "keywords": [
-    "json",
-    "formatter",
-    "tools"
-  ],
-  "categories": [
-    "Formatters"
-  ],
+  "keywords": ["json", "formatter", "tools"],
+  "categories": ["Formatters"],
   "license": "MIT"
 }
 ```
@@ -617,11 +616,11 @@ vsce publish
 ```typescript
 // Status bar with accessible text
 const statusBar = vscode.window.createStatusBarItem();
-statusBar.text = "$(check) Build successful";
-statusBar.tooltip = "Build completed successfully at " + new Date().toLocaleTimeString();
+statusBar.text = '$(check) Build successful';
+statusBar.tooltip = 'Build completed successfully at ' + new Date().toLocaleTimeString();
 statusBar.accessibilityInformation = {
-  label: "Build status: successful",
-  role: "status"
+  label: 'Build status: successful',
+  role: 'status',
 };
 ```
 
@@ -633,7 +632,7 @@ statusBar.accessibilityInformation = {
 // ✅ Respects user theme
 const decorationType = vscode.window.createTextEditorDecorationType({
   backgroundColor: new vscode.ThemeColor('editor.findMatchHighlightBackground'),
-  borderColor: new vscode.ThemeColor('editor.findMatchHighlightBorder')
+  borderColor: new vscode.ThemeColor('editor.findMatchHighlightBorder'),
 });
 ```
 
@@ -677,12 +676,14 @@ const files = await vscode.workspace.fs.readDirectory(uri);
 ### 1. Blocking Operations
 
 Don't use synchronous Node.js APIs:
+
 - `fs.readFileSync` → Use `vscode.workspace.fs.readFile`
 - `child_process.execSync` → Use async variant
 
 ### 2. Memory Leaks
 
 Always dispose resources:
+
 - Webviews
 - File watchers
 - Event listeners
@@ -721,4 +722,3 @@ Use workspace URIs and relative paths.
 - ✅ Follow semver for versioning
 
 This guide covers essential best practices for building professional VS Code extensions. Follow these guidelines to create extensions that are performant, secure, accessible, and provide excellent user experience.
-

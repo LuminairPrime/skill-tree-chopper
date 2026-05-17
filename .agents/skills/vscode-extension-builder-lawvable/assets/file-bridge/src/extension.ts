@@ -22,19 +22,17 @@ export async function activate(context: vscode.ExtensionContext) {
       if (bridge) {
         vscode.window.showInformationMessage('AI Bridge is active and listening for commands.');
       } else {
-        vscode.window.showWarningMessage('AI Bridge is not initialized. Run "Initialize AI Bridge" command.');
+        vscode.window.showWarningMessage(
+          'AI Bridge is not initialized. Run "Initialize AI Bridge" command.',
+        );
       }
-    })
+    }),
   );
 
   // Auto-initialize if bridge directory exists
   const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
   if (workspaceRoot) {
-    const bridgeDir = vscode.Uri.joinPath(
-      vscode.Uri.file(workspaceRoot),
-      '.vscode',
-      'ai-bridge'
-    );
+    const bridgeDir = vscode.Uri.joinPath(vscode.Uri.file(workspaceRoot), '.vscode', 'ai-bridge');
 
     try {
       await vscode.workspace.fs.stat(bridgeDir);
@@ -109,11 +107,11 @@ function registerHandlers(bridge: FileBridge, context: vscode.ExtensionContext) 
   bridge.registerHandler('getOpenFiles', async () => {
     const editors = vscode.window.visibleTextEditors;
     return {
-      files: editors.map(e => ({
+      files: editors.map((e) => ({
         path: e.document.uri.fsPath,
         languageId: e.document.languageId,
-        isDirty: e.document.isDirty
-      }))
+        isDirty: e.document.isDirty,
+      })),
     };
   });
 
@@ -123,7 +121,7 @@ function registerHandlers(bridge: FileBridge, context: vscode.ExtensionContext) 
     const allowedCommands = [
       'editor.action.formatDocument',
       'workbench.action.files.save',
-      'workbench.action.files.saveAll'
+      'workbench.action.files.saveAll',
     ];
 
     if (!allowedCommands.includes(params.command)) {
@@ -138,11 +136,11 @@ function registerHandlers(bridge: FileBridge, context: vscode.ExtensionContext) 
   bridge.registerHandler('getWorkspaceInfo', async () => {
     const folders = vscode.workspace.workspaceFolders || [];
     return {
-      folders: folders.map(f => ({
+      folders: folders.map((f) => ({
         name: f.name,
-        path: f.uri.fsPath
+        path: f.uri.fsPath,
       })),
-      name: vscode.workspace.name
+      name: vscode.workspace.name,
     };
   });
 
@@ -151,7 +149,7 @@ function registerHandlers(bridge: FileBridge, context: vscode.ExtensionContext) 
     const result = await vscode.window.showInputBox({
       prompt: params.prompt,
       placeHolder: params.placeHolder,
-      value: params.value
+      value: params.value,
     });
     return { value: result };
   });
@@ -160,7 +158,7 @@ function registerHandlers(bridge: FileBridge, context: vscode.ExtensionContext) 
   bridge.registerHandler('showQuickPick', async (params) => {
     const result = await vscode.window.showQuickPick(params.items, {
       placeHolder: params.placeHolder,
-      canPickMany: params.canPickMany
+      canPickMany: params.canPickMany,
     });
     return { selected: result };
   });

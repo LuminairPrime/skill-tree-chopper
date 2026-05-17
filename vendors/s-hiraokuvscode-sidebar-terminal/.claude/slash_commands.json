@@ -5,7 +5,7 @@
       "usage": "/release [patch|minor|major]",
       "examples": [
         "/release patch   # Patch version (0.1.70 → 0.1.71)",
-        "/release minor   # Minor version (0.1.70 → 0.2.0)", 
+        "/release minor   # Minor version (0.1.70 → 0.2.0)",
         "/release major   # Major version (0.1.70 → 1.0.0)"
       ],
       "command": "node commands/release.js",
@@ -27,7 +27,7 @@
       "cwd": ".",
       "features": [
         "🔍 Full quality gate analysis",
-        "📊 Detailed quality report", 
+        "📊 Detailed quality report",
         "⚠️ Error and warning identification",
         "💡 Fix recommendations"
       ]
@@ -47,17 +47,17 @@
   },
   "aliases": {
     "/r": "release",
-    "/rel": "release", 
+    "/rel": "release",
     "/q": "quality",
     "/f": "fix"
   },
   "workflows": {
     "complete_release": {
-      "name": "Complete Release Workflow", 
+      "name": "Complete Release Workflow",
       "description": "Full quality-assured release process",
       "steps": [
         "Run comprehensive quality checks",
-        "Auto-fix detected issues", 
+        "Auto-fix detected issues",
         "Increment version and create Git tag",
         "Push to GitHub and trigger CI/CD",
         "Monitor GitHub Actions success"

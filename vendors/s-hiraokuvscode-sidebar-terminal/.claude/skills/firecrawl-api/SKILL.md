@@ -18,11 +18,13 @@ Environment variable: `FIRECRAWL_API_KEY`
 Extract content from a single URL.
 
 ### Endpoint
+
 ```
 POST https://api.firecrawl.dev/v1/scrape
 ```
 
 ### Usage
+
 ```bash
 curl -s -X POST "https://api.firecrawl.dev/v1/scrape" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
@@ -34,12 +36,14 @@ curl -s -X POST "https://api.firecrawl.dev/v1/scrape" \
 ```
 
 ### Parameters
+
 - `url` (required): URL to scrape
 - `formats` (optional): Output formats - `markdown`, `html`, `rawHtml`, `links`
 - `onlyMainContent` (optional): Extract main content only (default: true)
 - `waitFor` (optional): Wait time in ms for dynamic content
 
 ### Example with Options
+
 ```bash
 curl -s -X POST "https://api.firecrawl.dev/v1/scrape" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
@@ -57,11 +61,13 @@ curl -s -X POST "https://api.firecrawl.dev/v1/scrape" \
 Discover all URLs on a website.
 
 ### Endpoint
+
 ```
 POST https://api.firecrawl.dev/v1/map
 ```
 
 ### Usage
+
 ```bash
 curl -s -X POST "https://api.firecrawl.dev/v1/map" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
@@ -76,11 +82,13 @@ curl -s -X POST "https://api.firecrawl.dev/v1/map" \
 Search the web and optionally scrape results.
 
 ### Endpoint
+
 ```
 POST https://api.firecrawl.dev/v1/search
 ```
 
 ### Usage
+
 ```bash
 curl -s -X POST "https://api.firecrawl.dev/v1/search" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
@@ -96,11 +104,13 @@ curl -s -X POST "https://api.firecrawl.dev/v1/search" \
 Crawl multiple pages from a website.
 
 ### Endpoint
+
 ```
 POST https://api.firecrawl.dev/v1/crawl
 ```
 
 ### Usage
+
 ```bash
 curl -s -X POST "https://api.firecrawl.dev/v1/crawl" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
@@ -113,6 +123,7 @@ curl -s -X POST "https://api.firecrawl.dev/v1/crawl" \
 ```
 
 This returns a job ID. Check status with:
+
 ```bash
 curl -s "https://api.firecrawl.dev/v1/crawl/JOB_ID" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY"
@@ -121,6 +132,7 @@ curl -s "https://api.firecrawl.dev/v1/crawl/JOB_ID" \
 ## Common Workflows
 
 ### Scrape Documentation
+
 ```bash
 curl -s -X POST "https://api.firecrawl.dev/v1/scrape" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
@@ -132,6 +144,7 @@ curl -s -X POST "https://api.firecrawl.dev/v1/scrape" \
 ```
 
 ### Extract Links from Page
+
 ```bash
 curl -s -X POST "https://api.firecrawl.dev/v1/scrape" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \

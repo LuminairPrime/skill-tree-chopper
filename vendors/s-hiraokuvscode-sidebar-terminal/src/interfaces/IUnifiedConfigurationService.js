@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * Interface definitions for the Unified Configuration Service
  *
@@ -6,7 +6,7 @@
  * following VS Code's established patterns and ensure type safety
  * across the entire configuration system.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.ConfigurationTarget = void 0;
 /**
  * Configuration target enumeration
@@ -14,11 +14,11 @@ exports.ConfigurationTarget = void 0;
  */
 var ConfigurationTarget;
 (function (ConfigurationTarget) {
-    ConfigurationTarget[ConfigurationTarget["DEFAULT"] = 0] = "DEFAULT";
-    ConfigurationTarget[ConfigurationTarget["APPLICATION"] = 1] = "APPLICATION";
-    ConfigurationTarget[ConfigurationTarget["USER"] = 2] = "USER";
-    ConfigurationTarget[ConfigurationTarget["WORKSPACE"] = 3] = "WORKSPACE";
-    ConfigurationTarget[ConfigurationTarget["WORKSPACE_FOLDER"] = 4] = "WORKSPACE_FOLDER";
-    ConfigurationTarget[ConfigurationTarget["MEMORY"] = 5] = "MEMORY";
+  ConfigurationTarget[(ConfigurationTarget['DEFAULT'] = 0)] = 'DEFAULT';
+  ConfigurationTarget[(ConfigurationTarget['APPLICATION'] = 1)] = 'APPLICATION';
+  ConfigurationTarget[(ConfigurationTarget['USER'] = 2)] = 'USER';
+  ConfigurationTarget[(ConfigurationTarget['WORKSPACE'] = 3)] = 'WORKSPACE';
+  ConfigurationTarget[(ConfigurationTarget['WORKSPACE_FOLDER'] = 4)] = 'WORKSPACE_FOLDER';
+  ConfigurationTarget[(ConfigurationTarget['MEMORY'] = 5)] = 'MEMORY';
 })(ConfigurationTarget || (exports.ConfigurationTarget = ConfigurationTarget = {}));
 //# sourceMappingURL=IUnifiedConfigurationService.js.map

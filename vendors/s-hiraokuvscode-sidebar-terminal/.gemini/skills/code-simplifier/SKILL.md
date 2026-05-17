@@ -1,6 +1,6 @@
 ---
 name: code-simplifier
-description: "Simplifies and refines code for clarity, consistency, and maintainability while preserving all functionality. This skill should be used after implementing features or bug fixes to clean up code, when refactoring for readability, or when reducing unnecessary complexity. It launches the code-simplifier subagent provided by the code-simplifier@claude-plugins-official plugin."
+description: 'Simplifies and refines code for clarity, consistency, and maintainability while preserving all functionality. This skill should be used after implementing features or bug fixes to clean up code, when refactoring for readability, or when reducing unnecessary complexity. It launches the code-simplifier subagent provided by the code-simplifier@claude-plugins-official plugin.'
 ---
 
 # Code Simplifier
@@ -40,6 +40,7 @@ Task tool call:
 ```
 
 The subagent is an Opus-powered specialist that:
+
 - Preserves exact functionality while improving how code is written
 - Applies project standards from CLAUDE.md (ES modules, naming conventions, etc.)
 - Reduces unnecessary complexity and nesting
@@ -49,6 +50,7 @@ The subagent is an Opus-powered specialist that:
 ### Step 3: Prompt Construction
 
 Include in the prompt:
+
 - The specific files or code areas to simplify
 - Any constraints (e.g., "preserve the public API", "do not change test files")
 - The type of simplification needed (e.g., "reduce nesting", "improve naming", "remove dead code")
@@ -56,6 +58,7 @@ Include in the prompt:
 #### Example Invocations
 
 **After a feature implementation:**
+
 ```
 Task tool:
   subagent_type: "code-simplifier"
@@ -64,6 +67,7 @@ Task tool:
 ```
 
 **Targeted cleanup:**
+
 ```
 Task tool:
   subagent_type: "code-simplifier"
@@ -72,6 +76,7 @@ Task tool:
 ```
 
 **Branch-wide cleanup:**
+
 ```
 Task tool:
   subagent_type: "code-simplifier"
@@ -82,6 +87,7 @@ Task tool:
 ### Step 4: Review Results
 
 After the subagent completes:
+
 1. Review the changes for correctness
 2. Run tests to verify functionality is preserved: `npm run test:unit`
 3. Run the linter to verify code quality: `npm run lint`

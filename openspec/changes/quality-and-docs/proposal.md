@@ -12,10 +12,12 @@ The current `ai-skill-auditor` MVP lacks test coverage and user documentation. W
 ## Capabilities
 
 ### New Capabilities
+
 - `test-infrastructure`: Establishes the sandboxed automated testing environment (unit and integration tests) using mock file systems and the VS Code Extension test CLI.
 - `user-documentation`: Creates the outward-facing documentation (`README.md`) detailing the extension's purpose, usage, and supported paths.
 
 ### Modified Capabilities
+
 <!-- No existing requirement changes at the spec level. -->
 
 ## Impact

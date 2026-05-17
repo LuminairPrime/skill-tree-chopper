@@ -17,7 +17,8 @@ module.exports = {
     messages: {
       requireBaseManager: 'Manager class "{{className}}" must extend BaseManager',
       requireDispose: 'Manager class "{{className}}" must implement dispose() method',
-      noLateBinding: 'Avoid late-binding pattern with setCoordinator(). Use constructor injection instead',
+      noLateBinding:
+        'Avoid late-binding pattern with setCoordinator(). Use constructor injection instead',
     },
     schema: [],
   },

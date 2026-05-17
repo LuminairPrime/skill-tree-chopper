@@ -84,14 +84,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ConfigurationService } from '../../../services/ConfigurationService';
 
 describe('ConfigurationService', () => {
-
   let mockConfig: any;
   let service: ConfigurationService;
 
   beforeEach(() => {
-
     mockConfig = {
-      get: vi.fn()
+      get: vi.fn(),
     };
     service = new ConfigurationService(mockConfig);
   });
@@ -170,7 +168,7 @@ describe('Settings Manager', () => {
       },
       update: vi.fn().mockResolvedValue(undefined),
       has: (key: string) => true,
-      inspect: vi.fn()
+      inspect: vi.fn(),
     }));
   });
 
@@ -187,25 +185,23 @@ describe('Settings Manager', () => {
 describe('Extension Activation', () => {
   let mockContext: vscode.ExtensionContext;
 
-
   beforeEach(() => {
-
     mockContext = {
       subscriptions: [],
       globalState: {
         get: vi.fn(),
         update: vi.fn().mockResolvedValue(undefined),
-        keys: vi.fn().mockReturnValue([])
+        keys: vi.fn().mockReturnValue([]),
       },
       workspaceState: {
         get: vi.fn(),
         update: vi.fn().mockResolvedValue(undefined),
-        keys: vi.fn().mockReturnValue([])
+        keys: vi.fn().mockReturnValue([]),
       },
       extensionPath: '/mock/extension/path',
       storagePath: '/mock/storage/path',
       globalStoragePath: '/mock/global/storage',
-      logPath: '/mock/log/path'
+      logPath: '/mock/log/path',
     } as any;
   });
 
@@ -241,15 +237,13 @@ export class StorageService {
 
 // テスト
 describe('StorageService', () => {
-
   let mockStorage: any;
   let service: StorageService;
 
   beforeEach(() => {
-
     mockStorage = {
       get: vi.fn(),
-      update: vi.fn().mockResolvedValue(undefined)
+      update: vi.fn().mockResolvedValue(undefined),
     };
     service = new StorageService(mockStorage);
   });
@@ -408,9 +402,7 @@ describe('Error Handling', () => {
 ```typescript
 describe('Async Error Handling', () => {
   it('should reject with error', async () => {
-    await expect(
-      service.loadInvalidData()
-    ).rejects.toThrow('Data not found');
+    await expect(service.loadInvalidData()).rejects.toThrow('Data not found');
   });
 
   it('should handle rejection gracefully', async () => {
@@ -482,7 +474,7 @@ export function createTestTerminal(overrides = {}): Terminal {
     isActive: true,
     scrollback: [],
     cwd: '/home/user',
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -491,7 +483,7 @@ export function createTestSession(overrides = {}): Session {
     id: 'session-1',
     terminals: [createTestTerminal()],
     timestamp: Date.now(),
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -500,7 +492,7 @@ describe('TerminalManager', () => {
   it('should handle terminal with custom data', () => {
     const terminal = createTestTerminal({
       name: 'Custom Terminal',
-      scrollback: ['line1', 'line2']
+      scrollback: ['line1', 'line2'],
     });
 
     manager.addTerminal(terminal);

@@ -224,7 +224,7 @@ class MyClass implements vscode.Disposable {
     this._disposables.add({
       dispose: () => {
         // Custom cleanup logic
-      }
+      },
     });
   }
 

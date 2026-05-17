@@ -9,10 +9,7 @@
     "vscode": "^1.106.0",
     "node": ">=18.0.0"
   },
-  "categories": [
-    "Other",
-    "Debuggers"
-  ],
+  "categories": ["Other", "Debuggers"],
   "keywords": [
     "terminal",
     "sidebar",
@@ -65,10 +62,7 @@
   "qna": "https://github.com/s-hiraoku/vscode-sidebar-terminal/discussions",
   "preview": false,
   "main": "./dist/extension.js",
-  "activationEvents": [
-    "onView:secondaryTerminal",
-    "onCommand:secondaryTerminal.focusTerminal"
-  ],
+  "activationEvents": ["onView:secondaryTerminal", "onCommand:secondaryTerminal.focusTerminal"],
   "contributes": {
     "viewsContainers": {
       "activitybar": [
@@ -336,11 +330,7 @@
         "secondaryTerminal.theme": {
           "type": "string",
           "default": "auto",
-          "enum": [
-            "auto",
-            "dark",
-            "light"
-          ],
+          "enum": ["auto", "dark", "light"],
           "description": "Terminal theme. Auto follows VS Code theme."
         },
         "secondaryTerminal.defaultDirectory": {
@@ -489,11 +479,7 @@
         "secondaryTerminal.persistentSessionReviveProcess": {
           "type": "string",
           "default": "onExitAndWindowClose",
-          "enum": [
-            "never",
-            "onExit",
-            "onExitAndWindowClose"
-          ],
+          "enum": ["never", "onExit", "onExitAndWindowClose"],
           "enumDescriptions": [
             "Never save terminal sessions",
             "Save sessions when VS Code exits",
@@ -537,37 +523,13 @@
         "secondaryTerminal.fontWeight": {
           "type": "string",
           "default": "normal",
-          "enum": [
-            "normal",
-            "bold",
-            "100",
-            "200",
-            "300",
-            "400",
-            "500",
-            "600",
-            "700",
-            "800",
-            "900"
-          ],
+          "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"],
           "description": "The font weight to use within the terminal for non-bold text. Accepts normal and bold keywords or numbers between 1 and 1000."
         },
         "secondaryTerminal.fontWeightBold": {
           "type": "string",
           "default": "bold",
-          "enum": [
-            "normal",
-            "bold",
-            "100",
-            "200",
-            "300",
-            "400",
-            "500",
-            "600",
-            "700",
-            "800",
-            "900"
-          ],
+          "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"],
           "description": "The font weight to use within the terminal for bold text. Accepts normal and bold keywords or numbers between 1 and 1000."
         },
         "secondaryTerminal.lineHeight": {
@@ -594,11 +556,7 @@
         "secondaryTerminal.cursorStyle": {
           "type": "string",
           "default": "block",
-          "enum": [
-            "block",
-            "underline",
-            "bar"
-          ],
+          "enum": ["block", "underline", "bar"],
           "description": "Controls the style of terminal cursor."
         },
         "secondaryTerminal.cursorWidth": {
@@ -636,26 +594,17 @@
           "description": "The macOS terminal profiles to present when creating a new terminal via the terminal dropdown. Set to null to exclude a profile from the list, for example: \"secondaryTerminal.profiles.osx\": { \"bash\": null }."
         },
         "secondaryTerminal.defaultProfile.windows": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "default": null,
           "markdownDescription": "The default terminal profile name on Windows. Enter a **profile name** (not a path). Examples: `PowerShell`, `PowerShell 7`, `Command Prompt`, `Git Bash`. To see available profiles, run `Terminal: Select Default Profile` from the Command Palette."
         },
         "secondaryTerminal.defaultProfile.linux": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "default": null,
           "markdownDescription": "The default terminal profile name on Linux. Enter a **profile name** (not a path). Examples: `bash`, `zsh`, `fish`. To see available profiles, run `Terminal: Select Default Profile` from the Command Palette."
         },
         "secondaryTerminal.defaultProfile.osx": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "default": null,
           "markdownDescription": "The default terminal profile name on macOS. Enter a **profile name** (not a path). Examples: `zsh`, `bash`, `fish`. To see available profiles, run `Terminal: Select Default Profile` from the Command Palette."
         },
@@ -696,11 +645,7 @@
         "secondaryTerminal.panelLocation": {
           "type": "string",
           "default": "auto",
-          "enum": [
-            "auto",
-            "sidebar",
-            "panel"
-          ],
+          "enum": ["auto", "sidebar", "panel"],
           "enumDescriptions": [
             "Automatically detect panel location",
             "Force sidebar location for split direction calculation",
@@ -783,16 +728,8 @@
         },
         "secondaryTerminal.activeBorderMode": {
           "type": "string",
-          "enum": [
-            "none",
-            "always",
-            "multipleOnly"
-          ],
-          "enumItemLabels": [
-            "Off",
-            "Always",
-            "Only with Multiple Terminals"
-          ],
+          "enum": ["none", "always", "multipleOnly"],
+          "enumItemLabels": ["Off", "Always", "Only with Multiple Terminals"],
           "enumDescriptions": [
             "Border highlight is disabled",
             "Border always shown on the active terminal",
@@ -878,13 +815,7 @@
         "secondaryTerminal.logging.level": {
           "type": "string",
           "default": "warn",
-          "enum": [
-            "none",
-            "error",
-            "warn",
-            "info",
-            "debug"
-          ],
+          "enum": ["none", "error", "warn", "info", "debug"],
           "enumDescriptions": [
             "No logging",
             "Log only errors",
@@ -1170,12 +1101,8 @@
     "node-pty": "^1.2.0-beta.11",
     "process": "^0.11.10"
   },
-  "bundledDependencies": [
-    "node-pty"
-  ],
-  "bundleDependencies": [
-    "node-pty"
-  ],
+  "bundledDependencies": ["node-pty"],
+  "bundleDependencies": ["node-pty"],
   "volta": {
     "node": "24.13.1"
   }

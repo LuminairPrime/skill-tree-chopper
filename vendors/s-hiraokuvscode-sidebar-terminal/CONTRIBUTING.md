@@ -103,6 +103,7 @@ git commit -m "docs: update installation instructions"
 ```
 
 **Types:**
+
 - `feat`: A new feature
 - `fix`: A bug fix
 - `docs`: Documentation only changes
@@ -118,6 +119,7 @@ git push origin feature/your-feature-name
 ```
 
 Then create a Pull Request on GitHub with:
+
 - Clear title and description
 - Link to related issues
 - Screenshots/GIFs if UI changes
@@ -167,12 +169,14 @@ Security is a top priority for this project. Please follow these guidelines when
 ### Never Commit Credentials
 
 **CRITICAL**: Never commit any of the following:
+
 - API keys, tokens, or passwords
 - Private keys or certificates (`.pem`, `.key`, `.p12`, `.pfx`)
 - Environment files with sensitive data
 - Any hardcoded secrets in source code
 
 These files are automatically excluded via `.gitignore`:
+
 ```
 .env, .env.*, credentials.json, secrets.json
 *.pem, *.key, *.p12, *.pfx
@@ -183,6 +187,7 @@ These files are automatically excluded via `.gitignore`:
 If you need to store credentials:
 
 ✅ **CORRECT**: Use VS Code's SecretStorage API
+
 ```typescript
 // Store a secret
 await context.secrets.store('myExtension.apiKey', apiKey);
@@ -195,9 +200,10 @@ await context.secrets.delete('myExtension.apiKey');
 ```
 
 ❌ **INCORRECT**: Never do this
+
 ```typescript
 // Don't hardcode credentials
-const API_KEY = "sk-1234567890abcdef";
+const API_KEY = 'sk-1234567890abcdef';
 
 // Don't store in workspace configuration
 vscode.workspace.getConfiguration().update('apiKey', key);
@@ -216,6 +222,7 @@ fs.writeFileSync('credentials.json', JSON.stringify({ key }));
    - Validate configuration values
 
 3. **Dependencies**: Keep them updated and secure
+
    ```bash
    # Check for vulnerabilities
    npm audit
@@ -233,12 +240,14 @@ fs.writeFileSync('credentials.json', JSON.stringify({ key }));
 Before submitting a PR:
 
 1. **Check for hardcoded secrets**:
+
    ```bash
    # Search for potential secrets (future implementation)
    git diff main | grep -iE "(password|secret|token|api_key)"
    ```
 
 2. **Run security linters**:
+
    ```bash
    npm run lint
    ```
@@ -250,6 +259,7 @@ Before submitting a PR:
 **DO NOT** create public issues for security vulnerabilities.
 
 Instead:
+
 1. Email the maintainer directly
 2. Use GitHub's "Report a vulnerability" feature
 3. Include reproduction steps and potential impact
@@ -259,6 +269,7 @@ See [SECURITY.md](../SECURITY.md) for full details.
 ### Pre-commit Checklist
 
 Before committing:
+
 - [ ] No hardcoded credentials in code
 - [ ] No `.env` files or credential files staged
 - [ ] All secrets use VS Code SecretStorage API
@@ -284,6 +295,7 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 We welcome feature requests! Please use the [feature request template](https://github.com/s-hiraoku/vscode-sidebar-terminal/issues/new?template=feature_request.md).
 
 Consider:
+
 - Is this feature useful to most users?
 - How difficult would it be to implement?
 - Does it align with the project's goals?
@@ -293,16 +305,19 @@ Consider:
 We especially welcome contributions in these areas:
 
 ### High Priority
+
 - **Performance Optimization**: Improve terminal rendering performance
 - **Cross-platform Testing**: Ensure compatibility across Windows/macOS/Linux
 - **Terminal Features**: Advanced terminal features (search, selection, etc.)
 
 ### Medium Priority
+
 - **Accessibility**: Screen reader support, keyboard navigation
 - **Themes**: Better integration with VS Code themes
 - **Multi-tab Support**: Enhanced terminal tab management
 
 ### Low Priority
+
 - **Documentation**: Improve README, add tutorials
 - **Testing**: Increase test coverage
 - **CI/CD**: Improve build and release process
@@ -310,15 +325,18 @@ We especially welcome contributions in these areas:
 ## 📚 Resources
 
 ### VS Code Extension Development
+
 - [VS Code Extension API](https://code.visualstudio.com/api)
 - [VS Code UX Guidelines](https://code.visualstudio.com/api/ux-guidelines/overview)
 - [Webview API](https://code.visualstudio.com/api/extension-guides/webview)
 
 ### Terminal Technology
+
 - [xterm.js Documentation](https://xtermjs.org/docs/)
 - [node-pty Documentation](https://github.com/microsoft/node-pty)
 
 ### Project-Specific
+
 - [Architecture Overview](./docs/architecture.md) (if available)
 - [Testing Guide](./docs/testing.md) (if available)
 - [Release Process Guide (Japanese)](RELEASE_PROCESS.md)
@@ -334,6 +352,7 @@ By contributing, you agree that your contributions will be licensed under the sa
 ## 🙏 Questions?
 
 Feel free to:
+
 - [Open an issue](https://github.com/s-hiraoku/vscode-sidebar-terminal/issues/new/choose)
 - Contact the maintainer: [@s-hiraoku](https://github.com/s-hiraoku)
 

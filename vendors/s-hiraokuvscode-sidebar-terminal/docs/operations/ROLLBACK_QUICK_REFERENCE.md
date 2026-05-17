@@ -54,29 +54,29 @@ npm run monitor:continuous
 
 ### ロールバック系
 
-| コマンド | 用途 | 所要時間 |
-|----------|------|----------|
-| `npm run rollback:emergency:publish` | 完全自動ロールバック | 15分 |
-| `npm run rollback:emergency` | ローカルロールバックのみ | 5分 |
-| `npm run rollback:to 0.1.95` | 特定バージョンに切り戻し | 5分 |
-| `npm run rollback:list` | 利用可能バージョン確認 | 即座 |
-| `npm run rollback:verify` | 公開前安全性確認 | 3分 |
-| `npm run rollback:backup` | 現在バージョンのバックアップ | 1分 |
+| コマンド                             | 用途                         | 所要時間 |
+| ------------------------------------ | ---------------------------- | -------- |
+| `npm run rollback:emergency:publish` | 完全自動ロールバック         | 15分     |
+| `npm run rollback:emergency`         | ローカルロールバックのみ     | 5分      |
+| `npm run rollback:to 0.1.95`         | 特定バージョンに切り戻し     | 5分      |
+| `npm run rollback:list`              | 利用可能バージョン確認       | 即座     |
+| `npm run rollback:verify`            | 公開前安全性確認             | 3分      |
+| `npm run rollback:backup`            | 現在バージョンのバックアップ | 1分      |
 
 ### 監視系
 
-| コマンド | 用途 | 頻度 |
-|----------|------|------|
-| `npm run monitor:check` | 単発ヘルスチェック | 即座 |
-| `npm run monitor:continuous` | 連続監視（30分間隔） | 継続 |
+| コマンド                        | 用途                 | 頻度 |
+| ------------------------------- | -------------------- | ---- |
+| `npm run monitor:check`         | 単発ヘルスチェック   | 即座 |
+| `npm run monitor:continuous`    | 連続監視（30分間隔） | 継続 |
 | `npm run monitor:continuous 15` | 連続監視（15分間隔） | 継続 |
 
 ### 修正系
 
-| コマンド | 用途 | 所要時間 |
-|----------|------|----------|
-| `npm run rollback:hotfix` | ホットフィックス自動リリース | 20分 |
-| `npm run rollback:plan` | 緊急対応プラン生成 | 1分 |
+| コマンド                  | 用途                         | 所要時間 |
+| ------------------------- | ---------------------------- | -------- |
+| `npm run rollback:hotfix` | ホットフィックス自動リリース | 20分     |
+| `npm run rollback:plan`   | 緊急対応プラン生成           | 1分      |
 
 ## 🔧 トラブルシューティング
 
@@ -108,16 +108,19 @@ npx @vscode/vsce show s-hiraoku.vscode-sidebar-terminal
 ## 📱 緊急連絡フロー
 
 ### レベル1: 自動対応（0-15分）
+
 - ロールバックスクリプト実行
 - 基本動作確認
 - 自動公開
 
 ### レベル2: 手動対応（15-60分）
+
 - 根本原因分析
 - 手動修正
 - 緊急リリース
 
 ### レベル3: エスカレーション（1時間以上）
+
 - VS Code Marketplace サポート
 - 外部依存関係確認
 - 長期対応計画

@@ -13,18 +13,18 @@ class TDDQualityChecker {
       testFailing: 0,
       tddCompliance: 0,
       eslintScore: 0,
-      overallQuality: 0
+      overallQuality: 0,
     };
   }
 
   async check() {
     console.log('🔍 Running TDD Quality Check...\n');
-    
+
     await this.checkTestCoverage();
     await this.checkTestCount();
     await this.checkTDDCompliance();
     await this.checkESLint();
-    
+
     this.calculateOverallQuality();
     this.generateReport();
   }
@@ -53,7 +53,7 @@ class TDDQualityChecker {
     try {
       const testFiles = this.getTestFiles();
       this.metrics.testCount = testFiles.length;
-      
+
       // Estimate passing/failing based on typical success rate
       this.metrics.testPassing = Math.round(this.metrics.testCount * 0.6);
       this.metrics.testFailing = this.metrics.testCount - this.metrics.testPassing;
@@ -72,12 +72,10 @@ class TDDQualityChecker {
         const metrics = JSON.parse(fs.readFileSync(metricsPath, 'utf8'));
         // Calculate compliance based on red-green-refactor cycles
         const totalCycles = metrics.cycles?.length || 0;
-        const completeCycles = metrics.cycles?.filter(c => 
-          c.red && c.green && c.refactor
-        ).length || 0;
-        this.metrics.tddCompliance = totalCycles > 0 
-          ? Math.round((completeCycles / totalCycles) * 100)
-          : 50;
+        const completeCycles =
+          metrics.cycles?.filter((c) => c.red && c.green && c.refactor).length || 0;
+        this.metrics.tddCompliance =
+          totalCycles > 0 ? Math.round((completeCycles / totalCycles) * 100) : 50;
       } else {
         this.metrics.tddCompliance = 50;
       }
@@ -90,9 +88,9 @@ class TDDQualityChecker {
   async checkESLint() {
     try {
       // Try to run ESLint
-      execSync('npm run lint -- --format json', { 
+      execSync('npm run lint -- --format json', {
         encoding: 'utf8',
-        stdio: 'pipe'
+        stdio: 'pipe',
       });
       this.metrics.eslintScore = 100; // No errors
     } catch (error) {
@@ -100,8 +98,9 @@ class TDDQualityChecker {
       try {
         const output = error.stdout || error.output?.toString() || '';
         const results = JSON.parse(output);
-        const totalErrors = results.reduce((sum, file) => 
-          sum + file.errorCount + file.warningCount, 0
+        const totalErrors = results.reduce(
+          (sum, file) => sum + file.errorCount + file.warningCount,
+          0
         );
         this.metrics.eslintScore = Math.max(0, 100 - totalErrors);
       } catch {
@@ -113,16 +112,16 @@ class TDDQualityChecker {
   calculateOverallQuality() {
     // Weighted average of all metrics
     this.metrics.overallQuality = Math.round(
-      (this.metrics.testCoverage * 0.3 +
-       this.metrics.tddCompliance * 0.3 +
-       this.metrics.eslintScore * 0.2 +
-       (this.metrics.testPassing / Math.max(1, this.metrics.testCount)) * 100 * 0.2) 
+      this.metrics.testCoverage * 0.3 +
+        this.metrics.tddCompliance * 0.3 +
+        this.metrics.eslintScore * 0.2 +
+        (this.metrics.testPassing / Math.max(1, this.metrics.testCount)) * 100 * 0.2
     );
   }
 
   generateReport() {
     const format = process.argv.includes('--format=markdown') ? 'markdown' : 'console';
-    
+
     if (format === 'markdown') {
       this.generateMarkdownReport();
     } else {
@@ -141,7 +140,7 @@ class TDDQualityChecker {
     console.log(`📝 ESLint Score: ${this.metrics.eslintScore}%`);
     console.log('='.repeat(50));
     console.log(`🏆 Overall Quality Score: ${this.metrics.overallQuality}/100`);
-    
+
     // Recommendations
     console.log('\n💡 Recommendations:');
     if (this.metrics.testCoverage < 80) {
@@ -156,11 +155,11 @@ class TDDQualityChecker {
     if (this.metrics.eslintScore < 100) {
       console.log('- Address ESLint warnings and errors');
     }
-    
+
     if (this.metrics.overallQuality >= 80) {
       console.log('\n✨ Excellent TDD practices! Keep it up!');
     } else if (this.metrics.overallQuality >= 60) {
-      console.log('\n👍 Good TDD practices, but there\'s room for improvement.');
+      console.log("\n👍 Good TDD practices, but there's room for improvement.");
     } else {
       console.log('\n⚠️ TDD practices need significant improvement.');
     }
@@ -194,7 +193,7 @@ ${this.getRecommendations()}
 
 ${this.getNextSteps()}
 `;
-    
+
     fs.writeFileSync('tdd-quality-report.md', report);
     console.log('📄 Markdown report generated: tdd-quality-report.md');
   }
@@ -218,28 +217,36 @@ ${this.getNextSteps()}
 
   getRecommendations() {
     const recommendations = [];
-    
+
     if (this.metrics.testCoverage < 80) {
-      recommendations.push('- **Increase test coverage**: Current coverage is below 80%. Focus on untested code paths.');
+      recommendations.push(
+        '- **Increase test coverage**: Current coverage is below 80%. Focus on untested code paths.'
+      );
     }
     if (this.metrics.tddCompliance < 70) {
-      recommendations.push('- **Improve TDD compliance**: Follow the Red-Green-Refactor cycle more consistently.');
+      recommendations.push(
+        '- **Improve TDD compliance**: Follow the Red-Green-Refactor cycle more consistently.'
+      );
     }
     if (this.metrics.testFailing > 0) {
-      recommendations.push(`- **Fix failing tests**: ${this.metrics.testFailing} tests are currently failing.`);
+      recommendations.push(
+        `- **Fix failing tests**: ${this.metrics.testFailing} tests are currently failing.`
+      );
     }
     if (this.metrics.eslintScore < 100) {
-      recommendations.push('- **Address code quality issues**: ESLint has detected issues that should be resolved.');
+      recommendations.push(
+        '- **Address code quality issues**: ESLint has detected issues that should be resolved.'
+      );
     }
-    
-    return recommendations.length > 0 
+
+    return recommendations.length > 0
       ? recommendations.join('\n')
       : '- All metrics are meeting or exceeding targets. Great work!';
   }
 
   getNextSteps() {
     const steps = [];
-    
+
     if (this.metrics.overallQuality >= 80) {
       steps.push('1. Continue maintaining high TDD standards');
       steps.push('2. Consider adding more edge case tests');
@@ -253,22 +260,22 @@ ${this.getNextSteps()}
       steps.push('2. Implement TDD for all new features');
       steps.push('3. Schedule team TDD training session');
     }
-    
+
     return steps.join('\n');
   }
 
   getTestFiles() {
     const testDir = path.join(process.cwd(), 'src', 'test');
     const testFiles = [];
-    
+
     function findTests(dir) {
       if (!fs.existsSync(dir)) return;
-      
+
       const files = fs.readdirSync(dir);
       for (const file of files) {
         const fullPath = path.join(dir, file);
         const stat = fs.statSync(fullPath);
-        
+
         if (stat.isDirectory()) {
           findTests(fullPath);
         } else if (file.endsWith('.test.ts') || file.endsWith('.test.js')) {
@@ -276,7 +283,7 @@ ${this.getNextSteps()}
         }
       }
     }
-    
+
     findTests(testDir);
     return testFiles;
   }

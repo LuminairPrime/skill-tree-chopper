@@ -9,60 +9,60 @@ Inter-agent communication framework via Google A2A Protocol.
 
 ## Quick Reference
 
-| Task | Command |
-|------|---------|
-| List agents (Rich TUI) | `synapse list` (event-driven refresh via file watcher with 10s fallback, ↑/↓ or 1-9 to select, Enter/j jump, k kill, / filter by TYPE/NAME/WORKING_DIR) |
-| Send message | `synapse send <target> "<message>" --from <sender>` |
-| Broadcast to cwd agents | `synapse broadcast "<message>" --from <sender>` |
-| Wait for reply | `synapse send <target> "<message>" --response --from <sender>` |
-| Reply to last message | `synapse reply "<response>"` |
-| Reply to specific sender | `synapse reply "<response>" --to <sender_id>` |
-| List reply targets | `synapse reply --list-targets` |
-| Emergency stop | `synapse send <target> "STOP" --priority 5 --from <sender>` |
-| Stop agent | `synapse stop <profile\|id>` |
-| Kill agent (graceful) | `synapse kill <target>` (sends shutdown request, 30s timeout, then SIGTERM) |
-| Kill agent (force) | `synapse kill <target> -f` (immediate SIGKILL) |
-| Jump to terminal | `synapse jump <target>` |
-| Rename agent | `synapse rename <target> --name <name> --role <role>` |
-| Check file locks | `synapse file-safety locks` |
-| View history | `synapse history list` |
-| Initialize settings | `synapse init` |
-| Edit settings (TUI) | `synapse config` (includes List Display for column config) |
-| View settings | `synapse config show [--scope user\|project]` |
-| Reset settings | `synapse reset [--scope user\|project\|both]` |
-| Show instructions | `synapse instructions show <agent>` |
-| Send instructions | `synapse instructions send <agent> [--preview]` |
-| View logs | `synapse logs <profile> [-f] [-n <lines>]` |
-| Add external agent | `synapse external add <url> [--alias <name>]` |
-| List external agents | `synapse external list` |
-| External agent info | `synapse external info <alias>` |
-| Send to external | `synapse external send <alias> "<message>" [--wait]` |
-| Remove external agent | `synapse external remove <alias>` |
-| Skill Manager (TUI) | `synapse skills` |
-| List skills | `synapse skills list [--scope synapse\|user\|project\|plugin]` |
-| Show skill detail | `synapse skills show <name>` |
-| Deploy skill | `synapse skills deploy <name> --agent claude,codex --scope user` |
-| Import skill | `synapse skills import <name>` |
-| Install from repo | `synapse skills add <repo>` |
-| Create skill | `synapse skills create` |
-| Delete skill | `synapse skills delete <name> [--force]` |
-| Move skill | `synapse skills move <name> --to <scope>` |
-| List skill sets | `synapse skills set list` |
-| Show skill set detail | `synapse skills set show <name>` |
-| Trace task | `synapse trace <task_id>` |
-| Auth setup | `synapse auth setup` (generate keys + instructions) |
-| Generate API key | `synapse auth generate-key [-n <count>] [-e]` |
-| List task board | `synapse tasks list [--status pending] [--agent claude]` |
-| Create task | `synapse tasks create "subject" -d "description" [--blocked-by ID]` |
-| Assign task | `synapse tasks assign <task_id> <agent>` |
-| Complete task | `synapse tasks complete <task_id>` |
-| Approve plan | `synapse approve <task_id>` |
-| Reject plan | `synapse reject <task_id> --reason "reason"` |
-| Start team (CLI) | `synapse team start <spec...> [--layout ...] [--all-new]` (1st=handoff, rest=new panes; `--all-new` for all new) |
-| Start team (API) | `POST /team/start` with `{"agents": [...], "layout": "split"}` |
-| Spawn agent | `synapse spawn <profile> [--port] [--name] [--role] [--skill-set] [--terminal]` |
-| Delegate mode | `synapse claude --delegate-mode [--name coordinator]` |
-| Version info | `synapse --version` |
+| Task                     | Command                                                                                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| List agents (Rich TUI)   | `synapse list` (event-driven refresh via file watcher with 10s fallback, ↑/↓ or 1-9 to select, Enter/j jump, k kill, / filter by TYPE/NAME/WORKING_DIR) |
+| Send message             | `synapse send <target> "<message>" --from <sender>`                                                                                                     |
+| Broadcast to cwd agents  | `synapse broadcast "<message>" --from <sender>`                                                                                                         |
+| Wait for reply           | `synapse send <target> "<message>" --response --from <sender>`                                                                                          |
+| Reply to last message    | `synapse reply "<response>"`                                                                                                                            |
+| Reply to specific sender | `synapse reply "<response>" --to <sender_id>`                                                                                                           |
+| List reply targets       | `synapse reply --list-targets`                                                                                                                          |
+| Emergency stop           | `synapse send <target> "STOP" --priority 5 --from <sender>`                                                                                             |
+| Stop agent               | `synapse stop <profile\|id>`                                                                                                                            |
+| Kill agent (graceful)    | `synapse kill <target>` (sends shutdown request, 30s timeout, then SIGTERM)                                                                             |
+| Kill agent (force)       | `synapse kill <target> -f` (immediate SIGKILL)                                                                                                          |
+| Jump to terminal         | `synapse jump <target>`                                                                                                                                 |
+| Rename agent             | `synapse rename <target> --name <name> --role <role>`                                                                                                   |
+| Check file locks         | `synapse file-safety locks`                                                                                                                             |
+| View history             | `synapse history list`                                                                                                                                  |
+| Initialize settings      | `synapse init`                                                                                                                                          |
+| Edit settings (TUI)      | `synapse config` (includes List Display for column config)                                                                                              |
+| View settings            | `synapse config show [--scope user\|project]`                                                                                                           |
+| Reset settings           | `synapse reset [--scope user\|project\|both]`                                                                                                           |
+| Show instructions        | `synapse instructions show <agent>`                                                                                                                     |
+| Send instructions        | `synapse instructions send <agent> [--preview]`                                                                                                         |
+| View logs                | `synapse logs <profile> [-f] [-n <lines>]`                                                                                                              |
+| Add external agent       | `synapse external add <url> [--alias <name>]`                                                                                                           |
+| List external agents     | `synapse external list`                                                                                                                                 |
+| External agent info      | `synapse external info <alias>`                                                                                                                         |
+| Send to external         | `synapse external send <alias> "<message>" [--wait]`                                                                                                    |
+| Remove external agent    | `synapse external remove <alias>`                                                                                                                       |
+| Skill Manager (TUI)      | `synapse skills`                                                                                                                                        |
+| List skills              | `synapse skills list [--scope synapse\|user\|project\|plugin]`                                                                                          |
+| Show skill detail        | `synapse skills show <name>`                                                                                                                            |
+| Deploy skill             | `synapse skills deploy <name> --agent claude,codex --scope user`                                                                                        |
+| Import skill             | `synapse skills import <name>`                                                                                                                          |
+| Install from repo        | `synapse skills add <repo>`                                                                                                                             |
+| Create skill             | `synapse skills create`                                                                                                                                 |
+| Delete skill             | `synapse skills delete <name> [--force]`                                                                                                                |
+| Move skill               | `synapse skills move <name> --to <scope>`                                                                                                               |
+| List skill sets          | `synapse skills set list`                                                                                                                               |
+| Show skill set detail    | `synapse skills set show <name>`                                                                                                                        |
+| Trace task               | `synapse trace <task_id>`                                                                                                                               |
+| Auth setup               | `synapse auth setup` (generate keys + instructions)                                                                                                     |
+| Generate API key         | `synapse auth generate-key [-n <count>] [-e]`                                                                                                           |
+| List task board          | `synapse tasks list [--status pending] [--agent claude]`                                                                                                |
+| Create task              | `synapse tasks create "subject" -d "description" [--blocked-by ID]`                                                                                     |
+| Assign task              | `synapse tasks assign <task_id> <agent>`                                                                                                                |
+| Complete task            | `synapse tasks complete <task_id>`                                                                                                                      |
+| Approve plan             | `synapse approve <task_id>`                                                                                                                             |
+| Reject plan              | `synapse reject <task_id> --reason "reason"`                                                                                                            |
+| Start team (CLI)         | `synapse team start <spec...> [--layout ...] [--all-new]` (1st=handoff, rest=new panes; `--all-new` for all new)                                        |
+| Start team (API)         | `POST /team/start` with `{"agents": [...], "layout": "split"}`                                                                                          |
+| Spawn agent              | `synapse spawn <profile> [--port] [--name] [--role] [--skill-set] [--terminal]`                                                                         |
+| Delegate mode            | `synapse claude --delegate-mode [--name coordinator]`                                                                                                   |
+| Version info             | `synapse --version`                                                                                                                                     |
 
 **Tip:** Run `synapse list` before sending to verify the target agent is READY.
 
@@ -77,10 +77,12 @@ synapse send codex-8120 "Fix this bug" --response --priority 3 --from synapse-ge
 ```
 
 **Important:**
+
 - Always use `--from` with your **agent ID** (format: `synapse-<type>-<port>`). Do NOT use custom names or agent types for `--from`.
 - By default, use `--response` to wait for a reply. Only use `--no-response` for notifications or fire-and-forget tasks.
 
 **Target Resolution (Matching Priority):**
+
 1. Custom name: `my-claude` (highest priority, exact match, case-sensitive)
 2. Exact ID: `synapse-claude-8100` (direct match)
 3. Type-port: `claude-8100`, `codex-8120`, `opencode-8130`, `copilot-8140` (shorthand)
@@ -91,6 +93,7 @@ synapse send codex-8120 "Fix this bug" --response --priority 3 --from synapse-ge
 ### Choosing --response vs --no-response
 
 Analyze the message content and determine if a reply is expected:
+
 - If the message expects or benefits from a reply → use `--response`
 - If the message is purely informational with no reply needed → use `--no-response`
 - **If unsure, use `--response`** (safer default)
@@ -141,6 +144,7 @@ synapse broadcast "FYI: Build completed" --no-response --from synapse-claude-810
 When you receive an A2A message, it appears with the `A2A:` prefix:
 
 **Message Formats:**
+
 ```
 A2A: [REPLY EXPECTED] <message>   <- Reply is REQUIRED
 A2A: <message>                    <- Reply is optional (one-way notification)
@@ -165,12 +169,14 @@ synapse reply "Here is my analysis..." --from <your_agent_id>
 ```
 
 **Example - Question received (MUST reply):**
+
 ```
 Received: A2A: [REPLY EXPECTED] What is the project structure?
 Reply:    synapse reply "The project has src/, tests/..."
 ```
 
 **Example - Delegation received (no reply needed):**
+
 ```
 Received: A2A: Run the tests and fix failures
 Action:   Just do the task. No reply needed unless you have questions.
@@ -178,12 +184,12 @@ Action:   Just do the task. No reply needed unless you have questions.
 
 ## Priority Levels
 
-| Priority | Description | Use Case |
-|----------|-------------|----------|
-| 1-2 | Low | Background tasks |
-| 3 | Normal | Standard tasks |
-| 4 | Urgent | Follow-ups, status checks |
-| 5 | Interrupt | Emergency (sends SIGINT first) |
+| Priority | Description | Use Case                       |
+| -------- | ----------- | ------------------------------ |
+| 1-2      | Low         | Background tasks               |
+| 3        | Normal      | Standard tasks                 |
+| 4        | Urgent      | Follow-ups, status checks      |
+| 5        | Interrupt   | Emergency (sends SIGINT first) |
 
 Default priority: `send` = 3 (normal), `broadcast` = 1 (low).
 
@@ -200,13 +206,13 @@ synapse send codex "STOP" --priority 5 --from synapse-claude-8100
 
 ## Agent Status
 
-| Status | Meaning | Color |
-|--------|---------|-------|
-| READY | Idle, waiting for input | Green |
-| WAITING | Awaiting user input (selection, confirmation) | Cyan |
-| PROCESSING | Busy handling a task | Yellow |
-| DONE | Task completed (auto-clears after 10s) | Blue |
-| SHUTTING_DOWN | Graceful shutdown in progress | Red |
+| Status        | Meaning                                       | Color  |
+| ------------- | --------------------------------------------- | ------ |
+| READY         | Idle, waiting for input                       | Green  |
+| WAITING       | Awaiting user input (selection, confirmation) | Cyan   |
+| PROCESSING    | Busy handling a task                          | Yellow |
+| DONE          | Task completed (auto-clears after 10s)        | Blue   |
+| SHUTTING_DOWN | Graceful shutdown in progress                 | Red    |
 
 **Verify before sending:** Run `synapse list` and confirm the target agent's Status column shows `READY`:
 
@@ -220,6 +226,7 @@ synapse list
 ```
 
 **Status meanings:**
+
 - `READY`: Safe to send messages
 - `WAITING`: Agent needs user input - use terminal jump (see below) to respond
 - `PROCESSING`: Busy, wait or use `--priority 5` for emergency interrupt
@@ -229,17 +236,18 @@ synapse list
 
 In `synapse list`, you can interact with agents:
 
-| Key | Action |
-|-----|--------|
-| `1-9` | Select agent row (direct) |
-| `↑/↓` | Navigate agent rows |
-| `Enter` or `j` | Jump to selected agent's terminal |
-| `k` | Kill selected agent (with confirmation) |
-| `/` | Filter by TYPE, NAME, or WORKING_DIR |
-| `ESC` | Clear filter first, then selection |
-| `q` | Quit |
+| Key            | Action                                  |
+| -------------- | --------------------------------------- |
+| `1-9`          | Select agent row (direct)               |
+| `↑/↓`          | Navigate agent rows                     |
+| `Enter` or `j` | Jump to selected agent's terminal       |
+| `k`            | Kill selected agent (with confirmation) |
+| `/`            | Filter by TYPE, NAME, or WORKING_DIR    |
+| `ESC`          | Clear filter first, then selection      |
+| `q`            | Quit                                    |
 
 **Supported Terminals:**
+
 - iTerm2 (macOS) - Switches to correct tab/pane
 - Terminal.app (macOS) - Switches to correct tab
 - Ghostty (macOS) - Activates application
@@ -275,6 +283,7 @@ synapse kill my-claude
 ```
 
 **Name vs ID:**
+
 - **Display/Prompts**: Shows name if set, otherwise ID (e.g., `Kill my-claude (PID: 1234)?`)
 - **Internal processing**: Always uses agent ID (`synapse-claude-8100`)
 - **Target resolution**: Name has highest priority when matching targets

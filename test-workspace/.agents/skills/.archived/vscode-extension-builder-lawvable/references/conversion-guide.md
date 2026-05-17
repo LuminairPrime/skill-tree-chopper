@@ -42,15 +42,15 @@ Before converting, assess your app:
 
 ### Conversion Difficulty
 
-| App Type | Difficulty | Notes |
-|----------|------------|-------|
-| Static React/Vue SPA | Easy | Direct webview conversion |
-| Form-based app | Easy | Map inputs to VS Code APIs |
-| File viewer/editor | Medium | Use custom editor pattern |
-| App with routing | Medium | Map routes to panels/views |
-| Real-time/WebSocket | Medium | Keep external connection |
-| Full-stack app | Hard | Extract frontend, keep backend external |
-| SSR app (Next.js) | Hard | Extract client code, lose SSR |
+| App Type             | Difficulty | Notes                                   |
+| -------------------- | ---------- | --------------------------------------- |
+| Static React/Vue SPA | Easy       | Direct webview conversion               |
+| Form-based app       | Easy       | Map inputs to VS Code APIs              |
+| File viewer/editor   | Medium     | Use custom editor pattern               |
+| App with routing     | Medium     | Map routes to panels/views              |
+| Real-time/WebSocket  | Medium     | Keep external connection                |
+| Full-stack app       | Hard       | Extract frontend, keep backend external |
+| SSR app (Next.js)    | Hard       | Extract client code, lose SSR           |
 
 ---
 
@@ -72,22 +72,22 @@ package.json        →            package.json (merged)
 
 ### State Management
 
-| Web Pattern | VS Code Pattern |
-|-------------|-----------------|
-| React useState | Same (webview) |
-| Redux/Zustand | Same (webview) + sync to extension |
-| localStorage | `context.globalState` / `context.workspaceState` |
-| IndexedDB | `context.globalStorageUri` (file-based) |
-| URL params | Command arguments or `context.workspaceState` |
+| Web Pattern    | VS Code Pattern                                  |
+| -------------- | ------------------------------------------------ |
+| React useState | Same (webview)                                   |
+| Redux/Zustand  | Same (webview) + sync to extension               |
+| localStorage   | `context.globalState` / `context.workspaceState` |
+| IndexedDB      | `context.globalStorageUri` (file-based)          |
+| URL params     | Command arguments or `context.workspaceState`    |
 
 ### Routing
 
-| Web Pattern | VS Code Pattern |
-|-------------|-----------------|
-| Single route | Single webview panel |
-| Multiple routes | Multiple panels or tabs in webview |
-| Nested routes | Sidebar (tree) + panel combination |
-| Modal routes | VS Code quick pick or webview modal |
+| Web Pattern     | VS Code Pattern                     |
+| --------------- | ----------------------------------- |
+| Single route    | Single webview panel                |
+| Multiple routes | Multiple panels or tabs in webview  |
+| Nested routes   | Sidebar (tree) + panel combination  |
+| Modal routes    | VS Code quick pick or webview modal |
 
 ---
 
@@ -115,7 +115,7 @@ const name = prompt('Enter name:');
 
 // After:
 vscode.window.showInformationMessage('Done!');
-const confirmed = await vscode.window.showWarningMessage('Are you sure?', 'Yes', 'No') === 'Yes';
+const confirmed = (await vscode.window.showWarningMessage('Are you sure?', 'Yes', 'No')) === 'Yes';
 const name = await vscode.window.showInputBox({ prompt: 'Enter name:' });
 ```
 
@@ -139,7 +139,7 @@ const url = URL.createObjectURL(blob);
 // ... download link
 
 // After:
-const uri = await vscode.window.showSaveDialog({ filters: { 'Text': ['txt'] } });
+const uri = await vscode.window.showSaveDialog({ filters: { Text: ['txt'] } });
 if (uri) {
   await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(content));
 }
@@ -166,6 +166,7 @@ await vscode.env.openExternal(vscode.Uri.parse('https://example.com'));
 ### Keep These As-Is
 
 These work unchanged in webviews:
+
 - `fetch()` for external APIs
 - `setTimeout`, `setInterval`
 - `console.log` (appears in webview devtools)
@@ -215,11 +216,14 @@ export function useVsCodeState<T>(key: string, defaultValue: T) {
     return state[key] ?? defaultValue;
   });
 
-  const updateValue = useCallback((newValue: T) => {
-    setValue(newValue);
-    const state = vscode.getState() || {};
-    vscode.setState({ ...state, [key]: newValue });
-  }, [key]);
+  const updateValue = useCallback(
+    (newValue: T) => {
+      setValue(newValue);
+      const state = vscode.getState() || {};
+      vscode.setState({ ...state, [key]: newValue });
+    },
+    [key],
+  );
 
   return [value, updateValue] as const;
 }
@@ -283,7 +287,7 @@ panel.webview.onDidReceiveMessage(async (message) => {
             const content = await vscode.workspace.fs.readFile(uri[0]);
             panel.webview.postMessage({
               type: 'fileContent',
-              content: new TextDecoder().decode(content)
+              content: new TextDecoder().decode(content),
             });
           }
           break;
@@ -305,7 +309,7 @@ panel.webview.onDidReceiveMessage(async (message) => {
     // Remove server-side deps (express, etc.)
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "^1.85.0"
     // ... extension dev deps
   }
 }
@@ -354,7 +358,7 @@ panel.webview.onDidReceiveMessage(async (msg) => {
   if (msg.command === 'submit') {
     await fetch('https://api.example.com/submit', {
       method: 'POST',
-      body: JSON.stringify(msg.args)
+      body: JSON.stringify(msg.args),
     });
     vscode.window.showInformationMessage('Submitted!');
   }
@@ -400,13 +404,13 @@ function Dashboard() {
 
 ### Workarounds
 
-| Web Feature | VS Code Alternative |
-|-------------|---------------------|
-| OAuth login | `vscode.authentication.getSession()` |
+| Web Feature        | VS Code Alternative                      |
+| ------------------ | ---------------------------------------- |
+| OAuth login        | `vscode.authentication.getSession()`     |
 | Push notifications | `vscode.window.showInformationMessage()` |
-| Background sync | Extension background tasks |
-| PWA install | Publish to VS Marketplace |
-| SEO | Not applicable |
+| Background sync    | Extension background tasks               |
+| PWA install        | Publish to VS Marketplace                |
+| SEO                | Not applicable                           |
 
 ### Performance Considerations
 

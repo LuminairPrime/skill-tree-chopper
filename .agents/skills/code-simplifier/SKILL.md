@@ -15,11 +15,11 @@ Simplify recently changed code in a controlled, reviewable way. Preserve all ext
 
 ## Relationship to Other Skills
 
-| Skill | Purpose |
-|-------|---------|
-| `/simplify` (built-in) | Three parallel review agents (reuse, quality, efficiency) |
-| `/code-quality` | Lint → type-check → test → **code-simplifier** (this skill) |
-| `code-simplifier` (this) | Subagent: targeted structural cleanup of changed files |
+| Skill                    | Purpose                                                     |
+| ------------------------ | ----------------------------------------------------------- |
+| `/simplify` (built-in)   | Three parallel review agents (reuse, quality, efficiency)   |
+| `/code-quality`          | Lint → type-check → test → **code-simplifier** (this skill) |
+| `code-simplifier` (this) | Subagent: targeted structural cleanup of changed files      |
 
 ## Prompt Safety
 
@@ -61,6 +61,7 @@ subagent_type: code-simplifier
 ```
 
 Provide:
+
 - File list with rationale for each file
 - Constraints: no behavior change, keep public APIs stable
 - Done criteria: tests pass, lint clean

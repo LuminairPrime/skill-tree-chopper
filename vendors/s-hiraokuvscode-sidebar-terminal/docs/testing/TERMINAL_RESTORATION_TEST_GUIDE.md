@@ -1,6 +1,7 @@
 # Terminal Restoration Function Test Guide
 
 ## 📋 Overview
+
 This guide provides comprehensive steps to verify the terminal session restoration functionality in the VS Code Secondary Terminal Extension.
 
 ## 🔧 1. Development Environment Setup
@@ -32,6 +33,7 @@ npm run watch
 ### Verify Extension Loading
 
 Check the console for initialization logs:
+
 ```
 [Extension] Secondary Terminal extension activated
 [EXTENSION] TerminalManager initialized
@@ -43,11 +45,13 @@ Check the console for initialization logs:
 ### Test Scenario 1: Basic Session Restoration
 
 #### Step 1: Create Terminal and Add Content
+
 1. **Open Secondary Terminal Panel**:
    - Click the Terminal icon in Activity Bar
    - Or use Command Palette: `Secondary Terminal: Focus Terminal`
 
 2. **Create Terminal Content**:
+
    ```bash
    # Create some command history
    echo "Test session restoration - $(date)"
@@ -61,6 +65,7 @@ Check the console for initialization logs:
    - Note the terminal name/ID in the header
 
 #### Step 2: Trigger Session Save
+
 1. **Manual Save** (if available):
    - Command Palette: `Secondary Terminal: Save Terminal Session`
 
@@ -72,11 +77,13 @@ Check the console for initialization logs:
    ```
 
 #### Step 3: Restart VS Code
+
 1. **Close VS Code completely** (`Cmd+Q` on Mac, `Alt+F4` on Windows/Linux)
 2. **Reopen VS Code** with the same workspace
 3. **Launch Extension Development Host again** (F5)
 
 #### Step 4: Verify Restoration
+
 1. **Check Terminal Panel**:
    - Terminal should automatically appear
    - Previous content should be visible
@@ -90,14 +97,16 @@ Check the console for initialization logs:
 ### Test Scenario 2: Multiple Terminal Restoration
 
 #### Create Multiple Terminals
+
 1. **Create 3-4 terminals** with different content:
+
    ```bash
    # Terminal 1
    echo "Terminal 1 content"
    npm --version
 
    # Terminal 2 (new split)
-   echo "Terminal 2 content"  
+   echo "Terminal 2 content"
    node --version
 
    # Terminal 3
@@ -110,6 +119,7 @@ Check the console for initialization logs:
    - Or use keybinding: `Cmd+\` (Mac) or `Ctrl+Shift+5`
 
 #### Verify Multi-Terminal Restoration
+
 1. **Restart VS Code**
 2. **Check all terminals are restored**:
    - Correct number of terminals
@@ -119,11 +129,13 @@ Check the console for initialization logs:
 ### Test Scenario 3: Edge Case Testing
 
 #### Empty Terminal Handling
+
 1. **Create empty terminal** (no commands executed)
 2. **Restart VS Code**
 3. **Verify behavior**: Should restore terminal structure even if empty
 
-#### Long Content Testing  
+#### Long Content Testing
+
 1. **Generate long output**:
    ```bash
    # Generate lots of content
@@ -132,6 +144,7 @@ Check the console for initialization logs:
 2. **Test scrollback restoration**: Previous content should be scrollable
 
 #### Error Content Testing
+
 1. **Create error output**:
    ```bash
    # Generate error output
@@ -147,13 +160,15 @@ Check the console for initialization logs:
 Monitor these key log patterns:
 
 #### Initialization Logs
+
 ```
 [EXTENSION] Extension activated
 [PERSISTENCE] StandardSessionManager initialized
 [TERMINAL-MANAGER] TerminalManager initialized with max 5 terminals
 ```
 
-#### Session Save Logs  
+#### Session Save Logs
+
 ```
 [EXTENSION] Terminal created - immediate save: Terminal 1
 [PERSISTENCE] Saving session with 1 terminals
@@ -161,9 +176,10 @@ Monitor these key log patterns:
 ```
 
 #### Session Restore Logs
+
 ```
 [PERSISTENCE] Attempting to restore 1 saved terminals
-[PERSISTENCE] Restoration started for 1 terminals  
+[PERSISTENCE] Restoration started for 1 terminals
 [WEBVIEW] Session restore message received for Terminal 1
 [PERSISTENCE] Session restore completed: 1 restored, 0 skipped
 ```
@@ -171,11 +187,13 @@ Monitor these key log patterns:
 ### WebView Console Logs
 
 **Access WebView Console**:
+
 1. Right-click in terminal area
 2. Select "Inspect Element"
 3. Check Console tab
 
 Expected WebView logs:
+
 ```
 [WEBVIEW] TerminalWebviewManager initialized
 [WEBVIEW] Session restore message received
@@ -186,6 +204,7 @@ Expected WebView logs:
 ### VS Code Storage Inspector
 
 **Check Persistent Storage**:
+
 1. Open Command Palette
 2. Search: `Developer: Reload Window With Extensions Disabled`
 3. Check if data persists across reloads
@@ -195,10 +214,13 @@ Expected WebView logs:
 ### Common Issues and Solutions
 
 #### Issue: No Terminals Restored
+
 **Symptoms**: VS Code restarts but no terminals appear
 
 **Debug Steps**:
+
 1. **Check Storage Permissions**:
+
    ```bash
    # Check VS Code has write permissions
    ls -la ~/.vscode/extensions/
@@ -216,15 +238,19 @@ Expected WebView logs:
    ```
 
 **Solution**:
+
 - Ensure extension is properly activated
 - Verify storage permissions
 - Check settings configuration
 
 #### Issue: Partial Content Restoration
+
 **Symptoms**: Terminal restored but content is incomplete
 
 **Debug Steps**:
+
 1. **Check Scrollback Settings**:
+
    ```json
    "secondaryTerminal.persistentSessionScrollback": 1000,
    "secondaryTerminal.scrollbackLines": 2000
@@ -235,35 +261,42 @@ Expected WebView logs:
    - Check for memory or size limitations
 
 **Solution**:
+
 - Increase scrollback buffer size
 - Check for content truncation settings
 
 #### Issue: Performance Problems
+
 **Symptoms**: Slow restoration or VS Code freezes
 
 **Debug Steps**:
+
 1. **Check Terminal Count**:
+
    ```json
    "secondaryTerminal.maxTerminals": 5
    ```
 
-2. **Monitor Memory Usage**: 
+2. **Monitor Memory Usage**:
    - Use VS Code Developer Tools
    - Check for memory leaks
 
 **Solution**:
+
 - Reduce max terminal count
 - Clear corrupted sessions: `Secondary Terminal: Clear Corrupted Terminal History`
 
 ### Error Log Analysis
 
 #### Critical Errors
+
 ```
 [PERSISTENCE] Failed to restore terminal session: Error details
 [EXTENSION] Terminal restore error: Terminal 1 - Unknown error
 ```
 
 #### Warning Signs
+
 ```
 [PERSISTENCE] Session restore skipped: Invalid data format
 [WEBVIEW] restoreTerminalScrollback method not found
@@ -272,12 +305,14 @@ Expected WebView logs:
 ## 📊 5. Quality Verification Checklist
 
 ### ✅ Pre-Test Checklist
+
 - [ ] Extension compiled without errors
 - [ ] All dependencies installed
 - [ ] VS Code Development Host launched
 - [ ] Developer Console accessible
 
 ### ✅ Functionality Tests
+
 - [ ] Single terminal creates and restores correctly
 - [ ] Multiple terminals restore with proper content
 - [ ] Split terminal layout preserved
@@ -285,13 +320,15 @@ Expected WebView logs:
 - [ ] Scrollback content accessible
 - [ ] Error outputs preserved
 
-### ✅ Edge Case Tests  
+### ✅ Edge Case Tests
+
 - [ ] Empty terminals handled gracefully
 - [ ] Large content buffers work correctly
 - [ ] Mixed content types (text, errors, colors) preserved
 - [ ] Special characters and Unicode supported
 
 ### ✅ Performance Tests
+
 - [ ] Restoration completes within 5 seconds
 - [ ] No memory leaks detected
 - [ ] Multiple restart cycles work correctly
@@ -304,7 +341,7 @@ Expected WebView logs:
 ```bash
 # Run test suites
 npm run test:unit
-npm run test:integration  
+npm run test:integration
 npm run test:performance
 
 # Generate coverage report
@@ -314,6 +351,7 @@ npm run test:coverage
 ### Manual Stress Testing
 
 1. **Heavy Load Test**:
+
    ```bash
    # Generate extensive content
    for i in {1..1000}; do echo "Stress test line $i"; done
@@ -333,7 +371,7 @@ The restoration functionality passes if:
 
 1. **Reliability**: 95%+ successful restoration rate
 2. **Performance**: Restoration completes within 5 seconds
-3. **Data Integrity**: All terminal content preserved accurately  
+3. **Data Integrity**: All terminal content preserved accurately
 4. **User Experience**: Seamless restore without user intervention
 5. **Error Handling**: Graceful fallback when restoration fails
 
@@ -345,23 +383,27 @@ The restoration functionality passes if:
 ## Test Session: [Date/Time]
 
 ### Environment
+
 - VS Code Version: [version]
 - Extension Version: [version]
 - Operating System: [OS details]
 
 ### Test Results
-| Test Scenario | Status | Notes |
-|---------------|--------|-------|
-| Basic Restoration | ✅/❌ | [details] |
-| Multiple Terminals | ✅/❌ | [details] |
-| Edge Cases | ✅/❌ | [details] |
+
+| Test Scenario      | Status | Notes     |
+| ------------------ | ------ | --------- |
+| Basic Restoration  | ✅/❌  | [details] |
+| Multiple Terminals | ✅/❌  | [details] |
+| Edge Cases         | ✅/❌  | [details] |
 
 ### Performance Metrics
+
 - Restoration Time: [seconds]
 - Memory Usage: [MB]
 - Success Rate: [%]
 
 ### Issues Found
+
 [List any issues with reproduction steps]
 ```
 

@@ -5,20 +5,22 @@ The `ai-skill-auditor` extension has been implemented with functional logic but 
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Provide clear, accessible user documentation via `README.md`.
 - Establish a sandboxed test environment using Mocha/Chai (VS Code's default testing framework).
 - Ensure that tests do not accidentally manipulate the developer's actual `~/.cursor` or `~/.agents` directories.
 - Add npm scripts to run tests seamlessly (`npm run test`).
 
 **Non-Goals:**
+
 - Setting up a full continuous integration (CI) pipeline (e.g., GitHub Actions) in this specific change (to be handled separately if needed).
 - Changing the existing implementation logic in `SkillTreeProvider.ts` or `extension.ts` unless required to expose methods for testability.
 
 ## Decisions
 
 - **Test Framework**: We will use VS Code's standard test setup. We will include `@vscode/test-cli` and `@vscode/test-electron` to spin up a headless extension host for integration testing. This is the industry standard for VS Code extensions and guarantees accurate VS Code API simulations.
-- **Sandboxing Strategy (Mocking)**: 
-  - To prevent tests from touching real user data, we will use a mocking library like `sinon` or proxyquire to stub `os.homedir()` during tests, redirecting it to a temporary `/tmp/mock-homedir` directory created before the test run. 
+- **Sandboxing Strategy (Mocking)**:
+  - To prevent tests from touching real user data, we will use a mocking library like `sinon` or proxyquire to stub `os.homedir()` during tests, redirecting it to a temporary `/tmp/mock-homedir` directory created before the test run.
   - Alternatively, we may refactor `SkillTreeProvider.ts` to accept a `homedirOverride` parameter in its constructor for easier dependency injection, eliminating the need for complex mocking libraries.
 - **Documentation Format**: The `README.md` will follow standard VS Code extension publishing guidelines, including screenshots (placeholders if needed), feature lists, and explicit explanations of the `-disabled` renaming mechanism.
 

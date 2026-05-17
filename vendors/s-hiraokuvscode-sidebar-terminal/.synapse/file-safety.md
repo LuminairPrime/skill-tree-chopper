@@ -9,24 +9,24 @@ Other agents may be editing files RIGHT NOW.
 MANDATORY WORKFLOW
 ================================================================================
 
-STEP 1: BEFORE EVERY FILE EDIT
--------------------------------
+## STEP 1: BEFORE EVERY FILE EDIT
+
 ALWAYS run this FIRST - no exceptions:
 
 ```bash
 synapse file-safety lock <file_path> {{agent_id}} --intent "what you plan to do"
 ```
 
-STEP 2: VERIFY LOCK STATUS
---------------------------
+## STEP 2: VERIFY LOCK STATUS
+
 Confirm you have the lock before proceeding:
 
 ```bash
 synapse file-safety locks
 ```
 
-STEP 3: AFTER EDIT COMPLETE
----------------------------
+## STEP 3: AFTER EDIT COMPLETE
+
 Record and release the lock:
 
 ```bash
@@ -57,12 +57,12 @@ IF LOCK FAILS (ANOTHER AGENT HAS IT)
 QUICK REFERENCE TABLE
 ================================================================================
 
-| Action          | Command                                              |
-|-----------------|------------------------------------------------------|
-| Lock file       | synapse file-safety lock FILE {{agent_id}}           |
-| Unlock file     | synapse file-safety unlock FILE {{agent_id}}         |
-| Check locks     | synapse file-safety locks                            |
-| Record change   | synapse file-safety record FILE {{agent_id}} --type MODIFY |
+| Action        | Command                                                    |
+| ------------- | ---------------------------------------------------------- |
+| Lock file     | synapse file-safety lock FILE {{agent_id}}                 |
+| Unlock file   | synapse file-safety unlock FILE {{agent_id}}               |
+| Check locks   | synapse file-safety locks                                  |
+| Record change | synapse file-safety record FILE {{agent_id}} --type MODIFY |
 
 ================================================================================
 EXAMPLE WORKFLOW

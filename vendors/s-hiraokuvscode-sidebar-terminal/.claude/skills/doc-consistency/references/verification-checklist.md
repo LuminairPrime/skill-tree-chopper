@@ -104,23 +104,23 @@ Object.keys(pkg.contributes.configuration.properties).forEach(key => {
 
 Verify these architecture descriptions match implementation:
 
-| Description in CLAUDE.md | Verify in Code |
-|--------------------------|----------------|
-| Manager-Coordinator pattern | src/webview/main.ts structure |
-| TerminalManager singleton | src/terminals/TerminalManager.ts |
-| ID Recycling System | TerminalManager ID allocation |
-| Session Persistence | src/sessions/ implementation |
+| Description in CLAUDE.md    | Verify in Code                   |
+| --------------------------- | -------------------------------- |
+| Manager-Coordinator pattern | src/webview/main.ts structure    |
+| TerminalManager singleton   | src/terminals/TerminalManager.ts |
+| ID Recycling System         | TerminalManager ID allocation    |
+| Session Persistence         | src/sessions/ implementation     |
 
 ### Step 5: Performance Metrics Verification
 
 Documented performance values in README.md/CLAUDE.md should match actual measurements:
 
-| Metric | Document Location | How to Verify |
-|--------|-------------------|---------------|
-| Build size | README.md | `ls -lh out/*.js` |
-| Buffer interval | CLAUDE.md | Check PerformanceManager constant |
-| Session save interval | CLAUDE.md | Check SessionManager constant |
-| Scrollback limit | CLAUDE.md | Check configuration default |
+| Metric                | Document Location | How to Verify                     |
+| --------------------- | ----------------- | --------------------------------- |
+| Build size            | README.md         | `ls -lh out/*.js`                 |
+| Buffer interval       | CLAUDE.md         | Check PerformanceManager constant |
+| Session save interval | CLAUDE.md         | Check SessionManager constant     |
+| Scrollback limit      | CLAUDE.md         | Check configuration default       |
 
 ## Common Documentation Drift Patterns
 
@@ -129,6 +129,7 @@ Documented performance values in README.md/CLAUDE.md should match actual measure
 **Symptom**: Feature exists in code but not in README.md
 
 **Detection**:
+
 ```bash
 # Check recent commits for feature additions
 git log --oneline --since="2 weeks ago" | grep -i "add\|feat\|new"
@@ -141,6 +142,7 @@ git log --oneline --since="2 weeks ago" | grep -i "add\|feat\|new"
 **Symptom**: Manager list in CLAUDE.md doesn't match actual managers
 
 **Detection**:
+
 ```bash
 # List actual managers
 ls src/webview/managers/

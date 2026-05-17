@@ -1,8 +1,11 @@
 # terminal-input Specification
 
 ## Purpose
+
 TBD - created by archiving change fix-duplicate-input-echo. Update Purpose after archive.
+
 ## Requirements
+
 ### Requirement: Input event type discrimination
 
 The InputManager MUST use xterm.js `onKey` event to distinguish user keyboard input from programmatic terminal writes, capturing only keyboard events that provide `{ key: string; domEvent: KeyboardEvent }` structure.
@@ -35,4 +38,3 @@ The InputManager MUST check IME composition state before processing keyboard eve
 **And** should return early without sending to extension
 **And** should let xterm.js handle composition internally
 **And** should send final composed text after composition completes
-

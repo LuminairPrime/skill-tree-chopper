@@ -13,6 +13,7 @@ synapse list --json
 ```
 
 **Rich TUI Features:**
+
 - Auto-refresh when agent status changes (via file watcher)
 - Color-coded status display:
   - READY = green (idle, waiting for input)
@@ -32,6 +33,7 @@ synapse list --json
 - Press `ESC` to clear filter/selection, `q` to exit
 
 **Terminal Jump Supported Terminals:**
+
 - iTerm2 (macOS) - Switches to correct tab/pane
 - Terminal.app (macOS) - Switches to correct tab
 - Ghostty (macOS) - Activates application. **Note:** Ghostty uses AppleScript to target the focused tab. Do not switch tabs during spawn or team start.
@@ -40,6 +42,7 @@ synapse list --json
 - Zellij - Activates terminal app (direct pane focus not supported via CLI)
 
 **Output columns:**
+
 - **NAME**: Custom name if set, otherwise agent type (e.g., `my-claude` or `claude`)
 - **TYPE**: Agent type (claude, gemini, codex, opencode, copilot)
 - **ID**: Full Runtime ID (e.g., `synapse-claude-8100`)
@@ -213,6 +216,7 @@ synapse kill my-claude -f
 ```
 
 **Graceful shutdown flow** (total budget: `shutdown.timeout_seconds`, default 30s):
+
 1. Sets agent status to `SHUTTING_DOWN`
 2. Sends `shutdown_request` A2A message (HTTP, up to `min(10s, total budget)`)
 3. Waits grace period (`min(max(1, remaining // 3), remaining)` — targets 1/3 of remaining budget, capped to `remaining`; **0s when budget ≤ 10s**), then sends SIGTERM
@@ -250,6 +254,7 @@ synapse rename my-claude --clear
 ```
 
 **Name vs ID:**
+
 - Custom names are for **display and user-facing operations** (prompts, `synapse list` output)
 - Runtime ID (`synapse-claude-8100`) is used **internally** for registry and processing
 - Target resolution: name has highest priority when matching
@@ -269,6 +274,7 @@ synapse status my-claude --json
 ```
 
 **Text output sections:**
+
 - **Agent Info**: ID, type, name, role, port, status, PID, working directory, uptime
 - **Current Task**: Task preview with elapsed time (e.g., `Review code (2m 15s)`)
 - **Recent Messages**: Last 5 messages from history (task ID, direction, sender, preview)
@@ -278,6 +284,7 @@ synapse status my-claude --json
 **JSON output** includes all the same data in structured format, with `uptime_seconds` and `current_task.elapsed_seconds` as numeric values for programmatic use.
 
 **Use cases:**
+
 - Checking what an agent is currently working on and how long it has been running
 - Debugging why an agent is stuck in PROCESSING (check file locks, task board)
 - Reviewing recent communication history for a specific agent
@@ -320,6 +327,7 @@ synapse agents delete sharp-checker
 ```
 
 **Output columns** (in `synapse agents list`):
+
 - **ID**: Agent ID identifier (e.g., `sharp-checker`)
 - **NAME**: Display name
 - **PROFILE**: Agent type (claude, codex, gemini, opencode, copilot)
@@ -330,6 +338,7 @@ synapse agents delete sharp-checker
 **Resolution order:** When resolving `<id-or-name>`, exact ID match is checked first, then display name match. An error is raised if the query matches multiple entries.
 
 **Storage:**
+
 - Project scope: `.synapse/agents/<id>.agent`
 - User scope: `~/.synapse/agents/<id>.agent`
 - Project-scoped definitions take precedence over user-scoped when IDs collide.
@@ -337,7 +346,7 @@ synapse agents delete sharp-checker
 ### Port Ranges
 
 | Agent    | Ports     |
-|----------|-----------|
+| -------- | --------- |
 | Claude   | 8100-8109 |
 | Gemini   | 8110-8119 |
 | Codex    | 8120-8129 |
@@ -349,6 +358,7 @@ synapse agents delete sharp-checker
 When you receive an A2A message, it appears with the `A2A:` prefix that includes optional sender identification and reply expectations:
 
 **Message Formats:**
+
 ```
 A2A: [From: NAME (SENDER_ID)] [REPLY EXPECTED] <message content>
 ```
@@ -357,6 +367,7 @@ A2A: [From: NAME (SENDER_ID)] [REPLY EXPECTED] <message content>
 - **REPLY EXPECTED**: Indicates that the sender is waiting for a response (blocking).
 
 If sender information is not available, it falls back to:
+
 - `A2A: [From: SENDER_ID] <message content>`
 - `A2A: <message content>` (backward compatible format)
 
@@ -377,12 +388,14 @@ synapse reply "<your reply>" --from $SYNAPSE_AGENT_ID
 ```
 
 **Example - Question received (MUST reply):**
+
 ```
 Received: A2A: [From: Claude (synapse-claude-8100)] [REPLY EXPECTED] What is the project structure?
 Reply:    synapse reply "The project has src/, tests/..."
 ```
 
 **Example - Delegation received (no reply needed):**
+
 ```
 Received: A2A: [From: Gemini (synapse-gemini-8110)] Run the tests and fix failures
 Action:   Just do the task. No reply needed unless you have questions.
@@ -400,14 +413,15 @@ synapse send <target> "<message>" [--from <sender>] [--priority <1-5>] [--wait |
 
 **Target Formats (in priority order):**
 
-| Format | Example | Description |
-|--------|---------|-------------|
-| Custom name | `my-claude` | Highest priority, exact match, case-sensitive |
-| Full ID | `synapse-claude-8100` | Always works, unique identifier |
-| Type-port | `claude-8100` | Use when multiple agents of same type |
-| Agent type | `claude` | Only when single instance exists |
+| Format      | Example               | Description                                   |
+| ----------- | --------------------- | --------------------------------------------- |
+| Custom name | `my-claude`           | Highest priority, exact match, case-sensitive |
+| Full ID     | `synapse-claude-8100` | Always works, unique identifier               |
+| Type-port   | `claude-8100`         | Use when multiple agents of same type         |
+| Agent type  | `claude`              | Only when single instance exists              |
 
 **Parameters:**
+
 - `--from, -f`: Sender Runtime ID (for reply identification) - **auto-detected** from `SYNAPSE_AGENT_ID` env var. Usually omittable; specify explicitly in sandboxed environments (e.g., Codex). When using, always provide the Runtime ID format (`synapse-<type>-<port>`). Note: `-f` means `--force` in other subcommands (e.g., `synapse kill -f`); prefer the long form `--from` to avoid confusion.
 - `--priority, -p`: Priority level 1-5 (default: 3)
   - 1-2: Low priority, background tasks
@@ -429,22 +443,24 @@ synapse send <target> "<message>" [--from <sender>] [--priority <1-5>] [--wait |
 **Choosing response mode:**
 
 Analyze the message content and determine if you need immediate results:
+
 - If you need immediate results and want to block until reply → use `--wait`
 - If you want to be notified when the task is done (async) → use `--notify` (default)
 - If the message is purely informational with no notification needed → use `--silent`
 
-| Message Type | Mode | Example |
-|--------------|------|---------|
-| Question | `--wait` | "What is the status?" |
-| Request for analysis | `--wait` | "Please review this code" |
-| Status check | `--wait` | "Are you ready?" |
-| Task with result expected | `--notify` | "Run tests and report the results" |
-| Delegated task (fire-and-forget) | `--silent` | "Fix this bug and commit" |
-| Notification | `--silent` | "FYI: Build completed" |
+| Message Type                     | Mode       | Example                            |
+| -------------------------------- | ---------- | ---------------------------------- |
+| Question                         | `--wait`   | "What is the status?"              |
+| Request for analysis             | `--wait`   | "Please review this code"          |
+| Status check                     | `--wait`   | "Are you ready?"                   |
+| Task with result expected        | `--notify` | "Run tests and report the results" |
+| Delegated task (fire-and-forget) | `--silent` | "Fix this bug and commit"          |
+| Notification                     | `--silent` | "FYI: Build completed"             |
 
 **Completion Callback:** With `--silent`, the receiver sends a best-effort callback to the sender when the task completes or fails. This updates the sender's history from `sent` to the final status with an output summary. The callback is fire-and-forget; failures are logged but do not block the receiver.
 
 **Examples:**
+
 ```bash
 # Question - immediate reply needed (blocking)
 synapse send gemini "What is the best approach?" --wait
@@ -466,6 +482,7 @@ synapse send my-claude "Cross-project info" --force
 ```
 
 **Sending long messages or files:**
+
 ```bash
 # Send message from file (avoids ARG_MAX shell limits)
 synapse send claude --message-file /tmp/review.txt --silent
@@ -498,12 +515,14 @@ synapse interrupt <target> "<message>" [--from <sender>] [--force]
 Equivalent to `synapse send <target> "<message>" -p 4 --silent [--from <sender>]`.
 
 **Parameters:**
+
 - `target`: Target agent (name, ID, type-port, or agent type)
 - `message`: Interrupt message to send
 - `--from, -f`: Sender Runtime ID (auto-detected from `SYNAPSE_AGENT_ID` env var)
 - `--force`: Bypass the working directory mismatch check
 
 **Examples:**
+
 ```bash
 # Interrupt an agent with an urgent message
 synapse interrupt claude "Stop and review"
@@ -544,6 +563,7 @@ synapse broadcast "<message>" [--from <sender>] [--priority <1-5>] [--wait | --n
 ```
 
 **Parameters:**
+
 - `message`: Message to broadcast to all cwd agents
 - `--from, -f`: Sender Runtime ID (auto-detected from `SYNAPSE_AGENT_ID` env var)
 - `--priority, -p`: Priority level 1-5 (default: 1)
@@ -554,6 +574,7 @@ synapse broadcast "<message>" [--from <sender>] [--priority <1-5>] [--wait | --n
 **Scope:** Only targets agents sharing the same working directory as the sender.
 
 **Examples:**
+
 ```bash
 # Broadcast status check
 synapse broadcast "Status check"
@@ -705,6 +726,7 @@ synapse config show --scope project    # Show project settings only
 ```
 
 **TUI Categories:**
+
 - **Environment Variables**: `SYNAPSE_HISTORY_ENABLED`, `SYNAPSE_FILE_SAFETY_ENABLED`, `SYNAPSE_LEARNING_MODE_ENABLED`, `SYNAPSE_LEARNING_MODE_TRANSLATION`, `SYNAPSE_PROACTIVE_MODE_ENABLED`, etc.
 - **Instructions**: Agent-specific initial instruction files
 - **Approval Mode**: `required` (prompt before sending) or `auto` (no prompt)
@@ -715,6 +737,7 @@ synapse config show --scope project    # Show project settings only
 ### Settings File Format
 
 `.synapse/settings.json`:
+
 ```json
 {
   "env": {
@@ -742,54 +765,55 @@ synapse config show --scope project    # Show project settings only
 
 **Available Settings:**
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `SYNAPSE_HISTORY_ENABLED` | Enable task history | `true` (v0.3.13+) |
-| `SYNAPSE_FILE_SAFETY_ENABLED` | Enable file safety | `true` |
-| `SYNAPSE_FILE_SAFETY_DB_PATH` | File safety DB path | `.synapse/file_safety.db` |
-| `SYNAPSE_FILE_SAFETY_RETENTION_DAYS` | Lock history retention days | `30` |
-| `SYNAPSE_UDS_DIR` | UDS socket directory | `/tmp/synapse-a2a/` |
-| `SYNAPSE_LONG_MESSAGE_THRESHOLD` | Character threshold for file storage | `200` |
-| `SYNAPSE_LONG_MESSAGE_TTL` | TTL for message files (seconds) | `3600` |
-| `SYNAPSE_LONG_MESSAGE_DIR` | Directory for message files | System temp |
-| `SYNAPSE_TASK_BOARD_ENABLED` | Enable shared task board | `true` |
-| `SYNAPSE_TASK_BOARD_DB_PATH` | Task board DB path | `.synapse/task_board.db` |
-| `SYNAPSE_SHARED_MEMORY_ENABLED` | Enable shared memory | `true` |
-| `SYNAPSE_SHARED_MEMORY_DB_PATH` | Shared memory DB path | `.synapse/memory.db` |
-| `SYNAPSE_LEARNING_MODE_ENABLED` | Enable prompt improvement feedback (independent flag) | `false` |
-| `SYNAPSE_LEARNING_MODE_TRANSLATION` | Enable Japanese-to-English translation (independent flag) | `false` |
-| `SYNAPSE_PROACTIVE_MODE_ENABLED` | Enable proactive mode (mandatory Synapse feature usage for every task) | `false` |
-| `SYNAPSE_REGISTRY_DIR` | Local registry directory | `~/.a2a/registry` |
-| `SYNAPSE_REPLY_TARGET_DIR` | Reply target persistence directory | `~/.a2a/reply` |
-| `SYNAPSE_EXTERNAL_REGISTRY_DIR` | External registry directory | `~/.a2a/external` |
-| `SYNAPSE_HISTORY_DB_PATH` | History database path | `~/.synapse/history/history.db` |
-| `SYNAPSE_SKILLS_DIR` | Central skill store directory | `~/.synapse/skills` |
+| Variable                             | Description                                                            | Default                         |
+| ------------------------------------ | ---------------------------------------------------------------------- | ------------------------------- |
+| `SYNAPSE_HISTORY_ENABLED`            | Enable task history                                                    | `true` (v0.3.13+)               |
+| `SYNAPSE_FILE_SAFETY_ENABLED`        | Enable file safety                                                     | `true`                          |
+| `SYNAPSE_FILE_SAFETY_DB_PATH`        | File safety DB path                                                    | `.synapse/file_safety.db`       |
+| `SYNAPSE_FILE_SAFETY_RETENTION_DAYS` | Lock history retention days                                            | `30`                            |
+| `SYNAPSE_UDS_DIR`                    | UDS socket directory                                                   | `/tmp/synapse-a2a/`             |
+| `SYNAPSE_LONG_MESSAGE_THRESHOLD`     | Character threshold for file storage                                   | `200`                           |
+| `SYNAPSE_LONG_MESSAGE_TTL`           | TTL for message files (seconds)                                        | `3600`                          |
+| `SYNAPSE_LONG_MESSAGE_DIR`           | Directory for message files                                            | System temp                     |
+| `SYNAPSE_TASK_BOARD_ENABLED`         | Enable shared task board                                               | `true`                          |
+| `SYNAPSE_TASK_BOARD_DB_PATH`         | Task board DB path                                                     | `.synapse/task_board.db`        |
+| `SYNAPSE_SHARED_MEMORY_ENABLED`      | Enable shared memory                                                   | `true`                          |
+| `SYNAPSE_SHARED_MEMORY_DB_PATH`      | Shared memory DB path                                                  | `.synapse/memory.db`            |
+| `SYNAPSE_LEARNING_MODE_ENABLED`      | Enable prompt improvement feedback (independent flag)                  | `false`                         |
+| `SYNAPSE_LEARNING_MODE_TRANSLATION`  | Enable Japanese-to-English translation (independent flag)              | `false`                         |
+| `SYNAPSE_PROACTIVE_MODE_ENABLED`     | Enable proactive mode (mandatory Synapse feature usage for every task) | `false`                         |
+| `SYNAPSE_REGISTRY_DIR`               | Local registry directory                                               | `~/.a2a/registry`               |
+| `SYNAPSE_REPLY_TARGET_DIR`           | Reply target persistence directory                                     | `~/.a2a/reply`                  |
+| `SYNAPSE_EXTERNAL_REGISTRY_DIR`      | External registry directory                                            | `~/.a2a/external`               |
+| `SYNAPSE_HISTORY_DB_PATH`            | History database path                                                  | `~/.synapse/history/history.db` |
+| `SYNAPSE_SKILLS_DIR`                 | Central skill store directory                                          | `~/.synapse/skills`             |
 
 Deprecated key:
+
 - `delegation` was removed in v0.3.19. Use `synapse send` for inter-agent communication.
 
 **list.columns:**
 
 Configure which columns to display in `synapse list`:
 
-| Column | Description |
-|--------|-------------|
-| `ID` | Runtime ID (e.g., `synapse-claude-8100`) |
-| `NAME` | Custom name if set |
-| `TYPE` | Agent type (claude, gemini, etc.) |
-| `ROLE` | Role description |
-| `STATUS` | READY/WAITING/PROCESSING/DONE/SHUTTING_DOWN |
-| `CURRENT` | Current task preview |
-| `TRANSPORT` | UDS/TCP communication status |
-| `WORKING_DIR` | Working directory |
+| Column         | Description                                  |
+| -------------- | -------------------------------------------- |
+| `ID`           | Runtime ID (e.g., `synapse-claude-8100`)     |
+| `NAME`         | Custom name if set                           |
+| `TYPE`         | Agent type (claude, gemini, etc.)            |
+| `ROLE`         | Role description                             |
+| `STATUS`       | READY/WAITING/PROCESSING/DONE/SHUTTING_DOWN  |
+| `CURRENT`      | Current task preview                         |
+| `TRANSPORT`    | UDS/TCP communication status                 |
+| `WORKING_DIR`  | Working directory                            |
 | `EDITING_FILE` | Currently locked file (requires file-safety) |
 
 **approvalMode:**
 
-| Value | Description |
-|-------|-------------|
+| Value      | Description                                                        |
+| ---------- | ------------------------------------------------------------------ |
 | `required` | Show approval prompt before sending initial instructions (default) |
-| `auto` | Skip approval prompt, send instructions automatically |
+| `auto`     | Skip approval prompt, send instructions automatically              |
 
 ## Instructions Management
 
@@ -819,6 +843,7 @@ synapse instructions send synapse-claude-8100
 **Use case:** If you started an agent with `--resume` (which skips initial instructions) and later need the A2A protocol information, use `synapse instructions send <agent>` to inject the instructions.
 
 **Optional instruction files:** Additional instruction files are automatically appended based on settings:
+
 - `file-safety.md` — appended when `SYNAPSE_FILE_SAFETY_ENABLED=true`
 - `learning.md` — appended when either `SYNAPSE_LEARNING_MODE_ENABLED=true` or `SYNAPSE_LEARNING_MODE_TRANSLATION=true` is set (the two flags are independent). `SYNAPSE_LEARNING_MODE_ENABLED` adds a PROMPT IMPROVEMENT section; `SYNAPSE_LEARNING_MODE_TRANSLATION` adds a JP-to-EN LEARNING section (English pattern template, slot mapping, assembled prompt with JP paraphrase, quick alternatives). Either flag alone or both together enable `learning.md` injection and TIPS. The RESPONSE section uses normal formatting (no separators or section headers); structured format (━━━ separators, numbered sub-sections) is only for the learning feedback sections (PROMPT IMPROVEMENT / JP → EN LEARNING / TIPS). Template uses `{{#learning_mode}}`/`{{#learning_translation}}` Mustache conditionals for layout switching.
 - `proactive.md` — appended when `SYNAPSE_PROACTIVE_MODE_ENABLED=true`. Injects a mandatory per-task checklist requiring agents to use task board, shared memory, file safety, canvas, and broadcast for every task regardless of size. See the Features reference for details.
@@ -839,6 +864,7 @@ synapse logs codex -n 100
 ```
 
 **Parameters:**
+
 - `profile`: Agent profile name (claude, gemini, codex, opencode, copilot)
 - `-f, --follow`: Follow log output in real-time (like `tail -f`)
 - `-n, --lines`: Number of lines to show (default: 50)
@@ -860,6 +886,7 @@ synapse external add https://agent.example.com --alias myagent
 ```
 
 **Parameters:**
+
 - `url`: Agent URL (must serve `/.well-known/agent.json`)
 - `--alias, -a`: Short alias for the agent (auto-generated from name if not specified)
 
@@ -890,6 +917,7 @@ synapse external send myagent "Process this file" --wait
 ```
 
 **Parameters:**
+
 - `alias`: Agent alias
 - `message`: Message to send
 - `--wait, -w`: Wait for task completion
@@ -929,6 +957,7 @@ synapse auth generate-key -n 3 -e
 ```
 
 **Parameters:**
+
 - `-n, --count`: Number of keys to generate (default: 1)
 - `-e, --export`: Output in `export SYNAPSE_API_KEYS=...` format
 
@@ -957,6 +986,7 @@ synapse reset --scope both -f
 ```
 
 **Parameters:**
+
 - `--scope`: Which settings to reset (`user`, `project`, or `both`)
 - `-f, --force`: Skip confirmation prompt
 
@@ -982,6 +1012,7 @@ synapse memory save auth-pattern "Use OAuth2 with PKCE flow" --notify
 ```
 
 **Parameters:**
+
 - `key`: Unique key for this memory (e.g., `auth-pattern`). Used as the UPSERT key.
 - `content`: Memory content text.
 - `--tags`: Comma-separated tags for categorization.
@@ -1041,10 +1072,10 @@ synapse memory stats
 
 ### Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `SYNAPSE_SHARED_MEMORY_ENABLED` | Enable shared memory | `true` |
-| `SYNAPSE_SHARED_MEMORY_DB_PATH` | Database file path | `.synapse/memory.db` |
+| Variable                        | Description          | Default              |
+| ------------------------------- | -------------------- | -------------------- |
+| `SYNAPSE_SHARED_MEMORY_ENABLED` | Enable shared memory | `true`               |
+| `SYNAPSE_SHARED_MEMORY_DB_PATH` | Database file path   | `.synapse/memory.db` |
 
 **Storage:** `.synapse/memory.db` (SQLite with WAL mode, project-local)
 
@@ -1293,6 +1324,7 @@ synapse session save my-team --workdir /path/to/project
 ```
 
 **Scope filter behavior:**
+
 - Default (project): captures agents whose `working_dir` matches `CWD`, saves to `.synapse/sessions/`
 - `--user`: captures all running agents regardless of directory, saves to `~/.synapse/sessions/`
 - `--workdir DIR`: captures agents matching the specified directory, saves to `DIR/.synapse/sessions/`
@@ -1348,13 +1380,13 @@ Each agent in the session is spawned via `spawn_agent()`. The `--worktree` / `-w
 
 When `--resume` is specified, each agent receives CLI-specific resume arguments built from `build_resume_args()`. If the session snapshot includes a `session_id` for an agent, the resume targets that specific conversation; otherwise, the latest session is resumed.
 
-| Profile | With `session_id` | Without `session_id` |
-|---------|-------------------|---------------------|
-| claude | `--resume <id>` | `--continue` |
-| gemini | `--resume <id>` | `--resume` |
-| codex | `resume <id>` | `resume --last` |
-| copilot | `--resume` | `--resume` |
-| opencode | *(no support)* | *(no support)* |
+| Profile  | With `session_id` | Without `session_id` |
+| -------- | ----------------- | -------------------- |
+| claude   | `--resume <id>`   | `--continue`         |
+| gemini   | `--resume <id>`   | `--resume`           |
+| codex    | `resume <id>`     | `resume --last`      |
+| copilot  | `--resume`        | `--resume`           |
+| opencode | _(no support)_    | _(no support)_       |
 
 **Shell-level fallback:** If the resume command exits with a non-zero status within 10 seconds (e.g., session ID not found), the agent is automatically retried without resume args. This prevents a missing session from blocking the entire restore. Failures after 10 seconds (e.g., a long-running agent crashing) do not trigger the fallback.
 
@@ -1445,25 +1477,25 @@ synapse workflow delete review-and-test --force
 
 ```yaml
 name: review-and-test
-description: "Send review to Claude, then tests to Gemini"
+description: 'Send review to Claude, then tests to Gemini'
 steps:
   - target: claude
-    message: "Review the changes"
+    message: 'Review the changes'
     priority: 4
     response_mode: wait
   - target: gemini
-    message: "Write tests"
+    message: 'Write tests'
     response_mode: silent
 ```
 
 **Step fields:**
 
-| Field | Required | Default | Description |
-|-------|----------|---------|-------------|
-| `target` | Yes | — | Agent target (name, type, ID) |
-| `message` | Yes | — | Message to send |
-| `priority` | No | `3` | Priority level (1-5) |
-| `response_mode` | No | `notify` | `wait`, `notify`, or `silent` |
+| Field           | Required | Default  | Description                   |
+| --------------- | -------- | -------- | ----------------------------- |
+| `target`        | Yes      | —        | Agent target (name, type, ID) |
+| `message`       | Yes      | —        | Message to send               |
+| `priority`      | No       | `3`      | Priority level (1-5)          |
+| `response_mode` | No       | `notify` | `wait`, `notify`, or `silent` |
 
 ### Storage
 
@@ -1484,7 +1516,7 @@ synapse skills
 
 ### Non-Interactive Commands
 
-```bash
+````bash
 # List and browse
 synapse skills list                                # All scopes
 synapse skills list --scope synapse                # Central store only
@@ -1510,14 +1542,16 @@ Apply a skill set to a running agent. This command copies skill files to the age
 
 ```bash
 synapse skills apply <target> <set_name> [--dry-run]
-```
+````
 
 **Parameters:**
+
 - `target`: Target agent (name, ID, type-port, or agent type)
 - `set_name`: Name of the skill set to apply (e.g., `developer`, `architect`)
 - `--dry-run`: Preview changes without applying them
 
 **Example:**
+
 ```bash
 synapse skills apply my-claude manager
 synapse skills apply gemini-8110 developer --dry-run
@@ -1525,35 +1559,35 @@ synapse skills apply gemini-8110 developer --dry-run
 
 **Default Skill Sets (6):**
 
-| Set | Description | Skills (+ synapse-a2a base) |
-|-----|-------------|----------------------------|
-| `architect` | System architecture and design — design docs, API contracts, code review | system-design, api-design, code-review, project-docs |
-| `developer` | Implementation and quality — test-first development, refactoring, code simplification | test-first, refactoring, code-simplifier, agent-memory |
-| `reviewer` | Code review and security — structured reviews, security audits, code simplification | code-review, security-audit, code-simplifier |
-| `frontend` | Frontend development — React/Next.js performance, component composition, design systems, accessibility | react-performance, frontend-design, react-composition, web-accessibility |
-| `manager` | Multi-agent management — task delegation, progress monitoring, quality verification, cross-review orchestration, re-instruction | synapse-manager, task-planner, agent-memory, code-review, synapse-reinst |
-| `documentation` | Documentation expert — audit, restructure, synchronize, and maintain project documentation | project-docs, doc-organizer, api-design, agent-memory |
+| Set             | Description                                                                                                                     | Skills (+ synapse-a2a base)                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `architect`     | System architecture and design — design docs, API contracts, code review                                                        | system-design, api-design, code-review, project-docs                     |
+| `developer`     | Implementation and quality — test-first development, refactoring, code simplification                                           | test-first, refactoring, code-simplifier, agent-memory                   |
+| `reviewer`      | Code review and security — structured reviews, security audits, code simplification                                             | code-review, security-audit, code-simplifier                             |
+| `frontend`      | Frontend development — React/Next.js performance, component composition, design systems, accessibility                          | react-performance, frontend-design, react-composition, web-accessibility |
+| `manager`       | Multi-agent management — task delegation, progress monitoring, quality verification, cross-review orchestration, re-instruction | synapse-manager, task-planner, agent-memory, code-review, synapse-reinst |
+| `documentation` | Documentation expert — audit, restructure, synchronize, and maintain project documentation                                      | project-docs, doc-organizer, api-design, agent-memory                    |
 
 **Skill Set in Initial Instructions:** When an agent starts with a skill set (via `--skill-set` or interactive selection), the skill set details (name, description, included skills) are automatically included in the agent's initial instructions. This allows the agent to understand its assigned capabilities.
 
 ### Skill Scopes
 
-| Scope | Location | Description |
-|-------|----------|-------------|
-| **Synapse** | `~/.synapse/skills/` | Central store (deploy to agents from here) |
-| **User** | `~/.claude/skills/`, `~/.agents/skills/` | User-wide skills |
-| **Project** | `./.claude/skills/`, `./.agents/skills/` | Project-local skills |
-| **Plugin** | `./plugins/*/skills/` | Read-only plugin skills |
+| Scope       | Location                                 | Description                                |
+| ----------- | ---------------------------------------- | ------------------------------------------ |
+| **Synapse** | `~/.synapse/skills/`                     | Central store (deploy to agents from here) |
+| **User**    | `~/.claude/skills/`, `~/.agents/skills/` | User-wide skills                           |
+| **Project** | `./.claude/skills/`, `./.agents/skills/` | Project-local skills                       |
+| **Plugin**  | `./plugins/*/skills/`                    | Read-only plugin skills                    |
 
 ### Agent Skill Directories
 
-| Agent | Directory |
-|-------|-----------|
-| Claude | `.claude/skills/` |
-| Codex | `.agents/skills/` |
-| Gemini | `.agents/skills/` |
+| Agent    | Directory         |
+| -------- | ----------------- |
+| Claude   | `.claude/skills/` |
+| Codex    | `.agents/skills/` |
+| Gemini   | `.agents/skills/` |
 | OpenCode | `.agents/skills/` |
-| Copilot | `.agents/skills/` |
+| Copilot  | `.agents/skills/` |
 
 ## CI Monitoring and Auto-Fix Skills
 
@@ -1576,6 +1610,7 @@ PostToolUse hooks in `.claude/hooks/` automatically launch background monitors a
 ```
 
 Reports:
+
 - GitHub Actions check results (pass/fail/running/pending)
 - Merge conflict state (MERGEABLE / CONFLICTING / computing)
 - CodeRabbit review comment count and classification
@@ -1611,6 +1646,7 @@ Workflow: fetch base branch -> test merge -> identify conflicts -> analyze both 
 Workflow: fetch PR reviews from `coderabbitai[bot]` -> classify comments (Bug/Security, Style, Suggestion) -> apply fixes for actionable categories -> verify locally -> commit and push.
 
 **Comment Classification:**
+
 - **Bug/Security** (auto-fix): issues with `⚠️ Potential issue`, `🐛 Bug`, `🔒 Security` headers or bug-related keywords
 - **Style** (auto-fix): nitpicks, formatting, naming issues; delegates to `ruff check --fix` and `ruff format` when applicable
 - **Suggestion** (report only): refactoring ideas, performance hints; only auto-fixed with `--all` flag
@@ -1710,14 +1746,14 @@ synapse canvas post-raw '{"type":"render","agent_id":"cli","template":"compariso
 
 **Template data schemas:**
 
-| Template | Required `template_data` | Description |
-|----------|--------------------------|-------------|
-| briefing | `{"sections": [{"title": str, "blocks?": [int]}], "summary?": str}` | Structured report with collapsible sections |
-| comparison | `{"sides": [{"label": str, "blocks": [int]}], "layout?": "side-by-side"\|"stacked", "summary?": str}` | 2-to-4-way side-by-side or stacked comparison |
-| dashboard | `{"widgets": [{"title": str, "blocks": [int], "size?": "1x1"\|"2x1"\|"1x2"\|"2x2"}], "cols?": int}` | Grid layout with resizable widget cells (1-4 columns) |
-| steps | `{"steps": [{"title": str, "blocks?": [int], "done?": bool, "description?": str}], "summary?": str}` | Linear workflow with completion tracking |
-| slides | `{"slides": [{"title?": str, "blocks": [int], "notes?": str}]}` | Page-by-page navigation |
-| plan | `{"plan_id": str, "status": str, "steps": [{"id": str, "subject": str, "agent?": str, "status": str, "blocked_by?": [str]}], "mermaid?": str}` | Task DAG with Mermaid visualization and step tracking |
+| Template   | Required `template_data`                                                                                                                       | Description                                           |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| briefing   | `{"sections": [{"title": str, "blocks?": [int]}], "summary?": str}`                                                                            | Structured report with collapsible sections           |
+| comparison | `{"sides": [{"label": str, "blocks": [int]}], "layout?": "side-by-side"\|"stacked", "summary?": str}`                                          | 2-to-4-way side-by-side or stacked comparison         |
+| dashboard  | `{"widgets": [{"title": str, "blocks": [int], "size?": "1x1"\|"2x1"\|"1x2"\|"2x2"}], "cols?": int}`                                            | Grid layout with resizable widget cells (1-4 columns) |
+| steps      | `{"steps": [{"title": str, "blocks?": [int], "done?": bool, "description?": str}], "summary?": str}`                                           | Linear workflow with completion tracking              |
+| slides     | `{"slides": [{"title?": str, "blocks": [int], "notes?": str}]}`                                                                                | Page-by-page navigation                               |
+| plan       | `{"plan_id": str, "status": str, "steps": [{"id": str, "subject": str, "agent?": str, "status": str, "blocked_by?": [str]}], "mermaid?": str}` | Task DAG with Mermaid visualization and step tracking |
 
 ### Template Selection Guide
 
@@ -1729,25 +1765,26 @@ synapse canvas post-raw '{"type":"render","agent_id":"cli","template":"compariso
 - `plan`: use for task DAGs with dependency visualization, step-level status tracking, and task board integration via `accept-plan` / `sync-plan`
 
 Rule of thumb:
+
 - One block, one idea: plain `synapse canvas post`
 - Many blocks, structured story: choose a template
 
 ### Rendering Details
 
-| Format | Renderer | Notes |
-|--------|----------|-------|
-| code | highlight.js 11.x | Syntax highlighting; set `--lang` for best results |
-| chart | Chart.js 4.x | All chart types: bar, line, pie, doughnut, radar, polarArea, scatter, bubble |
-| diff | Side-by-side | Parsed into left (deletions) / right (additions) columns |
-| html | Sandboxed iframe | `allow-scripts`; theme sync via `postMessage` (`--bg`/`--fg`/`--border` CSS vars), auto-resize via ResizeObserver, dark mode support, full document normalization |
-| image | `<img>` tag | PNG, JPEG, SVG, GIF, WebP via URL or Base64 data URI (up to 2MB) |
-| mermaid | Mermaid 11.x | Diagrams rendered client-side; theme-synced with light/dark toggle (Catppuccin dark / Indigo light palettes, brand accent `#4051b5`) |
-| progress | Progress bar + steps | `status`: in_progress, completed, failed, paused |
-| terminal | ANSI terminal | Renders raw terminal output with ANSI escape codes |
-| dependency-graph | Force-directed graph | Nodes with optional `group` colouring; directed edges |
-| task-board | Dashboard widget | Expandable task cards with markdown descriptions; expand state persists across polling; view toggle tabs (Status\|Group\|Component) |
-| cost | Cost summary table | Per-agent token counts and costs with total row |
-| link-preview | Open Graph card | Fetches OG metadata from URL; renders title, description, and thumbnail |
+| Format           | Renderer             | Notes                                                                                                                                                             |
+| ---------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| code             | highlight.js 11.x    | Syntax highlighting; set `--lang` for best results                                                                                                                |
+| chart            | Chart.js 4.x         | All chart types: bar, line, pie, doughnut, radar, polarArea, scatter, bubble                                                                                      |
+| diff             | Side-by-side         | Parsed into left (deletions) / right (additions) columns                                                                                                          |
+| html             | Sandboxed iframe     | `allow-scripts`; theme sync via `postMessage` (`--bg`/`--fg`/`--border` CSS vars), auto-resize via ResizeObserver, dark mode support, full document normalization |
+| image            | `<img>` tag          | PNG, JPEG, SVG, GIF, WebP via URL or Base64 data URI (up to 2MB)                                                                                                  |
+| mermaid          | Mermaid 11.x         | Diagrams rendered client-side; theme-synced with light/dark toggle (Catppuccin dark / Indigo light palettes, brand accent `#4051b5`)                              |
+| progress         | Progress bar + steps | `status`: in_progress, completed, failed, paused                                                                                                                  |
+| terminal         | ANSI terminal        | Renders raw terminal output with ANSI escape codes                                                                                                                |
+| dependency-graph | Force-directed graph | Nodes with optional `group` colouring; directed edges                                                                                                             |
+| task-board       | Dashboard widget     | Expandable task cards with markdown descriptions; expand state persists across polling; view toggle tabs (Status\|Group\|Component)                               |
+| cost             | Cost summary table   | Per-agent token counts and costs with total row                                                                                                                   |
+| link-preview     | Open Graph card      | Fetches OG metadata from URL; renders title, description, and thumbnail                                                                                           |
 
 ### Manage Cards
 
@@ -1805,9 +1842,9 @@ List all running Synapse agents with status and connection info. Equivalent to `
 }
 ```
 
-| Parameter | Type | Required | Description |
-|-----------|------|:--------:|-------------|
-| `status` | string | No | Filter by status (READY, PROCESSING, WAITING, DONE, etc.) |
+| Parameter | Type   | Required | Description                                               |
+| --------- | ------ | :------: | --------------------------------------------------------- |
+| `status`  | string |    No    | Filter by status (READY, PROCESSING, WAITING, DONE, etc.) |
 
 **Response fields:** `agent_id`, `agent_type`, `name`, `role`, `skill_set`, `port`, `status`, `pid`, `working_dir`, `endpoint`, `transport`, `current_task_preview`, `task_received_at`.
 
@@ -1825,9 +1862,9 @@ Analyze a user prompt and suggest team/task splits when the work is large enough
 }
 ```
 
-| Parameter | Type | Required | Description |
-|-----------|------|:--------:|-------------|
-| `prompt` | string | Yes | User instruction to analyze for team/task split suggestions |
+| Parameter | Type   | Required | Description                                                 |
+| --------- | ------ | :------: | ----------------------------------------------------------- |
+| `prompt`  | string |   Yes    | User instruction to analyze for team/task split suggestions |
 
 **Triggers:** The tool checks for changed file count, multi-directory changes, missing tests, prompt length, and keyword matches (e.g., "refactor", "migrate", "review"). Configuration is loaded from `.synapse/suggest.yaml` with sensible defaults.
 

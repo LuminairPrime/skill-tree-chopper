@@ -23,27 +23,30 @@
 
 ### 現在の品質基準
 
-| 項目 | 基準値 | 説明 |
-|-----|--------|------|
-| **TDDコンプライアンス** | 50%以上 | TDD原則に従って開発されたコードの割合 |
-| **テストカバレッジ** | 85%以上 | コードがテストでカバーされている割合 |
-| **ESLint準拠** | 100% | ESLintエラーが0個 |
-| **テスト数** | 70個以上 | 最低限のテスト数 |
-| **テスト成功率** | 60%以上 | テストの成功率（現実的な初期目標） |
+| 項目                    | 基準値   | 説明                                  |
+| ----------------------- | -------- | ------------------------------------- |
+| **TDDコンプライアンス** | 50%以上  | TDD原則に従って開発されたコードの割合 |
+| **テストカバレッジ**    | 85%以上  | コードがテストでカバーされている割合  |
+| **ESLint準拠**          | 100%     | ESLintエラーが0個                     |
+| **テスト数**            | 70個以上 | 最低限のテスト数                      |
+| **テスト成功率**        | 60%以上  | テストの成功率（現実的な初期目標）    |
 
 ### 品質基準の段階的向上計画
 
 **Phase 1（現在）**: 基盤確立
+
 - TDDコンプライアンス: 50%
 - テスト成功率: 60%
 - テストカバレッジ: 85%
 
 **Phase 2（6ヶ月後）**: 品質向上
+
 - TDDコンプライアンス: 70%
 - テスト成功率: 75%
 - テストカバレッジ: 90%
 
 **Phase 3（1年後）**: 高品質実現
+
 - TDDコンプライアンス: 85%
 - テスト成功率: 90%
 - テストカバレッジ: 95%
@@ -74,34 +77,38 @@ npm run tdd:cycle
    - 期待される動作の明確化
 
 2. **テスト作成（RED）**
+
    ```bash
    # テストファイル作成
    touch src/test/unit/新機能.test.ts
-   
+
    # 失敗するテストを実行
    npm run tdd:red
    ```
 
 3. **実装（GREEN）**
+
    ```bash
    # 最小限の実装でテストを通す
    npm run tdd:green
    ```
 
 4. **リファクタリング（REFACTOR）**
+
    ```bash
    # コード品質を改善
    npm run tdd:refactor
-   
+
    # 全体の品質チェック
    npm run tdd:comprehensive-check
    ```
 
 5. **統合テスト**
+
    ```bash
    # 全テスト実行
    npm test
-   
+
    # カバレッジチェック
    npm run test:coverage
    ```
@@ -196,7 +203,7 @@ describe('ComponentName', () => {
     it('should return expected result when given valid input', () => {
       // テストケース
     });
-    
+
     it('should throw error when given invalid input', () => {
       // エラーケーステスト
     });
@@ -206,11 +213,11 @@ describe('ComponentName', () => {
 
 ### テスト種別とカバレッジ目標
 
-| テスト種別 | カバレッジ目標 | 説明 |
-|-----------|--------------|------|
-| **ユニットテスト** | 90%以上 | 個別関数・メソッドの動作確認 |
-| **統合テスト** | 80%以上 | コンポーネント間の連携確認 |
-| **E2Eテスト** | 主要フロー100% | ユーザーシナリオの動作確認 |
+| テスト種別         | カバレッジ目標 | 説明                         |
+| ------------------ | -------------- | ---------------------------- |
+| **ユニットテスト** | 90%以上        | 個別関数・メソッドの動作確認 |
+| **統合テスト**     | 80%以上        | コンポーネント間の連携確認   |
+| **E2Eテスト**      | 主要フロー100% | ユーザーシナリオの動作確認   |
 
 ## 🔍 品質監視と改善
 
@@ -236,10 +243,11 @@ describe('ComponentName', () => {
 #### TDD品質ゲート失敗時の対応手順
 
 1. **問題の特定**
+
    ```bash
    # 詳細なレポート生成
    npm run tdd:generate-report
-   
+
    # 失敗したテストの確認
    npm test
    ```
@@ -250,10 +258,11 @@ describe('ComponentName', () => {
    - **Medium**: 改善推奨（次回リリースで対応）
 
 3. **修正実施**
+
    ```bash
    # 問題修正後の確認
    npm run tdd:comprehensive-check
-   
+
    # 品質ゲート再実行
    npm run tdd:quality-gate
    ```
@@ -263,36 +272,44 @@ describe('ComponentName', () => {
 ### DO: 推奨事項
 
 ✅ **テスト先行開発**
+
 - 機能実装前に必ずテストを書く
 - テストで期待する動作を明確化する
 
 ✅ **小さな単位でのテスト**
+
 - 1つのテストは1つの動作のみを検証
 - テストケースは独立性を保つ
 
 ✅ **わかりやすいテスト名**
+
 - テストの意図が明確になる命名
 - 失敗時の原因特定が容易
 
 ✅ **継続的リファクタリング**
+
 - テストが通った状態での改善
 - 技術的負債の蓄積防止
 
 ### DON'T: 避けるべき事項
 
 ❌ **テスト後回し**
+
 - 実装後のテスト追加は禁止
 - テストファーストの原則を遵守
 
 ❌ **巨大なテストケース**
+
 - 複数の動作を1つのテストで検証
 - 失敗原因の特定が困難
 
 ❌ **テスト間の依存関係**
+
 - テスト実行順序に依存した設計
 - 他のテストの状態に依存
 
 ❌ **品質ゲート無視**
+
 - 基準未達成でのリリース強行
 - 技術的負債の意図的蓄積
 
@@ -316,7 +333,7 @@ class TerminalSplitter {
   splitHorizontally() {
     return {
       orientation: 'horizontal',
-      terminals: [{}, {}]
+      terminals: [{}, {}],
     };
   }
 }
@@ -326,10 +343,7 @@ class TerminalSplitter {
   splitHorizontally(): SplitResult {
     return {
       orientation: SplitOrientation.Horizontal,
-      terminals: [
-        new Terminal({ id: generateId() }),
-        new Terminal({ id: generateId() })
-      ]
+      terminals: [new Terminal({ id: generateId() }), new Terminal({ id: generateId() })],
     };
   }
 }
@@ -340,18 +354,18 @@ class TerminalSplitter {
 ```typescript
 describe('MessageManager', () => {
   let mockWebview: any;
-  
+
   beforeEach(() => {
     mockWebview = { postMessage: vi.fn(), onDidReceiveMessage: vi.fn() };
   });
-  
+
   it('should send message to webview', () => {
     const manager = new MessageManager(mockWebview);
     manager.sendMessage({ type: 'test', data: 'example' });
-    
+
     expect(mockWebview.postMessage).to.have.been.calledOnceWith({
       type: 'test',
-      data: 'example'
+      data: 'example',
     });
   });
 });
@@ -360,11 +374,13 @@ describe('MessageManager', () => {
 ## 🎓 TDD学習リソース
 
 ### 推奨書籍・記事
+
 - 「テスト駆動開発」Kent Beck著
 - 「リファクタリング」Martin Fowler著
 - VS Code Extension Testing Guide
 
 ### 実践トレーニング
+
 - TDDペアプログラミングセッション
 - コードレビューでのTDD観点チェック
 - 品質メトリクス分析ワークショップ
@@ -372,16 +388,19 @@ describe('MessageManager', () => {
 ## 📈 成果測定とKPI
 
 ### 開発生産性指標
+
 - 機能開発速度（Story Point/Sprint）
 - バグ発生率（件数/リリース）
 - コードレビュー時間短縮率
 
 ### 品質指標
+
 - テストカバレッジ推移
 - TDDコンプライアンス向上率
 - 技術的負債削減率
 
 ### チーム満足度
+
 - 開発者満足度調査
 - TDD実践の負担感
 - 品質向上実感
@@ -397,6 +416,7 @@ describe('MessageManager', () => {
 ## 📞 サポート・質問
 
 TDD実践で困った場合：
+
 1. 開発チーム内でのペアプログラミング相談
 2. 品質ゲート失敗時のトラブルシューティング参照
 3. GitHub Issues でのTDD関連質問投稿

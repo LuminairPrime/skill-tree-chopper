@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * Performance Tests for Buffer Management - Following t-wada's TDD Methodology
  *
@@ -15,11 +15,11 @@
  * - onBufferOverflow
  * - And many others...
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-const chai_1 = require("chai");
+Object.defineProperty(exports, '__esModule', { value: true });
+const chai_1 = require('chai');
 describe.skip('Buffer Management Performance - DISABLED (API mismatch)', () => {
-    it('should be rewritten to match actual PerformanceManager API', () => {
-        (0, chai_1.expect)(true).to.be.true; // Placeholder test
-    });
+  it('should be rewritten to match actual PerformanceManager API', () => {
+    (0, chai_1.expect)(true).to.be.true; // Placeholder test
+  });
 });
 //# sourceMappingURL=BufferManagement.test.js.map

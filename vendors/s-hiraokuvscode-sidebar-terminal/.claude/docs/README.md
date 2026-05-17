@@ -5,34 +5,40 @@ This directory contains documentation for the terminal research and implementati
 ## Quick Start
 
 ### Research Terminal Implementation
+
 ```bash
 /terminal-research How does VS Code handle IME composition events?
 ```
+
 Launches 3 agents in parallel to gather implementation guidance.
 
 ### Research + Implement
+
 ```bash
 /terminal-implement Add terminal tab completion support
 ```
+
 Researches and implements the feature with TDD.
 
 ## Documentation Files
 
-| File | Description |
-|------|-------------|
-| `README.md` | This file - overview of the documentation |
+| File                          | Description                                |
+| ----------------------------- | ------------------------------------------ |
+| `README.md`                   | This file - overview of the documentation  |
 | `TERMINAL_COMMANDS_README.md` | Complete command reference and usage guide |
-| `TERMINAL_RESEARCH_GUIDE.md` | Detailed research workflow guide |
+| `TERMINAL_RESEARCH_GUIDE.md`  | Detailed research workflow guide           |
 
 ## Available Commands
 
 ### `/terminal-research`
+
 - **Purpose**: Research terminal implementation patterns
 - **Location**: `.claude/commands/terminal-research.md`
 - **Agents**: vscode-terminal-resolver, serena-semantic-search, xterm-info-analyzer
 - **Output**: Research report with VS Code patterns, codebase analysis, and xterm.js docs
 
 ### `/terminal-implement`
+
 - **Purpose**: Research and implement terminal features end-to-end
 - **Location**: `.claude/commands/terminal-implement.md`
 - **Agents**: 3 research agents + terminal-implementer
@@ -41,6 +47,7 @@ Researches and implements the feature with TDD.
 ## Available Agents
 
 ### Research Agents
+
 1. **vscode-terminal-resolver** (`.claude/agents/vscode-terminal-resolver.md`)
    - Analyzes VS Code official terminal implementation
    - Provides authoritative patterns from microsoft/vscode
@@ -54,6 +61,7 @@ Researches and implements the feature with TDD.
    - Provides API references and best practices
 
 ### Implementation Agent
+
 4. **terminal-implementer** (`.claude/agents/terminal-implementer.md`)
    - Implements features using TDD methodology
    - Ensures code quality and VS Code pattern compliance
@@ -99,6 +107,7 @@ Researches and implements the feature with TDD.
 ## Example Usage
 
 ### Feature Development
+
 ```bash
 # Full workflow: Research + Implementation
 /terminal-implement Add Ctrl+K shortcut to clear terminal
@@ -110,6 +119,7 @@ Researches and implements the feature with TDD.
 ```
 
 ### Performance Optimization
+
 ```bash
 /terminal-implement Optimize terminal rendering for high-frequency output
 
@@ -119,6 +129,7 @@ Researches and implements the feature with TDD.
 ```
 
 ### Bug Fix
+
 ```bash
 /terminal-implement Fix terminal scrollback restoration after reload
 
@@ -128,6 +139,7 @@ Researches and implements the feature with TDD.
 ```
 
 ### Research Only
+
 ```bash
 # Just gather information without implementing
 /terminal-research What patterns does VS Code use for terminal lifecycle?
@@ -198,12 +210,14 @@ git commit -m "feat: Add terminal split view support"
 ### Writing Effective Queries
 
 **Good (Specific)**:
+
 ```bash
 /terminal-implement Add Ctrl+L shortcut to clear terminal output
 /terminal-research How does VS Code handle terminal IME composition events?
 ```
 
 **Less Effective (Too Broad)**:
+
 ```bash
 /terminal-implement Make terminals better
 /terminal-research How do terminals work?
@@ -211,17 +225,18 @@ git commit -m "feat: Add terminal split view support"
 
 ### Choosing the Right Command
 
-| Scenario | Command | Reason |
-|----------|---------|--------|
-| Learning patterns | `/terminal-research` | Fast, no code changes |
-| Planning architecture | `/terminal-research` | Gather info before deciding |
-| Adding feature | `/terminal-implement` | Need working code |
-| Fixing bug | `/terminal-implement` | Need tests + fix |
-| Optimizing performance | `/terminal-implement` | Need measurable changes |
+| Scenario               | Command               | Reason                      |
+| ---------------------- | --------------------- | --------------------------- |
+| Learning patterns      | `/terminal-research`  | Fast, no code changes       |
+| Planning architecture  | `/terminal-research`  | Gather info before deciding |
+| Adding feature         | `/terminal-implement` | Need working code           |
+| Fixing bug             | `/terminal-implement` | Need tests + fix            |
+| Optimizing performance | `/terminal-implement` | Need measurable changes     |
 
 ## Troubleshooting
 
 ### Command Not Found
+
 ```bash
 # Check if command file exists
 ls .claude/commands/terminal-*.md
@@ -232,6 +247,7 @@ ls .claude/commands/terminal-*.md
 ```
 
 ### Agent Not Working
+
 ```bash
 # Check if agent files exist
 ls .claude/agents/
@@ -244,11 +260,13 @@ ls .claude/agents/
 ```
 
 ### Research Returns No Results
+
 - Feature might not exist in VS Code or current codebase
 - Try broader search terms
 - Check xterm.js documentation for API details
 
 ### Implementation Fails Tests
+
 ```bash
 # Run tests to see failures
 npm run test:unit
@@ -269,7 +287,9 @@ npm run compile
 ## Advanced Topics
 
 ### Chaining Commands
+
 Research first, then implement with refined understanding:
+
 ```bash
 /terminal-research Terminal session persistence patterns
 # Review findings...
@@ -277,7 +297,9 @@ Research first, then implement with refined understanding:
 ```
 
 ### Iterative Development
+
 Break complex features into incremental steps:
+
 ```bash
 # Step 1: Core feature
 /terminal-implement Add basic terminal split view
@@ -290,7 +312,9 @@ Break complex features into incremental steps:
 ```
 
 ### Custom Workflows
+
 Combine with other commands for complete workflows:
+
 ```bash
 # Implement feature
 /terminal-implement Add terminal color theme support

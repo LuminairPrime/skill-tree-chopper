@@ -5,12 +5,14 @@ The previous refactor (`tree-hierarchy-and-archiving`) inadvertently caused the 
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Replace the `vscode.workspace.findFiles` deep-glob approach with a highly targeted, manual directory scanning algorithm (depth of 1) for workspace scopes, mirroring the global logic.
 - Change the archive folder name from `archived` to `.archived`.
 - Introduce a `skills-container` Node Type in the tree that holds a checkbox for en-masse operations.
 - Introduce a strict validation check before moving folders to ensure they contain a `skill.md` or `.md` file.
 
 **Non-Goals:**
+
 - Supporting agent config directories outside the standard set (`.cursor`, `.agents`, `.claude`).
 
 ## Decisions

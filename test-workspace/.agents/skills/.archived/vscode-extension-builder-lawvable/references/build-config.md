@@ -31,7 +31,7 @@ const buildOptions = {
   bundle: true,
   outfile: 'dist/extension.js',
   external: [
-    'vscode',  // VS Code API provided at runtime
+    'vscode', // VS Code API provided at runtime
     // Add other externals if needed (native modules, etc.)
   ],
   format: 'cjs',
@@ -44,16 +44,16 @@ const buildOptions = {
 
   // Handle __dirname in bundled code
   define: {
-    'process.env.NODE_ENV': isProduction ? '"production"' : '"development"'
+    'process.env.NODE_ENV': isProduction ? '"production"' : '"development"',
   },
 
   // Copy static assets
   loader: {
-    '.node': 'copy',  // Native modules
+    '.node': 'copy', // Native modules
   },
 
   // Plugins (optional)
-  plugins: []
+  plugins: [],
 };
 
 async function build() {
@@ -78,7 +78,7 @@ For extensions with multiple entry points:
 const buildOptions = {
   entryPoints: {
     extension: 'src/extension.ts',
-    server: 'src/server.ts',  // Language server, etc.
+    server: 'src/server.ts', // Language server, etc.
   },
   outdir: 'dist',
   // ... rest of config
@@ -114,8 +114,8 @@ export default defineConfig({
         // Consistent filenames (no hashes) for CSP
         entryFileNames: '[name].js',
         chunkFileNames: '[name].js',
-        assetFileNames: '[name].[ext]'
-      }
+        assetFileNames: '[name].[ext]',
+      },
     },
 
     // Don't split chunks (simpler for extension)
@@ -128,20 +128,20 @@ export default defineConfig({
   // Resolve aliases
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
-    }
+      '@': resolve(__dirname, 'src'),
+    },
   },
 
   // Define globals
   define: {
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   },
 
   // Dev server (for standalone testing)
   server: {
     port: 3000,
-    strictPort: true
-  }
+    strictPort: true,
+  },
 });
 ```
 
@@ -151,15 +151,15 @@ export default defineConfig({
 <!-- src/webview/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Webview</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="./index.tsx"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webview</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+  </body>
 </html>
 ```
 
@@ -282,9 +282,7 @@ Create `.vscode/launch.json`:
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}"
-      ],
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "preLaunchTask": "npm: watch"
     },
@@ -292,9 +290,7 @@ Create `.vscode/launch.json`:
       "name": "Run Extension (Production)",
       "type": "extensionHost",
       "request": "launch",
-      "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}"
-      ],
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "preLaunchTask": "npm: build"
     }
@@ -315,10 +311,7 @@ Create `.vscode/tasks.json`:
       "type": "npm",
       "script": "watch",
       "isBackground": true,
-      "problemMatcher": [
-        "$tsc-watch",
-        "$esbuild-watch"
-      ],
+      "problemMatcher": ["$tsc-watch", "$esbuild-watch"],
       "presentation": {
         "reveal": "never",
         "panel": "dedicated"
@@ -416,6 +409,7 @@ Already enabled in esbuild with `--production` flag.
 ### Tree Shaking
 
 esbuild handles this automatically. Ensure:
+
 - Use ES modules where possible
 - Avoid `require()` for tree-shakeable imports
 - Mark side-effect-free packages in package.json
@@ -441,9 +435,9 @@ For debugging published extensions:
 ```javascript
 // esbuild.js
 const buildOptions = {
-  sourcemap: 'external',  // Separate .map files
+  sourcemap: 'external', // Separate .map files
   // or
-  sourcemap: true,  // Inline (larger bundle)
+  sourcemap: true, // Inline (larger bundle)
 };
 ```
 

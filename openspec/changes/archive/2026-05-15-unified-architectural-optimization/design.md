@@ -5,6 +5,7 @@ The discovery logic in the current prototype is deeply flawed: it synchronously 
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Shift all file system calls to `vscode.workspace.fs.*`.
 - Make `SkillTreeProvider.ts` completely asynchronous.
 - Implement an explicit array of `KNOWN_AGENT_PREFIXES` to avoid walking irrelevant directories in the user's home folder.
@@ -12,6 +13,7 @@ The discovery logic in the current prototype is deeply flawed: it synchronously 
 - Retain sequential awaiting in mass-toggles to prevent file system locks.
 
 **Non-Goals:**
+
 - Designing a UI busy indicator for the checkbox state. VS Code tree checkboxes fire asynchronously and update their state naturally when the data provider refreshes.
 
 ## Decisions

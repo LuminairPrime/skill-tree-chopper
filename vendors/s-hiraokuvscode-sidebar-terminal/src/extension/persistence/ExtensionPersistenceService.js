@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * Extension Persistence Service
  *
@@ -7,234 +7,230 @@
  *
  * @see Issue #223 - Phase 2: Persistence Layer Separation
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.ExtensionPersistenceService = void 0;
-const vscode = require("vscode");
+const vscode = require('vscode');
 /**
  * Extension-side persistence service
  * Implements IExtensionPersistencePort for Extension layer storage
  */
 class ExtensionPersistenceService {
-    constructor(context) {
-        this.context = context;
-    }
-    /**
-     * Save the current session
-     */
-    async saveSession(_request) {
-        try {
-            const sessionData = await this.collectSessionData();
-            const success = await this.storeSessionData(sessionData);
-            if (!success) {
-                return {
-                    success: false,
-                    savedTerminals: 0,
-                    totalSize: 0,
-                    error: 'Failed to store session data',
-                    timestamp: Date.now(),
-                };
-            }
-            const size = await this.getStorageSize();
-            return {
-                success: true,
-                savedTerminals: sessionData.terminals.length,
-                totalSize: size,
-                timestamp: Date.now(),
-            };
-        }
-        catch (error) {
-            return {
-                success: false,
-                savedTerminals: 0,
-                totalSize: 0,
-                error: error instanceof Error ? error.message : 'Unknown error',
-                timestamp: Date.now(),
-            };
-        }
-    }
-    /**
-     * Restore a session
-     */
-    async restoreSession(request) {
-        try {
-            const sessionData = await this.getSessionData(request.sessionId);
-            if (!sessionData) {
-                return {
-                    success: false,
-                    restoredTerminals: 0,
-                    skippedTerminals: 0,
-                    errors: ['No session data found'],
-                    timestamp: Date.now(),
-                };
-            }
-            // Session data will be used by TerminalManager to restore terminals
-            return {
-                success: true,
-                restoredTerminals: sessionData.terminals.length,
-                skippedTerminals: 0,
-                errors: [],
-                timestamp: Date.now(),
-            };
-        }
-        catch (error) {
-            return {
-                success: false,
-                restoredTerminals: 0,
-                skippedTerminals: 0,
-                errors: [error instanceof Error ? error.message : 'Unknown error'],
-                timestamp: Date.now(),
-            };
-        }
-    }
-    /**
-     * Clear stored session data
-     */
-    async clearSession(request) {
-        try {
-            if (request.clearAll) {
-                await this.context.globalState.update(ExtensionPersistenceService.STORAGE_KEY, undefined);
-                await this.context.workspaceState.update(ExtensionPersistenceService.STORAGE_KEY, undefined);
-                return {
-                    success: true,
-                    clearedSessions: 1,
-                    timestamp: Date.now(),
-                };
-            }
-            if (request.sessionId) {
-                // Clear specific session (if we implement multiple sessions in the future)
-                return {
-                    success: true,
-                    clearedSessions: 1,
-                    timestamp: Date.now(),
-                };
-            }
-            return {
-                success: false,
-                clearedSessions: 0,
-                error: 'No session specified',
-                timestamp: Date.now(),
-            };
-        }
-        catch (error) {
-            return {
-                success: false,
-                clearedSessions: 0,
-                error: error instanceof Error ? error.message : 'Unknown error',
-                timestamp: Date.now(),
-            };
-        }
-    }
-    /**
-     * Clean up expired sessions
-     */
-    async cleanupExpiredSessions() {
-        try {
-            const sessionData = await this.getSessionData();
-            if (!sessionData) {
-                return;
-            }
-            const now = Date.now();
-            const retentionMs = ExtensionPersistenceService.RETENTION_DAYS * 24 * 60 * 60 * 1000;
-            if (now - sessionData.timestamp > retentionMs) {
-                await this.context.globalState.update(ExtensionPersistenceService.STORAGE_KEY, undefined);
-            }
-        }
-        catch (error) {
-            console.error('Failed to cleanup expired sessions:', error);
-        }
-    }
-    /**
-     * Get session data
-     */
-    async getSessionData(_sessionId) {
-        try {
-            // Try workspace state first, then global state
-            const data = this.context.workspaceState.get(ExtensionPersistenceService.STORAGE_KEY) ||
-                this.context.globalState.get(ExtensionPersistenceService.STORAGE_KEY);
-            return data || null;
-        }
-        catch (error) {
-            console.error('Failed to get session data:', error);
-            return null;
-        }
-    }
-    /**
-     * Store session data
-     */
-    async storeSessionData(data) {
-        try {
-            const size = JSON.stringify(data).length;
-            if (size > ExtensionPersistenceService.MAX_STORAGE_SIZE) {
-                console.warn('Session data exceeds maximum storage size');
-                return false;
-            }
-            // Store in both workspace and global state for redundancy
-            await this.context.workspaceState.update(ExtensionPersistenceService.STORAGE_KEY, data);
-            await this.context.globalState.update(ExtensionPersistenceService.STORAGE_KEY, data);
-            return true;
-        }
-        catch (error) {
-            console.error('Failed to store session data:', error);
-            return false;
-        }
-    }
-    /**
-     * Get storage size
-     */
-    async getStorageSize() {
-        try {
-            const data = await this.getSessionData();
-            if (!data) {
-                return 0;
-            }
-            return JSON.stringify(data).length;
-        }
-        catch {
-            return 0;
-        }
-    }
-    /**
-     * Check storage health
-     */
-    async checkStorageHealth() {
-        try {
-            const size = await this.getStorageSize();
-            const maxSize = ExtensionPersistenceService.MAX_STORAGE_SIZE;
-            const usagePercent = (size / maxSize) * 100;
-            if (usagePercent > 90) {
-                return {
-                    healthy: false,
-                    message: `Storage usage is ${usagePercent.toFixed(1)}% (${size} bytes)`,
-                };
-            }
-            return { healthy: true };
-        }
-        catch (error) {
-            return {
-                healthy: false,
-                message: error instanceof Error ? error.message : 'Unknown error',
-            };
-        }
-    }
-    /**
-     * Dispose of the persistence service
-     */
-    dispose() {
-        // No resources to dispose
-    }
-    /**
-     * Collect current session data
-     * This will be called by TerminalManager to get current state
-     */
-    async collectSessionData() {
-        // This is a placeholder - actual implementation will collect data from TerminalManager
+  constructor(context) {
+    this.context = context;
+  }
+  /**
+   * Save the current session
+   */
+  async saveSession(_request) {
+    try {
+      const sessionData = await this.collectSessionData();
+      const success = await this.storeSessionData(sessionData);
+      if (!success) {
         return {
-            version: ExtensionPersistenceService.SESSION_VERSION,
-            timestamp: Date.now(),
-            terminals: [],
-            workspaceId: vscode.workspace.workspaceFolders?.[0]?.uri.toString(),
+          success: false,
+          savedTerminals: 0,
+          totalSize: 0,
+          error: 'Failed to store session data',
+          timestamp: Date.now(),
         };
+      }
+      const size = await this.getStorageSize();
+      return {
+        success: true,
+        savedTerminals: sessionData.terminals.length,
+        totalSize: size,
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        savedTerminals: 0,
+        totalSize: 0,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: Date.now(),
+      };
     }
+  }
+  /**
+   * Restore a session
+   */
+  async restoreSession(request) {
+    try {
+      const sessionData = await this.getSessionData(request.sessionId);
+      if (!sessionData) {
+        return {
+          success: false,
+          restoredTerminals: 0,
+          skippedTerminals: 0,
+          errors: ['No session data found'],
+          timestamp: Date.now(),
+        };
+      }
+      // Session data will be used by TerminalManager to restore terminals
+      return {
+        success: true,
+        restoredTerminals: sessionData.terminals.length,
+        skippedTerminals: 0,
+        errors: [],
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        restoredTerminals: 0,
+        skippedTerminals: 0,
+        errors: [error instanceof Error ? error.message : 'Unknown error'],
+        timestamp: Date.now(),
+      };
+    }
+  }
+  /**
+   * Clear stored session data
+   */
+  async clearSession(request) {
+    try {
+      if (request.clearAll) {
+        await this.context.globalState.update(ExtensionPersistenceService.STORAGE_KEY, undefined);
+        await this.context.workspaceState.update(
+          ExtensionPersistenceService.STORAGE_KEY,
+          undefined
+        );
+        return {
+          success: true,
+          clearedSessions: 1,
+          timestamp: Date.now(),
+        };
+      }
+      if (request.sessionId) {
+        // Clear specific session (if we implement multiple sessions in the future)
+        return {
+          success: true,
+          clearedSessions: 1,
+          timestamp: Date.now(),
+        };
+      }
+      return {
+        success: false,
+        clearedSessions: 0,
+        error: 'No session specified',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        clearedSessions: 0,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: Date.now(),
+      };
+    }
+  }
+  /**
+   * Clean up expired sessions
+   */
+  async cleanupExpiredSessions() {
+    try {
+      const sessionData = await this.getSessionData();
+      if (!sessionData) {
+        return;
+      }
+      const now = Date.now();
+      const retentionMs = ExtensionPersistenceService.RETENTION_DAYS * 24 * 60 * 60 * 1000;
+      if (now - sessionData.timestamp > retentionMs) {
+        await this.context.globalState.update(ExtensionPersistenceService.STORAGE_KEY, undefined);
+      }
+    } catch (error) {
+      console.error('Failed to cleanup expired sessions:', error);
+    }
+  }
+  /**
+   * Get session data
+   */
+  async getSessionData(_sessionId) {
+    try {
+      // Try workspace state first, then global state
+      const data =
+        this.context.workspaceState.get(ExtensionPersistenceService.STORAGE_KEY) ||
+        this.context.globalState.get(ExtensionPersistenceService.STORAGE_KEY);
+      return data || null;
+    } catch (error) {
+      console.error('Failed to get session data:', error);
+      return null;
+    }
+  }
+  /**
+   * Store session data
+   */
+  async storeSessionData(data) {
+    try {
+      const size = JSON.stringify(data).length;
+      if (size > ExtensionPersistenceService.MAX_STORAGE_SIZE) {
+        console.warn('Session data exceeds maximum storage size');
+        return false;
+      }
+      // Store in both workspace and global state for redundancy
+      await this.context.workspaceState.update(ExtensionPersistenceService.STORAGE_KEY, data);
+      await this.context.globalState.update(ExtensionPersistenceService.STORAGE_KEY, data);
+      return true;
+    } catch (error) {
+      console.error('Failed to store session data:', error);
+      return false;
+    }
+  }
+  /**
+   * Get storage size
+   */
+  async getStorageSize() {
+    try {
+      const data = await this.getSessionData();
+      if (!data) {
+        return 0;
+      }
+      return JSON.stringify(data).length;
+    } catch {
+      return 0;
+    }
+  }
+  /**
+   * Check storage health
+   */
+  async checkStorageHealth() {
+    try {
+      const size = await this.getStorageSize();
+      const maxSize = ExtensionPersistenceService.MAX_STORAGE_SIZE;
+      const usagePercent = (size / maxSize) * 100;
+      if (usagePercent > 90) {
+        return {
+          healthy: false,
+          message: `Storage usage is ${usagePercent.toFixed(1)}% (${size} bytes)`,
+        };
+      }
+      return { healthy: true };
+    } catch (error) {
+      return {
+        healthy: false,
+        message: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+  /**
+   * Dispose of the persistence service
+   */
+  dispose() {
+    // No resources to dispose
+  }
+  /**
+   * Collect current session data
+   * This will be called by TerminalManager to get current state
+   */
+  async collectSessionData() {
+    // This is a placeholder - actual implementation will collect data from TerminalManager
+    return {
+      version: ExtensionPersistenceService.SESSION_VERSION,
+      timestamp: Date.now(),
+      terminals: [],
+      workspaceId: vscode.workspace.workspaceFolders?.[0]?.uri.toString(),
+    };
+  }
 }
 exports.ExtensionPersistenceService = ExtensionPersistenceService;
 ExtensionPersistenceService.STORAGE_KEY = 'secondaryTerminal.sessionData';

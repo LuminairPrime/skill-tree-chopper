@@ -18,12 +18,14 @@ Patterns for integrating VS Code extensions with AI agents like Claude Code.
 VS Code extensions don't natively communicate with AI agents running in the terminal. The **file-bridge pattern** enables this communication through watched files.
 
 **How it works:**
+
 1. Extension watches a commands directory for new JSON files
 2. AI agent writes command files to trigger extension actions
 3. Extension processes commands and writes results to a response file
 4. AI agent reads the response
 
 **Benefits:**
+
 - No API keys needed in the extension
 - Uses the agent's existing subscription
 - Works with any AI agent (Claude Code, Codex, Gemini CLI)
@@ -186,7 +188,7 @@ export class FileBridge {
   private async processExistingCommands() {
     try {
       const files = await fs.promises.readdir(this.commandsDir);
-      for (const file of files.filter(f => f.endsWith('.json'))) {
+      for (const file of files.filter((f) => f.endsWith('.json'))) {
         await this.processCommand(path.join(this.commandsDir, file));
       }
     } catch (e) {
@@ -212,9 +214,9 @@ export class FileBridge {
           status: 'error',
           error: {
             code: 'UNKNOWN_ACTION',
-            message: `No handler for action: ${command.action}`
+            message: `No handler for action: ${command.action}`,
           },
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
       } else {
         try {
@@ -223,7 +225,7 @@ export class FileBridge {
             id: command.id,
             status: 'success',
             result,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           };
         } catch (e: any) {
           response = {
@@ -231,9 +233,9 @@ export class FileBridge {
             status: 'error',
             error: {
               code: 'HANDLER_ERROR',
-              message: e.message || String(e)
+              message: e.message || String(e),
             },
-            timestamp: Date.now()
+            timestamp: Date.now(),
           };
         }
       }
@@ -244,7 +246,6 @@ export class FileBridge {
 
       // Delete command file
       await fs.promises.unlink(filePath);
-
     } catch (e) {
       console.error('Error processing command:', e);
     }
@@ -260,9 +261,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Register handlers
   bridge.registerHandler('extractText', async (params) => {
-    const content = await vscode.workspace.fs.readFile(
-      vscode.Uri.file(params.filePath)
-    );
+    const content = await vscode.workspace.fs.readFile(vscode.Uri.file(params.filePath));
     return { text: new TextDecoder().decode(content) };
   });
 
@@ -274,7 +273,7 @@ export function activate(context: vscode.ExtensionContext) {
   bridge.registerHandler('getOpenFiles', async () => {
     const editors = vscode.window.visibleTextEditors;
     return {
-      files: editors.map(e => e.document.uri.fsPath)
+      files: editors.map((e) => e.document.uri.fsPath),
     };
   });
 
@@ -374,11 +373,7 @@ print(result)
 ```typescript
 bridge.registerHandler('executeCommand', async (params) => {
   // Whitelist allowed commands
-  const allowedCommands = [
-    'myExt.formatDocument',
-    'myExt.extractText',
-    'myExt.showPreview'
-  ];
+  const allowedCommands = ['myExt.formatDocument', 'myExt.extractText', 'myExt.showPreview'];
 
   if (!allowedCommands.includes(params.command)) {
     throw new Error(`Command not allowed: ${params.command}`);
@@ -401,9 +396,7 @@ bridge.registerHandler('readFile', async (params) => {
     throw new Error('Path outside workspace');
   }
 
-  const content = await vscode.workspace.fs.readFile(
-    vscode.Uri.file(resolvedPath)
-  );
+  const content = await vscode.workspace.fs.readFile(vscode.Uri.file(resolvedPath));
   return { content: new TextDecoder().decode(content) };
 });
 ```
@@ -459,15 +452,15 @@ const tool = vscode.lm.registerTool('myExt.searchFiles', {
   inputSchema: {
     type: 'object',
     properties: {
-      query: { type: 'string', description: 'Search query' }
+      query: { type: 'string', description: 'Search query' },
     },
-    required: ['query']
-  }
+    required: ['query'],
+  },
 });
 
 tool.onDidReceiveInput(async (input) => {
   const files = await vscode.workspace.findFiles(`**/*${input.query}*`);
-  return { files: files.map(f => f.fsPath) };
+  return { files: files.map((f) => f.fsPath) };
 });
 ```
 
@@ -481,7 +474,7 @@ import { Server } from '@modelcontextprotocol/sdk/server';
 
 const mcpServer = new Server({
   name: 'vscode-extension',
-  version: '1.0.0'
+  version: '1.0.0',
 });
 
 mcpServer.setRequestHandler('tools/call', async (request) => {
@@ -497,8 +490,12 @@ If building multiple extensions that need to communicate:
 // Extension A: Export API
 export function activate(context: vscode.ExtensionContext) {
   return {
-    extractText: async (path: string) => { /* ... */ },
-    formatDocument: async (uri: vscode.Uri) => { /* ... */ }
+    extractText: async (path: string) => {
+      /* ... */
+    },
+    formatDocument: async (uri: vscode.Uri) => {
+      /* ... */
+    },
   };
 }
 

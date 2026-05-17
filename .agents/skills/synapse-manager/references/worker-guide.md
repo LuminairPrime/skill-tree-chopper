@@ -28,6 +28,7 @@ How to operate as a worker agent in a multi-agent team.
 ## During Work
 
 Progress reporting prevents managers from sending unnecessary interrupts:
+
 - **Keep task board lifecycle current**: use `synapse tasks complete <task_id>` when done or
   `synapse tasks fail <task_id> --reason "<reason>"` when blocked
 - Report progress on long tasks (>5 min): `synapse send <manager> "Progress on 3f2a1b4c — <update>" --silent`
@@ -37,6 +38,7 @@ Progress reporting prevents managers from sending unnecessary interrupts:
 ### Sub-Delegation
 
 Workers can spawn helpers for independent subtasks. This is efficient when your task has naturally parallel parts:
+
 ```bash
 synapse spawn gemini --worktree --name Helper --role "test writer"
 synapse send Helper "Write tests for auth.py and report the result" --notify
@@ -45,6 +47,7 @@ synapse interrupt Helper "Quick status check" --priority 4
 # Wait for the completion notification (or use --wait above), then clean up:
 synapse kill Helper -f
 ```
+
 Prefer different model types to distribute load and avoid rate limits.
 
 ## On Completion
@@ -62,6 +65,7 @@ Prefer different model types to distribute load and avoid rate limits.
 ## On Failure
 
 Transparency prevents wasted effort — the manager needs to reassign or adjust the plan:
+
 1. `synapse tasks fail <task_id> --reason "<reason>"`
 2. `synapse send <manager> "Failed: <error details>" --silent`
 3. Do NOT silently move on
@@ -79,6 +83,7 @@ for the full checklist.
 ## When No Manager Exists
 
 If there is no manager/coordinator agent in the team:
+
 - Assess the situation: `synapse list`
 - Coordinate directly with available teammates
 - Proactively delegate and spawn when it improves efficiency

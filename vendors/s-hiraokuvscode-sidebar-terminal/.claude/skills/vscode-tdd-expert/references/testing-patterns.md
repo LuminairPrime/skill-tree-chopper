@@ -35,7 +35,7 @@ describe('Terminal Lifecycle Tests', () => {
     expect(stateChanges).toEqual([
       ProcessState.Creating,
       ProcessState.Running,
-      ProcessState.Terminated
+      ProcessState.Terminated,
     ]);
   });
 
@@ -51,8 +51,8 @@ describe('Terminal Lifecycle Tests', () => {
     const results = await Promise.allSettled(createPromises);
 
     // Assert - All should succeed without duplicates
-    const successful = results.filter(r => r.status === 'fulfilled');
-    const ids = successful.map(r => (r as PromiseFulfilledResult<any>).value.id);
+    const successful = results.filter((r) => r.status === 'fulfilled');
+    const ids = successful.map((r) => (r as PromiseFulfilledResult<any>).value.id);
     const uniqueIds = new Set(ids);
     expect(ids.length).toBe(uniqueIds.size);
   });
@@ -71,7 +71,7 @@ describe('Terminal ID Recycling Tests', () => {
     }
 
     // Verify IDs are 1-5
-    const ids = terminals.map(t => t.id);
+    const ids = terminals.map((t) => t.id);
     expect(ids).toEqual([1, 2, 3, 4, 5]);
 
     // Delete terminal 2 and 4
@@ -104,7 +104,7 @@ describe('WebView Message Tests', () => {
   beforeEach(() => {
     mockPostMessage = vi.fn().mockResolvedValue(true);
     messageManager = new MessageManager({
-      postMessage: mockPostMessage
+      postMessage: mockPostMessage,
     } as any);
   });
 
@@ -146,7 +146,7 @@ describe('WebView Message Tests', () => {
     // Act
     await messageManager.handleIncomingMessage({
       type: 'action',
-      data: { value: 42 }
+      data: { value: 42 },
     });
 
     // Assert
@@ -204,7 +204,7 @@ describe('Session Persistence Tests', () => {
   beforeEach(() => {
     mockStorage = {
       get: vi.fn(),
-      update: vi.fn().mockResolvedValue(undefined)
+      update: vi.fn().mockResolvedValue(undefined),
     };
     sessionManager = new SessionManager(mockStorage as any);
   });
@@ -215,7 +215,7 @@ describe('Session Persistence Tests', () => {
       id: 1,
       name: 'Terminal 1',
       scrollback: 'command output...',
-      cwd: '/home/user'
+      cwd: '/home/user',
     };
 
     // Act
@@ -232,7 +232,7 @@ describe('Session Persistence Tests', () => {
     // Arrange
     const savedState = {
       id: 1,
-      savedAt: Date.now() - (1 * 24 * 60 * 60 * 1000) // 1 day ago
+      savedAt: Date.now() - 1 * 24 * 60 * 60 * 1000, // 1 day ago
     };
     mockStorage.get.mockReturnValue(savedState);
 
@@ -247,7 +247,7 @@ describe('Session Persistence Tests', () => {
     // Arrange
     const expiredState = {
       id: 1,
-      savedAt: Date.now() - (8 * 24 * 60 * 60 * 1000) // 8 days ago
+      savedAt: Date.now() - 8 * 24 * 60 * 60 * 1000, // 8 days ago
     };
     mockStorage.get.mockReturnValue(expiredState);
 
@@ -414,7 +414,7 @@ describe('Integration Tests', () => {
       expect.objectContaining({
         type: 'terminalOutput',
         terminalId: terminal.id,
-        data: expect.any(String)
+        data: expect.any(String),
       })
     );
   });

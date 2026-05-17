@@ -52,7 +52,7 @@ class RollbackManager {
       const gitTags = execSync('git tag -l "v*" --sort=-version:refname', { encoding: 'utf8' })
         .trim()
         .split('\n')
-        .filter(tag => tag.length > 0)
+        .filter((tag) => tag.length > 0)
         .slice(0, 10); // Show last 10 versions
 
       if (gitTags.length === 0) {
@@ -66,12 +66,13 @@ class RollbackManager {
         console.log(`   ${index + 1}. ${version}${isLatest}`);
       });
 
-      return gitTags.map(tag => tag.replace('v', ''));
+      return gitTags.map((tag) => tag.replace('v', ''));
     } catch (error) {
       console.log('⚠️  Git tags not available, checking backup files...');
 
-      const backupFiles = fs.readdirSync(this.backupDir)
-        .filter(file => file.startsWith('backup-v') && file.endsWith('.json'))
+      const backupFiles = fs
+        .readdirSync(this.backupDir)
+        .filter((file) => file.startsWith('backup-v') && file.endsWith('.json'))
         .sort()
         .reverse()
         .slice(0, 5);
@@ -88,10 +89,12 @@ class RollbackManager {
         }
       });
 
-      return backupFiles.map(file => {
-        const match = file.match(/backup-v([\d.]+)-/);
-        return match ? match[1] : null;
-      }).filter(Boolean);
+      return backupFiles
+        .map((file) => {
+          const match = file.match(/backup-v([\d.]+)-/);
+          return match ? match[1] : null;
+        })
+        .filter(Boolean);
     }
   }
 
@@ -122,7 +125,9 @@ class RollbackManager {
       execSync('git rev-parse --verify ' + JSON.stringify(tagName), { stdio: 'ignore' });
 
       // Checkout the specific version
-      execSync('git checkout ' + JSON.stringify(tagName) + ' -- package.json', { stdio: 'inherit' });
+      execSync('git checkout ' + JSON.stringify(tagName) + ' -- package.json', {
+        stdio: 'inherit',
+      });
 
       console.log(`✅ Rolled back package.json to version ${targetVersion}`);
 
@@ -136,15 +141,15 @@ class RollbackManager {
 
       console.log('🎉 Rollback completed successfully!');
       console.log(`📝 Please verify the extension works correctly with version ${targetVersion}`);
-
     } catch (error) {
       throw new Error(`Git rollback failed: ${error.message}`);
     }
   }
 
   async backupFileRollback(targetVersion) {
-    const backupFiles = fs.readdirSync(this.backupDir)
-      .filter(file => file.includes(`backup-v${targetVersion}-`))
+    const backupFiles = fs
+      .readdirSync(this.backupDir)
+      .filter((file) => file.includes(`backup-v${targetVersion}-`))
       .sort()
       .reverse();
 
@@ -196,13 +201,10 @@ class RollbackManager {
         '3. 🧪 Test rolled-back version',
         '4. 📦 Publish emergency fix if needed',
         '5. 📝 Create incident report',
-        '6. 🔧 Fix issue in development branch'
+        '6. 🔧 Fix issue in development branch',
       ],
-      emergencyContacts: [
-        'Extension Marketplace Support',
-        'Development Team Lead'
-      ],
-      rollbackCommand: 'npm run rollback:emergency'
+      emergencyContacts: ['Extension Marketplace Support', 'Development Team Lead'],
+      rollbackCommand: 'npm run rollback:emergency',
     };
 
     const planPath = path.join(this.backupDir, 'emergency-rollback-plan.json');

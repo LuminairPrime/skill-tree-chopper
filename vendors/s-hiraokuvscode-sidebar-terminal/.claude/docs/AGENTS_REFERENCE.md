@@ -24,6 +24,7 @@ This guide provides detailed documentation for each agent, including purpose, us
 ### What is an Agent?
 
 An **Agent** is a specialized AI assistant configured for a specific task with:
+
 - **Predefined purpose**: Clear, focused objective
 - **Tool access**: Specific tools (Read, Write, Grep, Bash, MCP servers)
 - **Workflow**: Step-by-step process
@@ -40,11 +41,13 @@ An **Agent** is a specialized AI assistant configured for a specific task with:
 ### How to Invoke Agents
 
 **Method 1: Task Tool**
+
 ```bash
 Task(agent-name): "Task description with context"
 ```
 
 **Method 2: Generated Commands**
+
 ```bash
 /implement-{change-id}  # Automatically orchestrates multiple agents
 ```
@@ -60,11 +63,13 @@ Task(agent-name): "Task description with context"
 **Purpose**: Automate OpenSpec change directory scaffolding
 
 **When to Use**:
+
 - Starting a new feature or bug fix
 - Need to create OpenSpec proposal structure
 - Want to ensure OpenSpec standards compliance
 
 **Inputs**:
+
 ```typescript
 {
   changeId: string;          // e.g., "add-terminal-profile-sync"
@@ -74,6 +79,7 @@ Task(agent-name): "Task description with context"
 ```
 
 **Usage Example**:
+
 ```bash
 Task(openspec-scaffolder): "Create OpenSpec change for add-terminal-profile-sync
 
@@ -82,6 +88,7 @@ Affected capabilities: terminal-lifecycle-management, configuration-management"
 ```
 
 **Generated Files**:
+
 ```
 openspec/changes/{change-id}/
 ├── proposal.md          # Problem statement, solution, impact
@@ -93,6 +100,7 @@ openspec/changes/{change-id}/
 ```
 
 **Output Format**:
+
 ```markdown
 ## OpenSpec Change Scaffolded
 
@@ -108,6 +116,7 @@ openspec/changes/{change-id}/
 **Validation**: ✅ PASSED
 
 **Next Steps**:
+
 1. Fill in placeholder sections in proposal.md
 2. Define specific tasks in tasks.md
 3. Add scenarios to spec.md files
@@ -118,6 +127,7 @@ openspec/changes/{change-id}/
 **Time Savings**: 30min manual → 5min automated (6x faster)
 
 **Integrates With**:
+
 - Filesystem MCP (safe file operations)
 - OpenSpec CLI (validation)
 
@@ -130,12 +140,14 @@ openspec/changes/{change-id}/
 **Purpose**: Profile terminal performance and identify optimization opportunities
 
 **When to Use**:
+
 - Investigating performance degradation
 - Before/after optimization verification
 - Performance regression testing
 - Memory leak detection
 
 **Analysis Areas**:
+
 1. **Terminal Lifecycle**: Creation time, deletion time, session restore
 2. **Rendering Performance**: FPS, draw calls, buffer flush intervals
 3. **Memory Usage**: Per-terminal memory, scrollback size, leak detection
@@ -143,6 +155,7 @@ openspec/changes/{change-id}/
 5. **Dispose Handlers**: Coverage, performance (<100ms target)
 
 **Usage Example**:
+
 ```bash
 Task(terminal-performance-analyzer): "Analyze terminal creation performance after recent refactoring
 
@@ -154,31 +167,35 @@ Focus areas:
 ```
 
 **Output Format**:
-```markdown
+
+````markdown
 ## Terminal Performance Analysis Report
 
 **Analysis Date**: 2025-11-14
 **Scope**: Terminal Creation + Memory Usage
 
 ### Executive Summary
+
 **Overall Performance**: ⚠️ Needs Attention
 
 **Key Findings**:
+
 - Terminal creation: 650ms (target: <500ms) ❌
 - Memory per terminal: 18MB (target: <20MB) ✅
 - Dispose coverage: 87% ✅
 
 **Priority Actions**:
+
 1. Fix synchronous file reads in TerminalCreationService (P0)
 2. Implement lazy addon loading (P1)
 
 ### Current Performance Metrics
 
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| Terminal creation | 650ms | <500ms | ❌ |
-| Memory per terminal | 18MB | <20MB | ✅ |
-| Dispose coverage | 87% | 100% | ⚠️ |
+| Metric              | Current | Target | Status |
+| ------------------- | ------- | ------ | ------ |
+| Terminal creation   | 650ms   | <500ms | ❌     |
+| Memory per terminal | 18MB    | <20MB  | ✅     |
+| Dispose coverage    | 87%     | 100%   | ⚠️     |
 
 ### Bottlenecks Identified
 
@@ -189,11 +206,14 @@ Focus areas:
 **Description**: fs.readFileSync blocks terminal creation for ~150ms
 
 **Current Code**:
+
 ```typescript
 const config = fs.readFileSync('terminal-config.json', 'utf8');
 ```
+````
 
 **Recommended Fix**:
+
 ```typescript
 const config = await fs.promises.readFile('terminal-config.json', 'utf8');
 ```
@@ -205,13 +225,16 @@ const config = await fs.promises.readFile('terminal-config.json', 'utf8');
 [Additional bottlenecks...]
 
 ### Optimization Opportunities
+
 [...]
 
 ### Next Steps
+
 1. ✅ Immediate: Fix synchronous file reads
 2. Short-term: Implement lazy addon loading
 3. Long-term: Profile with Chrome DevTools MCP
-```
+
+````
 
 **Benchmarks**:
 - Terminal creation: <500ms
@@ -259,10 +282,11 @@ Files to check:
 - src/providers/SecondaryTerminalProvider.ts
 - src/providers/services/MessageRoutingFacade.ts
 "
-```
+````
 
 **Output Format**:
-```markdown
+
+````markdown
 ## VS Code API Validation Report
 
 **Extension**: vscode-sidebar-terminal
@@ -270,13 +294,16 @@ Files to check:
 **Validation Date**: 2025-11-14
 
 ### Executive Summary
+
 **Overall Status**: ⚠️ Issues Found
 
 **Issues Found**: 3
+
 - 🔴 Critical: 1 (Must fix before release)
 - 🟡 High: 2 (Should fix this sprint)
 
 **Quick Actions**:
+
 1. Fix deprecated onDidChangePanelLocation usage
 2. Add dispose handler for MessageRoutingFacade
 3. Add error handling for showInputBox promise
@@ -289,27 +316,32 @@ Files to check:
 **Severity**: 🔴 Critical
 
 **Current Code**:
+
 ```typescript
 vscode.window.onDidChangePanelLocation((location) => {
-    this.updateLayout(location);
+  this.updateLayout(location);
 });
 ```
+````
 
 **Problem**: API deprecated in VS Code 1.82, will be removed in 1.90
 
 **Replacement**:
+
 ```typescript
 vscode.window.onDidChangeActiveColorTheme((theme) => {
-    this.updateLayout();
+  this.updateLayout();
 });
 ```
 
 **Migration Steps**:
+
 1. Replace onDidChangePanelLocation with appropriate alternative
 2. Update layout logic to not depend on panel location
 3. Test with VS Code 1.85+
 
 **References**:
+
 - https://code.visualstudio.com/api/references/vscode-api#window.onDidChangePanelLocation
 - Migration guide: https://github.com/microsoft/vscode/issues/...
 
@@ -321,36 +353,39 @@ vscode.window.onDidChangeActiveColorTheme((theme) => {
 **Severity**: 🟡 High (Memory Leak Risk)
 
 **Current Code**:
+
 ```typescript
 export class MessageRoutingFacade {
-    private handlers: Map<string, Handler[]> = new Map();
+  private handlers: Map<string, Handler[]> = new Map();
 
-    constructor() {
-        // Registers event listeners but no dispose!
-    }
+  constructor() {
+    // Registers event listeners but no dispose!
+  }
 }
 ```
 
 **Fix**:
+
 ```typescript
 export class MessageRoutingFacade implements vscode.Disposable {
-    private readonly disposables: vscode.Disposable[] = [];
-    private handlers: Map<string, Handler[]> = new Map();
+  private readonly disposables: vscode.Disposable[] = [];
+  private handlers: Map<string, Handler[]> = new Map();
 
-    constructor() {
-        // Register resources for disposal
-    }
+  constructor() {
+    // Register resources for disposal
+  }
 
-    public dispose(): void {
-        while (this.disposables.length) {
-            this.disposables.pop()?.dispose();
-        }
-        this.handlers.clear();
+  public dispose(): void {
+    while (this.disposables.length) {
+      this.disposables.pop()?.dispose();
     }
+    this.handlers.clear();
+  }
 }
 ```
 
 **Resources at Risk**:
+
 - Event listeners: 3
 - Map references: 1
 
@@ -359,12 +394,14 @@ export class MessageRoutingFacade implements vscode.Disposable {
 ### Recommendations
 
 #### Priority 0 (Critical - Fix Before Release)
+
 1. **Fix onDidChangePanelLocation usage**
    - Impact: Extension will break in VS Code 1.90+
    - Effort: 2h
    - Fix: Use onDidChangeActiveColorTheme
 
 #### Priority 1 (High - Fix This Sprint)
+
 1. **Add MessageRoutingFacade dispose handler**
    - Impact: Memory leak risk
    - Effort: 1h
@@ -373,11 +410,13 @@ export class MessageRoutingFacade implements vscode.Disposable {
    - Effort: 30min
 
 ### Testing Checklist
+
 - [ ] All deprecated APIs replaced
 - [ ] All dispose handlers implemented
 - [ ] All promises have .catch()
 - [ ] Manual testing in VS Code 1.85+
-```
+
+````
 
 **Integrates With**:
 - GitHub MCP (VS Code API docs)
@@ -407,9 +446,10 @@ Focus on:
 - Message delivery guarantees
 - Error handling patterns
 "
-```
+````
 
 **Output Format** (100-200 words):
+
 ```markdown
 VS Code implements terminal shell initialization using a multi-step process:
 
@@ -419,12 +459,14 @@ VS Code implements terminal shell initialization using a multi-step process:
 4. **Output Routing** (TerminalInstance.ts:678): Routes PTY output through event emitter with buffering
 
 **Key Patterns**:
+
 - Uses promise-based handlers for async operations
 - Implements 3-retry logic with exponential backoff
 - Buffers output (16ms interval) for performance
 - Handles shell crashes gracefully with reconnection
 
 **Error Handling**:
+
 - Catches PTY spawn failures → Shows error message to user
 - Timeouts after 30s if shell doesn't initialize
 - Logs all errors to Extension Host console
@@ -433,6 +475,7 @@ VS Code implements terminal shell initialization using a multi-step process:
 ```
 
 **Integrates With**:
+
 - GitHub MCP (VS Code repository access)
 
 ---
@@ -444,11 +487,13 @@ VS Code implements terminal shell initialization using a multi-step process:
 **Purpose**: Semantic search within current codebase to find similar implementations
 
 **When to Use**:
+
 - Finding existing patterns in codebase
 - Understanding current architecture
 - Identifying refactoring opportunities
 
 **Usage Example**:
+
 ```bash
 Task(serena-semantic-search): "Find message routing patterns in the codebase
 
@@ -457,34 +502,43 @@ Focus: How handlers are currently registered and called"
 ```
 
 **Output Format** (100-200 words):
-```markdown
+
+````markdown
 Message routing is centralized in `MessageRoutingFacade` (src/providers/services/MessageRoutingFacade.ts):
 
 **Architecture**:
+
 - Category-based routing: 'terminal', 'webview', 'ui'
 - Handler registration via registerHandlers() method
 - Message routing via routeMessage(category, command, payload)
 
 **Current Implementations**:
+
 1. **Terminal handlers** (SecondaryTerminalProvider.ts:317):
-   - terminalInitializationComplete → _handleTerminalInitializationComplete
-   - terminalCreated → _handleTerminalCreated
+   - terminalInitializationComplete → \_handleTerminalInitializationComplete
+   - terminalCreated → \_handleTerminalCreated
    - Registered under 'terminal' category
 
 2. **WebView handlers** (SecondaryTerminalProvider.ts:412):
-   - themeChanged → _handleThemeChange
+   - themeChanged → \_handleThemeChange
    - Registered under 'webview' category
 
 **Pattern**:
+
 ```typescript
 const handlers = [
-    { command: 'terminalInitializationComplete', handler: this._handleTerminalInitializationComplete },
+  {
+    command: 'terminalInitializationComplete',
+    handler: this._handleTerminalInitializationComplete,
+  },
 ];
 messagingFacade.registerHandlers('terminal', handlers);
 ```
+````
 
 **Issue Found**: Handler registration timing - must complete before WebView sends messages.
-```
+
+````
 
 **Integrates With**:
 - Serena MCP (semantic code search)
@@ -510,38 +564,45 @@ Questions:
 - When is the terminal ready to accept input?
 - What events signal complete initialization?
 - How should addons be loaded for optimal performance?"
-```
+````
 
 **Output Format** (100-200 words):
-```markdown
+
+````markdown
 xterm.js terminal initialization lifecycle:
 
 **Initialization Sequence**:
+
 1. Create terminal: `new Terminal(options)`
 2. Open terminal: `terminal.open(container)` - Attaches to DOM
 3. Load addons: `terminal.loadAddon(addon)` - Activates addon functionality
 4. Wait for ready: Terminal emits 'onRender' event when ready
 
 **Optimal Addon Loading** (Performance):
+
 - **Eager loading** (at initialization): FitAddon, WebGLAddon
 - **Lazy loading** (on demand): SearchAddon, WebLinksAddon
 - **Deferred loading** (after first render): SerializeAddon
 
 **Ready Signal**:
+
 ```typescript
 terminal.onRender(() => {
-    // Terminal is ready to accept input
-    // Safe to send initialization messages
+  // Terminal is ready to accept input
+  // Safe to send initialization messages
 });
 ```
+````
 
 **Best Practices**:
+
 - Use WebGLAddon for hardware acceleration (fallback to Canvas)
 - Set scrollback limit (2000 lines recommended)
 - Dispose terminal when no longer needed: `terminal.dispose()`
 
 **Performance**: 30% faster creation with lazy addon loading.
-```
+
+````
 
 **Integrates With**:
 - deepwiki MCP (xterm.js repository docs)
@@ -582,48 +643,56 @@ Task(terminal-implementer): "Implement terminal shell initialization fix
 - Terminal prompt appears immediately
 - Input works correctly
 - All tests pass"
-```
+````
 
 **Output Format**:
+
 ```markdown
 ## Implementation Summary
 
 **Feature**: Terminal shell initialization fix
 
 **Files Modified**:
+
 - src/webview/services/TerminalCreationService.ts:357-363 - Added retry logic
 - src/providers/SecondaryTerminalProvider.ts:317 - Fixed handler timing
 - src/providers/services/MessageRoutingFacade.ts:85 - Fixed category routing
 - src/test/unit/MessageRoutingFacade.test.ts:1-50 - Added tests
 
 **Key Decisions**:
+
 - Followed VS Code 3-retry pattern from TerminalInstance.ts:234
 - Used exponential backoff (50ms, 100ms, 200ms)
 - Added logging with emoji markers (📨, 📥, ✅)
 - Ensured handler registration before WebView resolves
 
 **Test Coverage**:
+
 - Unit tests: 15 passing
 - Integration tests: 8 passing
 - TDD compliance: ✅
 
 **Performance Impact**:
+
 - No significant performance change
 - Retry adds max 350ms on failure (rare)
 
 **Next Steps**:
+
 - Run `npm run test:unit` ✅
 - Run `npm run compile` ✅
 - Manual testing in VS Code ✅
 ```
 
 **Code Quality Standards**:
+
 - TypeScript strict mode (no `any`)
 - Atomic operations (prevent race conditions)
 - Dispose handlers (prevent memory leaks)
 - Security patterns (regex, not includes())
 
 **Integrates With**:
+
 - vscode-terminal-resolver (VS Code patterns)
 - serena-semantic-search (codebase context)
 - xterm-info-analyzer (xterm.js APIs)
@@ -637,6 +706,7 @@ Task(terminal-implementer): "Implement terminal shell initialization fix
 **Purpose**: Create comprehensive test suites following t-wada TDD methodology
 
 **When to Use**:
+
 - After implementation completes
 - Creating test suite from scratch
 - Improving test coverage
@@ -644,6 +714,7 @@ Task(terminal-implementer): "Implement terminal shell initialization fix
 **TDD Workflow**: Red → Green → Refactor
 
 **Usage Example**:
+
 ```bash
 Task(tdd-quality-engineer): "Create comprehensive test suite for terminal initialization fix
 
@@ -658,7 +729,8 @@ Task(tdd-quality-engineer): "Create comprehensive test suite for terminal initia
 ```
 
 **Output Format**:
-```markdown
+
+````markdown
 ## TDD Test Suite Created
 
 **Feature**: Terminal initialization
@@ -666,37 +738,40 @@ Task(tdd-quality-engineer): "Create comprehensive test suite for terminal initia
 ### Unit Tests (15 tests)
 
 **MessageRoutingFacade** (src/test/unit/MessageRoutingFacade.test.ts):
+
 ```typescript
 describe('MessageRoutingFacade', () => {
-    describe('handler registration', () => {
-        it('should register handler for terminal category', () => {
-            // Red: Test fails initially
-            const facade = new MessageRoutingFacade();
-            facade.registerHandlers('terminal', handlers);
-            expect(facade.hasHandler('terminal', 'terminalInitializationComplete')).toBe(true);
-        });
-
-        it('should call registered handler when message routed', async () => {
-            // Green: Minimal implementation
-            const spy = jest.fn();
-            facade.registerHandlers('terminal', [{ command: 'test', handler: spy }]);
-            await facade.routeMessage('terminal', 'test', {});
-            expect(spy).toHaveBeenCalled();
-        });
-
-        it('should throw error if handler not found', () => {
-            // Refactor: Add error handling
-            expect(() => {
-                facade.routeMessage('terminal', 'unknown', {});
-            }).toThrow('Handler not found');
-        });
+  describe('handler registration', () => {
+    it('should register handler for terminal category', () => {
+      // Red: Test fails initially
+      const facade = new MessageRoutingFacade();
+      facade.registerHandlers('terminal', handlers);
+      expect(facade.hasHandler('terminal', 'terminalInitializationComplete')).toBe(true);
     });
+
+    it('should call registered handler when message routed', async () => {
+      // Green: Minimal implementation
+      const spy = jest.fn();
+      facade.registerHandlers('terminal', [{ command: 'test', handler: spy }]);
+      await facade.routeMessage('terminal', 'test', {});
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw error if handler not found', () => {
+      // Refactor: Add error handling
+      expect(() => {
+        facade.routeMessage('terminal', 'unknown', {});
+      }).toThrow('Handler not found');
+    });
+  });
 });
 ```
+````
 
 ### Integration Tests (8 tests)
 
 **Terminal Initialization Flow** (src/test/integration/TerminalInitialization.test.ts):
+
 - Full flow: WebView → Extension → TerminalManager
 - Shell initialization called
 - PTY output started
@@ -706,11 +781,11 @@ describe('MessageRoutingFacade', () => {
 
 **Overall**: 87% (target: >80%) ✅
 
-| File | Coverage |
-|------|----------|
-| MessageRoutingFacade.ts | 92% ✅ |
-| TerminalCreationService.ts | 85% ✅ |
-| SecondaryTerminalProvider.ts | 84% ✅ |
+| File                         | Coverage |
+| ---------------------------- | -------- |
+| MessageRoutingFacade.ts      | 92% ✅   |
+| TerminalCreationService.ts   | 85% ✅   |
+| SecondaryTerminalProvider.ts | 84% ✅   |
 
 ### TDD Compliance
 
@@ -719,7 +794,8 @@ describe('MessageRoutingFacade', () => {
 ✅ Each test verifies one specific behavior
 ✅ Test names describe expected behavior
 ✅ Arrange-Act-Assert structure used
-```
+
+````
 
 **Integrates With**:
 - terminal-implementer (implementation code)
@@ -741,24 +817,28 @@ Task(playwright-test-planner): "Create E2E test scenarios for terminal initializ
 
 Feature: Terminal prompt display and input capability
 User flows: Create terminal, verify prompt, type commands"
-```
+````
 
 **Output Format**:
+
 ```markdown
 ## E2E Test Scenarios
 
 ### Terminal Initialization
 
 #### Scenario 1: Terminal Prompt Display (P0)
+
 **Priority**: P0 (Critical)
 **Given**: Extension is activated
 **When**: User creates a new terminal
 **Then**:
+
 - Terminal displays shell prompt within 3 seconds
 - Prompt shows current directory
 - Cursor is visible and blinking
 
 **Test Steps**:
+
 1. Open VS Code
 2. Activate extension
 3. Click "New Terminal" button
@@ -767,10 +847,12 @@ User flows: Create terminal, verify prompt, type commands"
 6. Verify cursor visible
 
 #### Scenario 2: Keyboard Input (P0)
+
 **Priority**: P0 (Critical)
 **Given**: Terminal is displayed with prompt
 **When**: User types a command
 **Then**:
+
 - Characters appear in terminal
 - Terminal accepts Enter key
 - Command executes
@@ -787,6 +869,7 @@ User flows: Create terminal, verify prompt, type commands"
 **Purpose**: Generate Playwright test code from scenarios
 
 **Usage Example**:
+
 ```bash
 Task(playwright-test-generator): "Implement E2E test for terminal prompt display scenario
 
@@ -795,28 +878,29 @@ Steps: Create terminal → Wait for prompt → Verify text"
 ```
 
 **Output Format**:
+
 ```typescript
 // tests/e2e/terminal/prompt-display.spec.ts
 import { test, expect } from '@playwright/test';
 
 test.describe('Terminal Prompt Display', () => {
-    test('should display prompt within 3 seconds after creation', async ({ page }) => {
-        // Navigate to extension
-        await page.goto('http://localhost:3000');
+  test('should display prompt within 3 seconds after creation', async ({ page }) => {
+    // Navigate to extension
+    await page.goto('http://localhost:3000');
 
-        // Create terminal
-        await page.click('[data-testid="new-terminal-button"]');
+    // Create terminal
+    await page.click('[data-testid="new-terminal-button"]');
 
-        // Wait for prompt (max 3s)
-        const prompt = await page.waitForSelector('.terminal-prompt', { timeout: 3000 });
+    // Wait for prompt (max 3s)
+    const prompt = await page.waitForSelector('.terminal-prompt', { timeout: 3000 });
 
-        // Verify prompt visible
-        expect(await prompt.isVisible()).toBe(true);
+    // Verify prompt visible
+    expect(await prompt.isVisible()).toBe(true);
 
-        // Verify prompt text contains directory
-        const promptText = await prompt.textContent();
-        expect(promptText).toContain('$');
-    });
+    // Verify prompt text contains directory
+    const promptText = await prompt.textContent();
+    expect(promptText).toContain('$');
+  });
 });
 ```
 
@@ -829,6 +913,7 @@ test.describe('Terminal Prompt Display', () => {
 **Purpose**: Debug and fix failing Playwright tests
 
 **Usage Example**:
+
 ```bash
 Task(playwright-test-healer): "Debug failing test: terminal-prompt-display.spec.ts
 
@@ -837,7 +922,8 @@ Test was passing yesterday, started failing after refactoring"
 ```
 
 **Output Format**:
-```markdown
+
+````markdown
 ## Test Healing Report
 
 **Test**: terminal-prompt-display.spec.ts
@@ -848,6 +934,7 @@ Test was passing yesterday, started failing after refactoring"
 **Issue**: CSS class changed from 'terminal-prompt' to 'prompt-text' in refactoring
 
 **Evidence**:
+
 - Git diff shows class rename in TerminalCreationService.ts:123
 - Browser snapshot shows element exists with new class name
 - Other tests using old class name also failing
@@ -855,6 +942,7 @@ Test was passing yesterday, started failing after refactoring"
 ### Fix
 
 **Update selector**:
+
 ```typescript
 // Before
 await page.waitForSelector('.terminal-prompt');
@@ -862,6 +950,7 @@ await page.waitForSelector('.terminal-prompt');
 // After
 await page.waitForSelector('.prompt-text');
 ```
+````
 
 ### Verification
 
@@ -872,6 +961,7 @@ await page.waitForSelector('.prompt-text');
 ### Recommendation
 
 Use data-testid instead of CSS classes:
+
 ```typescript
 <div data-testid="terminal-prompt" class="prompt-text">
 ```
@@ -879,7 +969,8 @@ Use data-testid instead of CSS classes:
 ```typescript
 await page.waitForSelector('[data-testid="terminal-prompt"]');
 ```
-```
+
+````
 
 ---
 
@@ -904,10 +995,11 @@ Task(security-auditor): "Audit security in AI agent detection code
 
 Files: src/webview/services/AIAgentDetector.ts
 Focus: Pattern matching, URL validation"
-```
+````
 
 **Output Format**:
-```markdown
+
+````markdown
 ## Security Audit Report
 
 **Scope**: AI Agent Detection
@@ -920,23 +1012,27 @@ Focus: Pattern matching, URL validation"
 **Severity**: 🔴 Critical (CVSS: 7.5)
 
 **Vulnerable Code**:
+
 ```typescript
 if (text.includes('claude code')) {
-    // Detect Claude Code CLI agent
+  // Detect Claude Code CLI agent
 }
 ```
+````
 
 **Attack Vector**:
+
 ```typescript
 // Attacker can inject:
-text = "not claude code, actually malicious"
+text = 'not claude code, actually malicious';
 // Will trigger detection falsely
 ```
 
 **Fix**:
+
 ```typescript
 if (/(^|\s)claude\s+code(\s|$)/i.test(text)) {
-    // Use regex with word boundaries
+  // Use regex with word boundaries
 }
 ```
 
@@ -947,10 +1043,12 @@ if (/(^|\s)claude\s+code(\s|$)/i.test(text)) {
 [Additional issues...]
 
 ### Recommendations
+
 1. Replace all includes() with regex patterns
 2. Add input validation for CLI output
 3. Sanitize URLs before display
-```
+
+````
 
 ---
 
@@ -965,10 +1063,11 @@ if (/(^|\s)claude\s+code(\s|$)/i.test(text)) {
 Task(memory-leak-detector): "Detect memory leaks in terminal managers
 
 Focus: Event listeners, timers, dispose handlers"
-```
+````
 
 **Output Format**:
-```markdown
+
+````markdown
 ## Memory Leak Detection Report
 
 ### Potential Leaks Found: 3
@@ -979,6 +1078,7 @@ Focus: Event listeners, timers, dispose handlers"
 **Risk**: 🔴 High
 
 **Code**:
+
 ```typescript
 constructor() {
     vscode.workspace.onDidChangeConfiguration((e) => {
@@ -987,6 +1087,7 @@ constructor() {
     // No dispose handler!
 }
 ```
+````
 
 **Leak**: Event listener not cleaned up → Memory retained
 **Fix**: Add to disposables array
@@ -996,11 +1097,13 @@ constructor() {
 ### Dispose Handler Coverage: 87%
 
 **Missing Dispose**:
+
 - TerminalLifecycleManager
 - MessageRoutingFacade
 
 **Recommendation**: Implement IDisposable for all managers
-```
+
+````
 
 ---
 
@@ -1025,7 +1128,7 @@ Task(terminal-performance-analyzer): "..."
 
 # Phase 4: Testing
 Task(tdd-quality-engineer): "..."
-```
+````
 
 ---
 
@@ -1042,6 +1145,7 @@ Task(tdd-quality-engineer): "..."
 ```
 
 Agent internally orchestrates:
+
 1. Research (parallel agents)
 2. Implementation (TDD)
 3. Validation (parallel agents)
@@ -1054,12 +1158,14 @@ Agent internally orchestrates:
 ### 1. Always Use Research Agents Before Implementation
 
 ❌ **Bad**:
+
 ```bash
 Task(terminal-implementer): "Implement feature X"
 # No context → Poor quality
 ```
 
 ✅ **Good**:
+
 ```bash
 Task(vscode-terminal-resolver): "How does VS Code implement X?"
 Task(serena-semantic-search): "Find X patterns in codebase"
@@ -1085,6 +1191,7 @@ Task(memory-leak-detector): "Check for leaks in new managers"
 ### 3. Use Parallel Execution When Possible
 
 ❌ **Slow** (sequential):
+
 ```bash
 Task(vscode-terminal-resolver): "..."  # 30s
 # Wait...
@@ -1095,6 +1202,7 @@ Task(xterm-info-analyzer): "..."       # 30s
 ```
 
 ✅ **Fast** (parallel):
+
 ```bash
 # Single message with multiple Task tool calls
 Task(vscode-terminal-resolver): "..."
@@ -1108,11 +1216,13 @@ Task(xterm-info-analyzer): "..."
 ### 4. Provide Concise Prompts with Clear Context
 
 ❌ **Vague**:
+
 ```bash
 Task(terminal-implementer): "Fix the bug"
 ```
 
 ✅ **Clear**:
+
 ```bash
 Task(terminal-implementer): "Fix terminal prompt not displaying
 

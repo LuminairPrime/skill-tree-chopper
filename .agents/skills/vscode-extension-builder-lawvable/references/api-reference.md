@@ -30,9 +30,13 @@ vscode.window.showErrorMessage('Something went wrong');
 // With action buttons
 const result = await vscode.window.showInformationMessage(
   'Save changes?',
-  'Save', 'Discard', 'Cancel'
+  'Save',
+  'Discard',
+  'Cancel',
 );
-if (result === 'Save') { /* ... */ }
+if (result === 'Save') {
+  /* ... */
+}
 ```
 
 ### Input Boxes
@@ -42,13 +46,13 @@ if (result === 'Save') { /* ... */ }
 const name = await vscode.window.showInputBox({
   prompt: 'Enter your name',
   placeHolder: 'John Doe',
-  validateInput: (value) => value.length < 2 ? 'Too short' : null
+  validateInput: (value) => (value.length < 2 ? 'Too short' : null),
 });
 
 // Password input
 const password = await vscode.window.showInputBox({
   prompt: 'Enter password',
-  password: true
+  password: true,
 });
 ```
 
@@ -56,47 +60,44 @@ const password = await vscode.window.showInputBox({
 
 ```typescript
 // Simple selection
-const color = await vscode.window.showQuickPick(
-  ['Red', 'Green', 'Blue'],
-  { placeHolder: 'Select a color' }
-);
+const color = await vscode.window.showQuickPick(['Red', 'Green', 'Blue'], {
+  placeHolder: 'Select a color',
+});
 
 // With descriptions
 const item = await vscode.window.showQuickPick([
   { label: 'Option 1', description: 'First option', detail: 'More info' },
-  { label: 'Option 2', description: 'Second option' }
+  { label: 'Option 2', description: 'Second option' },
 ]);
 
 // Multi-select
-const items = await vscode.window.showQuickPick(
-  ['A', 'B', 'C'],
-  { canPickMany: true }
-);
+const items = await vscode.window.showQuickPick(['A', 'B', 'C'], { canPickMany: true });
 ```
 
 ### Progress Notifications
 
 ```typescript
-await vscode.window.withProgress({
-  location: vscode.ProgressLocation.Notification,
-  title: 'Processing...',
-  cancellable: true
-}, async (progress, token) => {
-  for (let i = 0; i < 100; i += 10) {
-    if (token.isCancellationRequested) break;
-    progress.report({ increment: 10, message: `${i}%` });
-    await sleep(100);
-  }
-});
+await vscode.window.withProgress(
+  {
+    location: vscode.ProgressLocation.Notification,
+    title: 'Processing...',
+    cancellable: true,
+  },
+  async (progress, token) => {
+    for (let i = 0; i < 100; i += 10) {
+      if (token.isCancellationRequested) break;
+      progress.report({ increment: 10, message: `${i}%` });
+      await sleep(100);
+    }
+  },
+);
 ```
 
 ### Status Bar
 
 ```typescript
 // Create status bar item
-const statusBar = vscode.window.createStatusBarItem(
-  vscode.StatusBarAlignment.Right, 100
-);
+const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 statusBar.text = '$(sync~spin) Syncing...';
 statusBar.tooltip = 'Click to cancel';
 statusBar.command = 'myExt.cancelSync';
@@ -118,7 +119,7 @@ if (editor) {
 }
 
 // Listen for editor changes
-vscode.window.onDidChangeActiveTextEditor(editor => {
+vscode.window.onDidChangeActiveTextEditor((editor) => {
   if (editor) {
     console.log('Switched to:', editor.document.fileName);
   }
@@ -176,13 +177,13 @@ await vscode.window.showTextDocument(doc);
 // Open untitled document
 const doc = await vscode.workspace.openTextDocument({
   content: 'Initial content',
-  language: 'javascript'
+  language: 'javascript',
 });
 
 // Open text document by content
 const doc = await vscode.workspace.openTextDocument({
   content: JSON.stringify(data, null, 2),
-  language: 'json'
+  language: 'json',
 });
 ```
 
@@ -197,7 +198,7 @@ const value = config.get<string>('settingName', 'default');
 await config.update('settingName', 'newValue', vscode.ConfigurationTarget.Global);
 
 // Watch for config changes
-vscode.workspace.onDidChangeConfiguration(e => {
+vscode.workspace.onDidChangeConfiguration((e) => {
   if (e.affectsConfiguration('myExtension.settingName')) {
     // Reload setting
   }
@@ -215,8 +216,8 @@ if (folders) {
 
 // Find files
 const files = await vscode.workspace.findFiles(
-  '**/*.ts',           // include pattern
-  '**/node_modules/**' // exclude pattern
+  '**/*.ts', // include pattern
+  '**/node_modules/**', // exclude pattern
 );
 ```
 
@@ -225,9 +226,9 @@ const files = await vscode.workspace.findFiles(
 ```typescript
 const watcher = vscode.workspace.createFileSystemWatcher('**/*.json');
 
-watcher.onDidCreate(uri => console.log('Created:', uri.fsPath));
-watcher.onDidChange(uri => console.log('Changed:', uri.fsPath));
-watcher.onDidDelete(uri => console.log('Deleted:', uri.fsPath));
+watcher.onDidCreate((uri) => console.log('Created:', uri.fsPath));
+watcher.onDidChange((uri) => console.log('Changed:', uri.fsPath));
+watcher.onDidDelete((uri) => console.log('Deleted:', uri.fsPath));
 
 context.subscriptions.push(watcher);
 ```
@@ -287,7 +288,7 @@ await vscode.commands.executeCommand('revealInExplorer', uri);
 
 // Execute terminal command
 await vscode.commands.executeCommand('workbench.action.terminal.sendSequence', {
-  text: 'npm install\n'
+  text: 'npm install\n',
 });
 ```
 
@@ -305,7 +306,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand('myExt.cmd', () => {}),
     vscode.window.createStatusBarItem(),
-    fileWatcher
+    fileWatcher,
   );
 }
 ```
@@ -349,7 +350,7 @@ const iconUri = vscode.Uri.joinPath(context.extensionUri, 'media', 'icon.png');
 
 // For webview resources
 const scriptUri = panel.webview.asWebviewUri(
-  vscode.Uri.joinPath(context.extensionUri, 'dist', 'webview.js')
+  vscode.Uri.joinPath(context.extensionUri, 'dist', 'webview.js'),
 );
 ```
 
@@ -375,9 +376,9 @@ const uri = vscode.Uri.joinPath(baseUri, 'subdir', 'file.txt');
 ```typescript
 const uri = vscode.Uri.file('/Users/me/project/file.ts');
 
-uri.scheme;   // 'file'
-uri.fsPath;   // '/Users/me/project/file.ts'
-uri.path;     // '/Users/me/project/file.ts'
+uri.scheme; // 'file'
+uri.fsPath; // '/Users/me/project/file.ts'
+uri.path; // '/Users/me/project/file.ts'
 uri.toString(); // 'file:///Users/me/project/file.ts'
 ```
 
@@ -427,7 +428,7 @@ await vscode.env.openExternal(vscode.Uri.parse('https://example.com'));
 ```typescript
 let timeout: NodeJS.Timeout | undefined;
 
-vscode.workspace.onDidChangeTextDocument(e => {
+vscode.workspace.onDidChangeTextDocument((e) => {
   clearTimeout(timeout);
   timeout = setTimeout(() => {
     // Handle change after 300ms of no activity
@@ -443,15 +444,15 @@ class MyFeature implements vscode.Disposable {
   private disposables: vscode.Disposable[] = [];
 
   constructor() {
-    this.disposables.push(
-      vscode.commands.registerCommand('myExt.cmd', this.handleCommand, this)
-    );
+    this.disposables.push(vscode.commands.registerCommand('myExt.cmd', this.handleCommand, this));
   }
 
-  private handleCommand() { /* ... */ }
+  private handleCommand() {
+    /* ... */
+  }
 
   dispose() {
-    this.disposables.forEach(d => d.dispose());
+    this.disposables.forEach((d) => d.dispose());
   }
 }
 

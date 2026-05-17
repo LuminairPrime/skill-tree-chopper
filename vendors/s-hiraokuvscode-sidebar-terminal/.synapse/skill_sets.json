@@ -2,34 +2,17 @@
   "architect": {
     "name": "architect",
     "description": "System architecture and design — design docs, API contracts, code review",
-    "skills": [
-      "synapse-a2a",
-      "system-design",
-      "api-design",
-      "code-review",
-      "project-docs"
-    ]
+    "skills": ["synapse-a2a", "system-design", "api-design", "code-review", "project-docs"]
   },
   "developer": {
     "name": "developer",
     "description": "Implementation and quality — test-first development, refactoring, code simplification",
-    "skills": [
-      "synapse-a2a",
-      "test-first",
-      "refactoring",
-      "code-simplifier",
-      "agent-memory"
-    ]
+    "skills": ["synapse-a2a", "test-first", "refactoring", "code-simplifier", "agent-memory"]
   },
   "reviewer": {
     "name": "reviewer",
     "description": "Code review and security — structured reviews, security audits, code simplification",
-    "skills": [
-      "synapse-a2a",
-      "code-review",
-      "security-audit",
-      "code-simplifier"
-    ]
+    "skills": ["synapse-a2a", "code-review", "security-audit", "code-simplifier"]
   },
   "frontend": {
     "name": "frontend",
@@ -57,12 +40,6 @@
   "documentation": {
     "name": "documentation",
     "description": "Documentation expert — audit, restructure, synchronize, and maintain project documentation",
-    "skills": [
-      "synapse-a2a",
-      "project-docs",
-      "doc-organizer",
-      "api-design",
-      "agent-memory"
-    ]
+    "skills": ["synapse-a2a", "project-docs", "doc-organizer", "api-design", "agent-memory"]
   }
 }

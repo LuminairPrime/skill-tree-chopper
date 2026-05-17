@@ -5,19 +5,21 @@ AI programming tools and extensions often write custom rule or instruction markd
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Provide a responsive VS Code sidebar tree view that lists discovered agent skills.
 - Use zero external NPM runtime dependencies, utilizing VS Code native APIs where possible for file IO, searching, and UI.
 - Use an extensible algorithm to locate skill files using known patterns from the `vercel-labs/skills` schema.
 - Allow disabling and deleting skills reliably without prompting security warnings.
 
 **Non-Goals:**
+
 - Creating a separate native desktop application.
 - Supporting environments outside of VS Code.
 - Parsing or modifying the content of the markdown files (we are only managing their location and state).
 
 ## Decisions
 
-- **Discovery Algorithm**: 
+- **Discovery Algorithm**:
   - **Local Workspace**: Use the "Vercel Method" pattern (`**/.*/{skills,rules}/**/{SKILL.md,*.md}` and `**/skills/**/{SKILL.md,*.md}`) via `vscode.workspace.findFiles`. This provides future-proofing for new AI agents without updating the plugin source code.
   - **Global Space**: Iterate over known directories in `os.homedir()` (e.g. `~/.cursor/skills`, `~/.agents/skills`) using a shallow scan to maintain performance.
 - **Disabling Mechanism**: Instead of modifying the markdown file names inline (e.g. `skill.md.disabled`), we rename the parent container from `/skills/` to `/skills-disabled/` or `/rules/` to `/rules-disabled/`. This is a bulletproof approach because many AI agents ingest any text-based file from the directory indiscriminately. We will use `vscode.workspace.fs.rename`.

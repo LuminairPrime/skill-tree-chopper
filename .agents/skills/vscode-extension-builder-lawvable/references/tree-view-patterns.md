@@ -45,7 +45,7 @@ class MyTreeProvider implements vscode.TreeDataProvider<MyItem> {
 class MyItem extends vscode.TreeItem {
   constructor(
     public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
   ) {
     super(label, collapsibleState);
   }
@@ -84,13 +84,13 @@ class FileItem extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly filePath: string,
-    public readonly isDirectory: boolean
+    public readonly isDirectory: boolean,
   ) {
     super(
       label,
       isDirectory
         ? vscode.TreeItemCollapsibleState.Collapsed
-        : vscode.TreeItemCollapsibleState.None
+        : vscode.TreeItemCollapsibleState.None,
     );
 
     // Tooltip on hover
@@ -100,9 +100,7 @@ class FileItem extends vscode.TreeItem {
     this.description = isDirectory ? 'folder' : path.extname(filePath);
 
     // Icon
-    this.iconPath = isDirectory
-      ? new vscode.ThemeIcon('folder')
-      : vscode.ThemeIcon.File;
+    this.iconPath = isDirectory ? new vscode.ThemeIcon('folder') : vscode.ThemeIcon.File;
 
     // Or custom icon
     // this.iconPath = {
@@ -115,7 +113,7 @@ class FileItem extends vscode.TreeItem {
       this.command = {
         command: 'vscode.open',
         title: 'Open File',
-        arguments: [vscode.Uri.file(filePath)]
+        arguments: [vscode.Uri.file(filePath)],
       };
     }
 
@@ -137,24 +135,24 @@ Use built-in icons with `ThemeIcon`:
 
 ```typescript
 // Common icons
-new vscode.ThemeIcon('file')
-new vscode.ThemeIcon('folder')
-new vscode.ThemeIcon('folder-opened')
-new vscode.ThemeIcon('symbol-class')
-new vscode.ThemeIcon('symbol-method')
-new vscode.ThemeIcon('symbol-property')
-new vscode.ThemeIcon('gear')
-new vscode.ThemeIcon('refresh')
-new vscode.ThemeIcon('add')
-new vscode.ThemeIcon('edit')
-new vscode.ThemeIcon('trash')
-new vscode.ThemeIcon('check')
-new vscode.ThemeIcon('error')
-new vscode.ThemeIcon('warning')
-new vscode.ThemeIcon('info')
+new vscode.ThemeIcon('file');
+new vscode.ThemeIcon('folder');
+new vscode.ThemeIcon('folder-opened');
+new vscode.ThemeIcon('symbol-class');
+new vscode.ThemeIcon('symbol-method');
+new vscode.ThemeIcon('symbol-property');
+new vscode.ThemeIcon('gear');
+new vscode.ThemeIcon('refresh');
+new vscode.ThemeIcon('add');
+new vscode.ThemeIcon('edit');
+new vscode.ThemeIcon('trash');
+new vscode.ThemeIcon('check');
+new vscode.ThemeIcon('error');
+new vscode.ThemeIcon('warning');
+new vscode.ThemeIcon('info');
 
 // With color
-new vscode.ThemeIcon('circle-filled', new vscode.ThemeColor('charts.green'))
+new vscode.ThemeIcon('circle-filled', new vscode.ThemeColor('charts.green'));
 ```
 
 ---
@@ -239,7 +237,7 @@ class LazyTreeProvider implements vscode.TreeDataProvider<LazyItem> {
 
     // Fetch children asynchronously
     const children = await this.fetchChildren(element.id);
-    return children.map(c => new LazyItem(c.name, c.id, c.hasChildren));
+    return children.map((c) => new LazyItem(c.name, c.id, c.hasChildren));
   }
 
   private async fetchChildren(parentId: string): Promise<ChildData[]> {
@@ -253,13 +251,13 @@ class LazyItem extends vscode.TreeItem {
   constructor(
     label: string,
     public readonly id: string,
-    hasChildren: boolean
+    hasChildren: boolean,
   ) {
     super(
       label,
       hasChildren
         ? vscode.TreeItemCollapsibleState.Collapsed
-        : vscode.TreeItemCollapsibleState.None
+        : vscode.TreeItemCollapsibleState.None,
     );
   }
 }
@@ -287,7 +285,7 @@ context.subscriptions.push(
   vscode.commands.registerCommand('myExt.deleteItem', (item: MyItem) => {
     // Delete clicked item
     provider.deleteItem(item);
-  })
+  }),
 );
 ```
 
@@ -358,8 +356,9 @@ class MyItem extends vscode.TreeItem {
 ### Enable Drag and Drop
 
 ```typescript
-class DragDropProvider implements vscode.TreeDataProvider<MyItem>, vscode.TreeDragAndDropController<MyItem> {
-
+class DragDropProvider
+  implements vscode.TreeDataProvider<MyItem>, vscode.TreeDragAndDropController<MyItem>
+{
   // Supported MIME types
   dropMimeTypes = ['application/vnd.code.tree.myTreeView'];
   dragMimeTypes = ['application/vnd.code.tree.myTreeView'];
@@ -368,7 +367,7 @@ class DragDropProvider implements vscode.TreeDataProvider<MyItem>, vscode.TreeDr
   handleDrag(source: readonly MyItem[], dataTransfer: vscode.DataTransfer): void {
     dataTransfer.set(
       'application/vnd.code.tree.myTreeView',
-      new vscode.DataTransferItem(source.map(s => s.id))
+      new vscode.DataTransferItem(source.map((s) => s.id)),
     );
   }
 
@@ -376,7 +375,7 @@ class DragDropProvider implements vscode.TreeDataProvider<MyItem>, vscode.TreeDr
   async handleDrop(
     target: MyItem | undefined,
     dataTransfer: vscode.DataTransfer,
-    token: vscode.CancellationToken
+    token: vscode.CancellationToken,
   ): Promise<void> {
     const transferItem = dataTransfer.get('application/vnd.code.tree.myTreeView');
     if (!transferItem) return;
@@ -394,7 +393,7 @@ class DragDropProvider implements vscode.TreeDataProvider<MyItem>, vscode.TreeDr
 const treeView = vscode.window.createTreeView('myTreeView', {
   treeDataProvider: provider,
   dragAndDropController: provider,
-  canSelectMany: true  // Enable multi-select
+  canSelectMany: true, // Enable multi-select
 });
 ```
 
@@ -419,7 +418,7 @@ class DecorationProvider implements vscode.FileDecorationProvider {
       return {
         badge: '!',
         color: new vscode.ThemeColor('charts.red'),
-        tooltip: 'Error'
+        tooltip: 'Error',
       };
     }
 
@@ -427,7 +426,7 @@ class DecorationProvider implements vscode.FileDecorationProvider {
       return {
         badge: 'M',
         color: new vscode.ThemeColor('gitDecoration.modifiedResourceForeground'),
-        tooltip: 'Modified'
+        tooltip: 'Modified',
       };
     }
 
@@ -435,7 +434,7 @@ class DecorationProvider implements vscode.FileDecorationProvider {
       return {
         badge: '+',
         color: new vscode.ThemeColor('gitDecoration.addedResourceForeground'),
-        tooltip: 'New'
+        tooltip: 'New',
       };
     }
 
@@ -448,9 +447,7 @@ class DecorationProvider implements vscode.FileDecorationProvider {
 }
 
 // Register
-context.subscriptions.push(
-  vscode.window.registerFileDecorationProvider(new DecorationProvider())
-);
+context.subscriptions.push(vscode.window.registerFileDecorationProvider(new DecorationProvider()));
 ```
 
 Set `resourceUri` on TreeItem to enable decorations:
@@ -474,8 +471,8 @@ Get more control with `createTreeView`:
 ```typescript
 const treeView = vscode.window.createTreeView('myTreeView', {
   treeDataProvider: provider,
-  showCollapseAll: true,       // Add "Collapse All" button
-  canSelectMany: true          // Enable multi-select
+  showCollapseAll: true, // Add "Collapse All" button
+  canSelectMany: true, // Enable multi-select
 });
 
 // Reveal item
@@ -485,12 +482,12 @@ treeView.reveal(item, { select: true, focus: true, expand: true });
 treeView.selection; // readonly MyItem[]
 
 // Listen to selection changes
-treeView.onDidChangeSelection(e => {
+treeView.onDidChangeSelection((e) => {
   console.log('Selected:', e.selection);
 });
 
 // Listen to visibility changes
-treeView.onDidChangeVisibility(e => {
+treeView.onDidChangeVisibility((e) => {
   if (e.visible) {
     // Tree view became visible
   }

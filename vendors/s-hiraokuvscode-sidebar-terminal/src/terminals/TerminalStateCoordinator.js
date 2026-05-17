@@ -1,146 +1,152 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.TerminalStateCoordinator = void 0;
-const common_1 = require("../utils/common");
+const common_1 = require('../utils/common');
 /** Manages terminal state and synchronization */
 class TerminalStateCoordinator {
-    constructor(_terminals, _activeTerminalManager, _stateUpdateEmitter, _terminalFocusEmitter, _terminalNumberManager) {
-        this._terminals = _terminals;
-        this._activeTerminalManager = _activeTerminalManager;
-        this._stateUpdateEmitter = _stateUpdateEmitter;
-        this._terminalFocusEmitter = _terminalFocusEmitter;
-        this._terminalNumberManager = _terminalNumberManager;
+  constructor(
+    _terminals,
+    _activeTerminalManager,
+    _stateUpdateEmitter,
+    _terminalFocusEmitter,
+    _terminalNumberManager
+  ) {
+    this._terminals = _terminals;
+    this._activeTerminalManager = _activeTerminalManager;
+    this._stateUpdateEmitter = _stateUpdateEmitter;
+    this._terminalFocusEmitter = _terminalFocusEmitter;
+    this._terminalNumberManager = _terminalNumberManager;
+  }
+  getCurrentState() {
+    const terminals = Array.from(this._terminals.values()).map((terminal) => ({
+      id: terminal.id,
+      name: terminal.name,
+      isActive: terminal.isActive,
+      ...(terminal.indicatorColor ? { indicatorColor: terminal.indicatorColor } : {}),
+    }));
+    return {
+      terminals,
+      activeTerminalId: this._activeTerminalManager.getActive() || null,
+      maxTerminals: (0, common_1.getTerminalConfig)().maxTerminals,
+      availableSlots: this.getAvailableSlots(),
+    };
+  }
+  getAvailableSlots() {
+    return this._terminalNumberManager.getAvailableSlots(this._terminals);
+  }
+  notifyStateUpdate() {
+    this._stateUpdateEmitter.fire(this.getCurrentState());
+  }
+  hasActiveTerminal() {
+    return this._activeTerminalManager.hasActive();
+  }
+  getActiveTerminalId() {
+    return this._activeTerminalManager.getActive();
+  }
+  setActiveTerminal(terminalId) {
+    const terminal = this._terminals.get(terminalId);
+    if (terminal) {
+      this.deactivateAllTerminals();
+      terminal.isActive = true;
+      this._activeTerminalManager.setActive(terminalId);
     }
-    getCurrentState() {
-        const terminals = Array.from(this._terminals.values()).map((terminal) => ({
-            id: terminal.id,
-            name: terminal.name,
-            isActive: terminal.isActive,
-            ...(terminal.indicatorColor ? { indicatorColor: terminal.indicatorColor } : {}),
-        }));
-        return {
-            terminals,
-            activeTerminalId: this._activeTerminalManager.getActive() || null,
-            maxTerminals: (0, common_1.getTerminalConfig)().maxTerminals,
-            availableSlots: this.getAvailableSlots(),
-        };
+  }
+  /** Focus a terminal without changing CLI Agent status */
+  focusTerminal(terminalId) {
+    if (this._terminals.has(terminalId)) {
+      this._terminalFocusEmitter.fire(terminalId);
     }
-    getAvailableSlots() {
-        return this._terminalNumberManager.getAvailableSlots(this._terminals);
+  }
+  deactivateAllTerminals() {
+    for (const term of this._terminals.values()) {
+      term.isActive = false;
     }
-    notifyStateUpdate() {
-        this._stateUpdateEmitter.fire(this.getCurrentState());
+  }
+  updateActiveTerminalAfterRemoval(terminalId) {
+    if (this._activeTerminalManager.isActive(terminalId)) {
+      const remaining = (0, common_1.getFirstValue)(this._terminals);
+      if (remaining) {
+        this._activeTerminalManager.setActive(remaining.id);
+        remaining.isActive = true;
+      } else {
+        this._activeTerminalManager.clearActive();
+      }
     }
-    hasActiveTerminal() {
-        return this._activeTerminalManager.hasActive();
+  }
+  reorderTerminals(order) {
+    if (!Array.isArray(order) || order.length === 0) {
+      return;
     }
-    getActiveTerminalId() {
-        return this._activeTerminalManager.getActive();
+    const existingEntries = Array.from(this._terminals.entries());
+    const existingMap = new Map(existingEntries);
+    const normalizedOrder = order.filter((id) => existingMap.has(id));
+    const remaining = existingEntries
+      .map(([id]) => id)
+      .filter((id) => !normalizedOrder.includes(id));
+    const finalOrder = [...normalizedOrder, ...remaining];
+    if (finalOrder.length === 0) {
+      return;
     }
-    setActiveTerminal(terminalId) {
-        const terminal = this._terminals.get(terminalId);
-        if (terminal) {
-            this.deactivateAllTerminals();
-            terminal.isActive = true;
-            this._activeTerminalManager.setActive(terminalId);
-        }
+    this._terminals.clear();
+    for (const id of finalOrder) {
+      const terminal = existingMap.get(id);
+      if (terminal) {
+        this._terminals.set(id, terminal);
+      }
     }
-    /** Focus a terminal without changing CLI Agent status */
-    focusTerminal(terminalId) {
-        if (this._terminals.has(terminalId)) {
-            this._terminalFocusEmitter.fire(terminalId);
-        }
+    this.notifyStateUpdate();
+  }
+  updateTerminalCwd(terminalId, cwd) {
+    const terminal = this._terminals.get(terminalId);
+    if (terminal) {
+      terminal.cwd = cwd;
     }
-    deactivateAllTerminals() {
-        for (const term of this._terminals.values()) {
-            term.isActive = false;
-        }
+  }
+  renameTerminal(terminalId, newName) {
+    return this.updateTerminalHeader(terminalId, { newName });
+  }
+  updateTerminalHeader(terminalId, updates) {
+    const terminal = this._terminals.get(terminalId);
+    if (!terminal) {
+      return false;
     }
-    updateActiveTerminalAfterRemoval(terminalId) {
-        if (this._activeTerminalManager.isActive(terminalId)) {
-            const remaining = (0, common_1.getFirstValue)(this._terminals);
-            if (remaining) {
-                this._activeTerminalManager.setActive(remaining.id);
-                remaining.isActive = true;
+    const hasName = typeof updates.newName === 'string' && updates.newName.trim().length > 0;
+    const normalizedIndicatorColor =
+      typeof updates.indicatorColor === 'string'
+        ? (() => {
+            const value = updates.indicatorColor.trim();
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+              return value.toUpperCase();
             }
-            else {
-                this._activeTerminalManager.clearActive();
+            if (value.toLowerCase() === 'transparent') {
+              return 'transparent';
             }
-        }
+            return undefined;
+          })()
+        : undefined;
+    const hasColor = typeof normalizedIndicatorColor === 'string';
+    if (!hasName && !hasColor) {
+      return false;
     }
-    reorderTerminals(order) {
-        if (!Array.isArray(order) || order.length === 0) {
-            return;
-        }
-        const existingEntries = Array.from(this._terminals.entries());
-        const existingMap = new Map(existingEntries);
-        const normalizedOrder = order.filter((id) => existingMap.has(id));
-        const remaining = existingEntries
-            .map(([id]) => id)
-            .filter((id) => !normalizedOrder.includes(id));
-        const finalOrder = [...normalizedOrder, ...remaining];
-        if (finalOrder.length === 0) {
-            return;
-        }
-        this._terminals.clear();
-        for (const id of finalOrder) {
-            const terminal = existingMap.get(id);
-            if (terminal) {
-                this._terminals.set(id, terminal);
-            }
-        }
-        this.notifyStateUpdate();
+    let changed = false;
+    if (hasName) {
+      const trimmedName = updates.newName.trim();
+      if (terminal.name !== trimmedName) {
+        terminal.name = trimmedName;
+        changed = true;
+      }
     }
-    updateTerminalCwd(terminalId, cwd) {
-        const terminal = this._terminals.get(terminalId);
-        if (terminal) {
-            terminal.cwd = cwd;
-        }
+    if (hasColor) {
+      if (terminal.indicatorColor !== normalizedIndicatorColor) {
+        terminal.indicatorColor = normalizedIndicatorColor;
+        changed = true;
+      }
     }
-    renameTerminal(terminalId, newName) {
-        return this.updateTerminalHeader(terminalId, { newName });
+    if (changed) {
+      this.notifyStateUpdate();
     }
-    updateTerminalHeader(terminalId, updates) {
-        const terminal = this._terminals.get(terminalId);
-        if (!terminal) {
-            return false;
-        }
-        const hasName = typeof updates.newName === 'string' && updates.newName.trim().length > 0;
-        const normalizedIndicatorColor = typeof updates.indicatorColor === 'string'
-            ? (() => {
-                const value = updates.indicatorColor.trim();
-                if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
-                    return value.toUpperCase();
-                }
-                if (value.toLowerCase() === 'transparent') {
-                    return 'transparent';
-                }
-                return undefined;
-            })()
-            : undefined;
-        const hasColor = typeof normalizedIndicatorColor === 'string';
-        if (!hasName && !hasColor) {
-            return false;
-        }
-        let changed = false;
-        if (hasName) {
-            const trimmedName = updates.newName.trim();
-            if (terminal.name !== trimmedName) {
-                terminal.name = trimmedName;
-                changed = true;
-            }
-        }
-        if (hasColor) {
-            if (terminal.indicatorColor !== normalizedIndicatorColor) {
-                terminal.indicatorColor = normalizedIndicatorColor;
-                changed = true;
-            }
-        }
-        if (changed) {
-            this.notifyStateUpdate();
-        }
-        return true;
-    }
+    return true;
+  }
 }
 exports.TerminalStateCoordinator = TerminalStateCoordinator;
 //# sourceMappingURL=TerminalStateCoordinator.js.map

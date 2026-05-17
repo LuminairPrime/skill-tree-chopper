@@ -1,0 +1,15 @@
+node_modules/
+out/
+releases/
+coverage/
+archive/
+test-workspace/
+vendors/
+*.vsix
+.vscode-test/
+.agent/
+.agents/
+.forge/
+.gemini/
+.github/
+openspec/

@@ -37,23 +37,20 @@ class WebViewManager {
     }
 
     this.panel = vscode.window.createWebviewPanel(
-      'myWebview',           // viewType - unique identifier
-      'My WebView',          // title
+      'myWebview', // viewType - unique identifier
+      'My WebView', // title
       vscode.ViewColumn.One, // column to show in
       {
         enableScripts: true,
-        retainContextWhenHidden: true,  // Keep state when hidden
+        retainContextWhenHidden: true, // Keep state when hidden
         localResourceRoots: [
           vscode.Uri.joinPath(context.extensionUri, 'media'),
-          vscode.Uri.joinPath(context.extensionUri, 'dist')
-        ]
+          vscode.Uri.joinPath(context.extensionUri, 'dist'),
+        ],
       }
     );
 
-    this.panel.webview.html = this.getHtmlContent(
-      this.panel.webview,
-      context.extensionUri
-    );
+    this.panel.webview.html = this.getHtmlContent(this.panel.webview, context.extensionUri);
 
     // Handle disposal
     this.panel.onDidDispose(() => {
@@ -80,7 +77,7 @@ class SidebarWebViewProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [this.extensionUri]
+      localResourceRoots: [this.extensionUri],
     };
 
     webviewView.webview.html = this.getHtmlContent(webviewView.webview);
@@ -113,20 +110,13 @@ class SidebarWebViewProvider implements vscode.WebviewViewProvider {
 ### CSP Implementation (Critical)
 
 ```typescript
-function getHtmlContent(
-  webview: vscode.Webview,
-  extensionUri: vscode.Uri
-): string {
+function getHtmlContent(webview: vscode.Webview, extensionUri: vscode.Uri): string {
   // Generate unique nonce for scripts
   const nonce = getNonce();
 
   // Get resource URIs
-  const styleUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, 'media', 'style.css')
-  );
-  const scriptUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, 'dist', 'webview.js')
-  );
+  const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'style.css'));
+  const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'dist', 'webview.js'));
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -163,15 +153,15 @@ function getNonce(): string {
 
 ### CSP Directives Reference
 
-| Directive | Purpose | Recommended Value |
-|-----------|---------|-------------------|
-| `default-src` | Fallback for other directives | `'none'` |
-| `script-src` | JavaScript sources | `'nonce-${nonce}'` |
-| `style-src` | Stylesheet sources | `${webview.cspSource} 'unsafe-inline'` |
-| `img-src` | Image sources | `${webview.cspSource} https: data:` |
-| `font-src` | Font sources | `${webview.cspSource}` |
-| `connect-src` | XHR/Fetch destinations | `https:` or specific origins |
-| `frame-src` | iframe sources | `'none'` (unless needed) |
+| Directive     | Purpose                       | Recommended Value                      |
+| ------------- | ----------------------------- | -------------------------------------- |
+| `default-src` | Fallback for other directives | `'none'`                               |
+| `script-src`  | JavaScript sources            | `'nonce-${nonce}'`                     |
+| `style-src`   | Stylesheet sources            | `${webview.cspSource} 'unsafe-inline'` |
+| `img-src`     | Image sources                 | `${webview.cspSource} https: data:`    |
+| `font-src`    | Font sources                  | `${webview.cspSource}`                 |
+| `connect-src` | XHR/Fetch destinations        | `https:` or specific origins           |
+| `frame-src`   | iframe sources                | `'none'` (unless needed)               |
 
 ### Common CSP Issues and Solutions
 
@@ -202,7 +192,7 @@ connect-src https://api.example.com;
 interface Message {
   type: string;
   payload?: unknown;
-  id?: string;  // For request-response pattern
+  id?: string; // For request-response pattern
 }
 
 // Extension → WebView messages
@@ -224,27 +214,28 @@ type WebViewMessage =
 
 ```typescript
 class WebViewMessageHandler {
-  private pendingRequests = new Map<string, {
-    resolve: (value: unknown) => void;
-    reject: (error: Error) => void;
-    timeout: NodeJS.Timeout;
-  }>();
+  private pendingRequests = new Map<
+    string,
+    {
+      resolve: (value: unknown) => void;
+      reject: (error: Error) => void;
+      timeout: NodeJS.Timeout;
+    }
+  >();
 
   constructor(private panel: vscode.WebviewPanel) {
     this.setupMessageHandler();
   }
 
   private setupMessageHandler(): void {
-    this.panel.webview.onDidReceiveMessage(
-      async (message: WebViewMessage) => {
-        try {
-          await this.handleMessage(message);
-        } catch (error) {
-          console.error('Message handling error:', error);
-          this.sendError(error as Error);
-        }
+    this.panel.webview.onDidReceiveMessage(async (message: WebViewMessage) => {
+      try {
+        await this.handleMessage(message);
+      } catch (error) {
+        console.error('Message handling error:', error);
+        this.sendError(error as Error);
       }
-    );
+    });
   }
 
   private async handleMessage(message: WebViewMessage): Promise<void> {
@@ -273,8 +264,8 @@ class WebViewMessageHandler {
       type: 'init',
       payload: {
         config: await this.getConfig(),
-        state: await this.getState()
-      }
+        state: await this.getState(),
+      },
     });
   }
 
@@ -287,7 +278,7 @@ class WebViewMessageHandler {
         type: 'response',
         id,
         payload: null,
-        error: (error as Error).message
+        error: (error as Error).message,
       });
     }
   }
@@ -301,7 +292,7 @@ class WebViewMessageHandler {
       type: 'response',
       id: 'error',
       payload: null,
-      error: error.message
+      error: error.message,
     });
   }
 }
@@ -319,10 +310,13 @@ declare const acquireVsCodeApi: () => {
 
 class VSCodeBridge {
   private vscode = acquireVsCodeApi();
-  private pendingRequests = new Map<string, {
-    resolve: (value: unknown) => void;
-    reject: (error: Error) => void;
-  }>();
+  private pendingRequests = new Map<
+    string,
+    {
+      resolve: (value: unknown) => void;
+      reject: (error: Error) => void;
+    }
+  >();
   private ready = false;
   private messageQueue: unknown[] = [];
 
@@ -390,7 +384,7 @@ class VSCodeBridge {
         reject: (error) => {
           clearTimeout(timeout);
           reject(error);
-        }
+        },
       });
 
       this.send({ type: 'request', id, payload: { method, args } });
@@ -469,10 +463,7 @@ class PersistentStateManager {
 class WebViewSerializer implements vscode.WebviewPanelSerializer {
   constructor(private manager: WebViewManager) {}
 
-  async deserializeWebviewPanel(
-    panel: vscode.WebviewPanel,
-    state: unknown
-  ): Promise<void> {
+  async deserializeWebviewPanel(panel: vscode.WebviewPanel, state: unknown): Promise<void> {
     // Restore panel with saved state
     this.manager.restorePanel(panel, state);
   }
@@ -491,11 +482,7 @@ class StateSynchronizer<T> {
   private context: vscode.ExtensionContext;
   private saveDebouncer: NodeJS.Timeout | undefined;
 
-  constructor(
-    webview: vscode.Webview,
-    context: vscode.ExtensionContext,
-    initialState: T
-  ) {
+  constructor(webview: vscode.Webview, context: vscode.ExtensionContext, initialState: T) {
     this.webview = webview;
     this.context = context;
     this.state = this.loadState() ?? initialState;
@@ -515,7 +502,7 @@ class StateSynchronizer<T> {
     // Notify WebView
     this.webview.postMessage({
       type: 'state-update',
-      payload: this.state
+      payload: this.state,
     });
 
     // Debounced persistence
@@ -595,7 +582,7 @@ class MessageBatcher {
     // Send batch message
     this.webview.postMessage({
       type: 'batch',
-      messages: this.queue
+      messages: this.queue,
     });
 
     this.queue = [];
@@ -640,10 +627,7 @@ class VirtualList {
   private render(): void {
     const scrollTop = this.container.scrollTop;
     const startIndex = Math.floor(scrollTop / this.itemHeight);
-    const endIndex = Math.min(
-      startIndex + this.visibleItems,
-      this.items.length
-    );
+    const endIndex = Math.min(startIndex + this.visibleItems, this.items.length);
 
     // Only render visible items
     const visibleItems = this.items.slice(startIndex, endIndex);
@@ -651,7 +635,7 @@ class VirtualList {
     // Update DOM with padding for scroll position
     this.container.innerHTML = `
       <div style="height: ${startIndex * this.itemHeight}px"></div>
-      ${visibleItems.map(item => this.renderItem(item)).join('')}
+      ${visibleItems.map((item) => this.renderItem(item)).join('')}
       <div style="height: ${(this.items.length - endIndex) * this.itemHeight}px"></div>
     `;
   }
@@ -720,8 +704,8 @@ function watchThemeChanges(webview: vscode.Webview): vscode.Disposable {
       type: 'theme-changed',
       payload: {
         kind: theme.kind, // 1=Light, 2=Dark, 3=HighContrast
-        theme: theme.kind === vscode.ColorThemeKind.Dark ? 'dark' : 'light'
-      }
+        theme: theme.kind === vscode.ColorThemeKind.Dark ? 'dark' : 'light',
+      },
     });
   });
 }
@@ -757,8 +741,8 @@ window.onerror = (message, source, lineno, colno, error) => {
       source,
       lineno,
       colno,
-      stack: error?.stack
-    }
+      stack: error?.stack,
+    },
   });
 };
 
@@ -768,8 +752,8 @@ window.addEventListener('unhandledrejection', (event) => {
     payload: {
       message: 'Unhandled Promise rejection',
       reason: String(event.reason),
-      stack: event.reason?.stack
-    }
+      stack: event.reason?.stack,
+    },
   });
 });
 
@@ -779,16 +763,16 @@ const debug = {
     console.log('[WebView]', ...args);
     vscode.postMessage({
       type: 'debug',
-      payload: { level: 'log', args: args.map(String) }
+      payload: { level: 'log', args: args.map(String) },
     });
   },
   error: (...args: unknown[]) => {
     console.error('[WebView]', ...args);
     vscode.postMessage({
       type: 'debug',
-      payload: { level: 'error', args: args.map(String) }
+      payload: { level: 'error', args: args.map(String) },
     });
-  }
+  },
 };
 ```
 
@@ -862,7 +846,7 @@ class MultiPanelManager {
   }
 
   disposeAll(): void {
-    this.panels.forEach(panel => panel.dispose());
+    this.panels.forEach((panel) => panel.dispose());
     this.panels.clear();
   }
 }
@@ -871,6 +855,7 @@ class MultiPanelManager {
 ## Resources
 
 For detailed reference documentation:
+
 - `references/csp-reference.md` - Complete CSP directive reference
 - `references/message-patterns.md` - Advanced message passing patterns
 - `references/theming-guide.md` - VS Code theme integration guide

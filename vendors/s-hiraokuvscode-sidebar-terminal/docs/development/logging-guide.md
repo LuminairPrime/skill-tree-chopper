@@ -55,6 +55,7 @@ Users can configure logging via VS Code settings:
 ```
 
 Log levels (from least to most verbose):
+
 - `none`: No logging
 - `error`: Only errors
 - `warn`: Errors and warnings (default)
@@ -108,6 +109,7 @@ npm run lint
 Replace console statements with logger calls:
 
 ### Before
+
 ```typescript
 console.log('Terminal created:', id);
 console.warn('Something unexpected:', data);
@@ -115,6 +117,7 @@ console.error('Failed to initialize:', error);
 ```
 
 ### After
+
 ```typescript
 import { info, warn, error } from '../utils/logger';
 
@@ -132,6 +135,7 @@ error('Failed to initialize:', error);
    - `error`: Error messages for serious problems
 
 2. **Provide context**
+
    ```typescript
    logger.info('Operation completed', 'TerminalManager', { terminalId, duration });
    ```
@@ -141,6 +145,7 @@ error('Failed to initialize:', error);
    - Be careful with user data and file paths
 
 4. **Use categorized logging**
+
    ```typescript
    import { terminal, webview, ui } from '../utils/logger';
 
@@ -160,10 +165,12 @@ error('Failed to initialize:', error);
 ## Viewing Logs
 
 ### Extension Logs
+
 1. Open VS Code Output panel (`View > Output`)
 2. Select "Secondary Terminal" from the dropdown
 
 ### Webview Logs
+
 1. Open Developer Tools (`Help > Toggle Developer Tools`)
 2. View console output (in development mode only)
 
@@ -172,16 +179,19 @@ error('Failed to initialize:', error);
 To set up pre-commit hooks to enforce logging standards:
 
 1. Install husky and lint-staged:
+
    ```bash
    npm install --save-dev husky lint-staged
    ```
 
 2. Initialize husky:
+
    ```bash
    npx husky init
    ```
 
 3. Add pre-commit hook:
+
    ```bash
    npx husky add .husky/pre-commit "npx lint-staged"
    ```
@@ -190,10 +200,7 @@ To set up pre-commit hooks to enforce logging standards:
    ```json
    {
      "lint-staged": {
-       "*.{ts,js}": [
-         "eslint --fix",
-         "prettier --write"
-       ]
+       "*.{ts,js}": ["eslint --fix", "prettier --write"]
      }
    }
    ```

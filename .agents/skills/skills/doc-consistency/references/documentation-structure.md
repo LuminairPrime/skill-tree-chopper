@@ -26,28 +26,28 @@ Project Root
 
 ### 1. User-Facing Documentation
 
-| File | Purpose | Audience |
-|------|---------|----------|
-| README.md | Primary documentation, features, installation | End users |
-| docs/README_ja.md | Japanese version | Japanese users |
-| CHANGELOG.md | Release history and changes | Users, contributors |
-| PRIVACY.md | Privacy policy | Users concerned about data |
+| File              | Purpose                                       | Audience                   |
+| ----------------- | --------------------------------------------- | -------------------------- |
+| README.md         | Primary documentation, features, installation | End users                  |
+| docs/README_ja.md | Japanese version                              | Japanese users             |
+| CHANGELOG.md      | Release history and changes                   | Users, contributors        |
+| PRIVACY.md        | Privacy policy                                | Users concerned about data |
 
 ### 2. Developer Documentation
 
-| File | Purpose | Audience |
-|------|---------|----------|
-| CLAUDE.md | Development commands, architecture, guidelines | AI assistants, developers |
-| src/webview/CLAUDE.md | WebView implementation patterns | AI assistants, developers |
-| src/test/CLAUDE.md | TDD workflow and patterns | AI assistants, developers |
+| File                  | Purpose                                        | Audience                  |
+| --------------------- | ---------------------------------------------- | ------------------------- |
+| CLAUDE.md             | Development commands, architecture, guidelines | AI assistants, developers |
+| src/webview/CLAUDE.md | WebView implementation patterns                | AI assistants, developers |
+| src/test/CLAUDE.md    | TDD workflow and patterns                      | AI assistants, developers |
 
 ### 3. Architecture Documentation
 
-| File | Purpose | Update Frequency |
-|------|---------|-----------------|
-| docs/architecture/ARCHITECTURE_ANALYSIS.md | Overall architecture | Major changes |
+| File                                         | Purpose                 | Update Frequency   |
+| -------------------------------------------- | ----------------------- | ------------------ |
+| docs/architecture/ARCHITECTURE_ANALYSIS.md   | Overall architecture    | Major changes      |
 | docs/architecture/COMPONENT-RELATIONSHIPS.md | Component relationships | Structural changes |
-| docs/architecture/clean-architecture.md | Design principles | Rarely |
+| docs/architecture/clean-architecture.md      | Design principles       | Rarely             |
 
 ## Documentation Update Triggers
 
@@ -84,21 +84,21 @@ Project Root
 
 ### Critical Files to Cross-Reference
 
-| Code File | Documentation | What to Sync |
-|-----------|---------------|--------------|
-| package.json | README.md, CHANGELOG.md | Version, features |
-| src/extension.ts | README.md | Commands, activation |
-| src/webview/main.ts | CLAUDE.md, src/webview/CLAUDE.md | Manager architecture |
-| src/terminals/TerminalManager.ts | CLAUDE.md | Terminal management patterns |
-| src/test/**/*.test.ts | src/test/CLAUDE.md | Test patterns |
+| Code File                        | Documentation                    | What to Sync                 |
+| -------------------------------- | -------------------------------- | ---------------------------- |
+| package.json                     | README.md, CHANGELOG.md          | Version, features            |
+| src/extension.ts                 | README.md                        | Commands, activation         |
+| src/webview/main.ts              | CLAUDE.md, src/webview/CLAUDE.md | Manager architecture         |
+| src/terminals/TerminalManager.ts | CLAUDE.md                        | Terminal management patterns |
+| src/test/\*_/_.test.ts           | src/test/CLAUDE.md               | Test patterns                |
 
 ### Configuration Sync Points
 
-| Code | Documentation | Items |
-|------|---------------|-------|
+| Code                                   | Documentation                   | Items                                  |
+| -------------------------------------- | ------------------------------- | -------------------------------------- |
 | package.json contributes.configuration | README.md Configuration section | Settings names, defaults, descriptions |
-| package.json contributes.keybindings | README.md Keyboard Shortcuts | Shortcuts, platforms |
-| package.json contributes.commands | README.md Command Palette | Command names, descriptions |
+| package.json contributes.keybindings   | README.md Keyboard Shortcuts    | Shortcuts, platforms                   |
+| package.json contributes.commands      | README.md Command Palette       | Command names, descriptions            |
 
 ## Language Considerations
 
@@ -118,4 +118,5 @@ Project Root
 ### Synchronization Strategy
 
 When updating English documentation, check if Japanese equivalent needs updating:
+
 - README.md <-> docs/README_ja.md

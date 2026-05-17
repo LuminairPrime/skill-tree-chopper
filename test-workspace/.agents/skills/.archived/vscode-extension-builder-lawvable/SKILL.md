@@ -30,13 +30,13 @@ Build stack: **TypeScript + esbuild** (extension) + **Vite** (webviews)
 
 ## Template Decision Tree
 
-| Need | Template |
-|------|----------|
-| Simple command/action | `assets/basic-command/` |
+| Need                    | Template                |
+| ----------------------- | ----------------------- |
+| Simple command/action   | `assets/basic-command/` |
 | Custom UI panel (React) | `assets/webview-react/` |
-| Sidebar file tree | `assets/tree-view/` |
-| Custom file editor | `assets/custom-editor/` |
-| AI agent integration | `assets/file-bridge/` |
+| Sidebar file tree       | `assets/tree-view/`     |
+| Custom file editor      | `assets/custom-editor/` |
+| AI agent integration    | `assets/file-bridge/`   |
 
 ## Extension Types
 
@@ -57,10 +57,9 @@ See [references/api-reference.md](references/api-reference.md) for common APIs.
 Full HTML/CSS/JS UIs in panels or sidebar. Use React for complex interfaces.
 
 ```typescript
-const panel = vscode.window.createWebviewPanel(
-  'myView', 'My Panel', vscode.ViewColumn.One,
-  { enableScripts: true }
-);
+const panel = vscode.window.createWebviewPanel('myView', 'My Panel', vscode.ViewColumn.One, {
+  enableScripts: true,
+});
 panel.webview.html = getWebviewContent();
 ```
 
@@ -95,14 +94,14 @@ To convert a JS/React/Vue app into an extension:
 3. **Restructure** — Move UI into webview, logic into extension host
 4. **Connect** — Wire up postMessage communication
 
-| Web API | VS Code Equivalent |
-|---------|-------------------|
-| `localStorage` | `context.globalState` / `context.workspaceState` |
-| `fetch()` | `vscode.workspace.fs` or keep `fetch` for external APIs |
-| Router | Multiple webview panels or sidebar views |
-| `alert()` | `vscode.window.showInformationMessage()` |
-| `prompt()` | `vscode.window.showInputBox()` |
-| `confirm()` | `vscode.window.showWarningMessage()` with options |
+| Web API        | VS Code Equivalent                                      |
+| -------------- | ------------------------------------------------------- |
+| `localStorage` | `context.globalState` / `context.workspaceState`        |
+| `fetch()`      | `vscode.workspace.fs` or keep `fetch` for external APIs |
+| Router         | Multiple webview panels or sidebar views                |
+| `alert()`      | `vscode.window.showInformationMessage()`                |
+| `prompt()`     | `vscode.window.showInputBox()`                          |
+| `confirm()`    | `vscode.window.showWarningMessage()` with options       |
 
 See [references/conversion-guide.md](references/conversion-guide.md) for detailed step-by-step process.
 
@@ -129,8 +128,8 @@ esbuild.build({
 export default defineConfig({
   build: {
     outDir: '../dist/webview',
-    rollupOptions: { output: { entryFileNames: '[name].js' } }
-  }
+    rollupOptions: { output: { entryFileNames: '[name].js' } },
+  },
 });
 ```
 
@@ -234,23 +233,23 @@ vsce package --target linux-x64
 
 ## Reference Files
 
-| File | When to Read |
-|------|--------------|
-| [api-reference.md](references/api-reference.md) | Implementing extension features |
-| [contribution-points.md](references/contribution-points.md) | Configuring package.json contributes |
-| [webview-patterns.md](references/webview-patterns.md) | Building React webviews |
-| [tree-view-patterns.md](references/tree-view-patterns.md) | Implementing tree views |
-| [custom-editor-patterns.md](references/custom-editor-patterns.md) | Building custom file editors |
-| [build-config.md](references/build-config.md) | Configuring esbuild/Vite |
-| [conversion-guide.md](references/conversion-guide.md) | Converting web apps |
-| [ai-integration.md](references/ai-integration.md) | Integrating with AI agents |
+| File                                                              | When to Read                         |
+| ----------------------------------------------------------------- | ------------------------------------ |
+| [api-reference.md](references/api-reference.md)                   | Implementing extension features      |
+| [contribution-points.md](references/contribution-points.md)       | Configuring package.json contributes |
+| [webview-patterns.md](references/webview-patterns.md)             | Building React webviews              |
+| [tree-view-patterns.md](references/tree-view-patterns.md)         | Implementing tree views              |
+| [custom-editor-patterns.md](references/custom-editor-patterns.md) | Building custom file editors         |
+| [build-config.md](references/build-config.md)                     | Configuring esbuild/Vite             |
+| [conversion-guide.md](references/conversion-guide.md)             | Converting web apps                  |
+| [ai-integration.md](references/ai-integration.md)                 | Integrating with AI agents           |
 
 ## Asset Templates
 
-| Template | Description |
-|----------|-------------|
-| [basic-command/](assets/basic-command/) | Minimal extension with one command |
-| [webview-react/](assets/webview-react/) | React webview panel with messaging |
-| [tree-view/](assets/tree-view/) | Sidebar tree view with provider |
+| Template                                | Description                           |
+| --------------------------------------- | ------------------------------------- |
+| [basic-command/](assets/basic-command/) | Minimal extension with one command    |
+| [webview-react/](assets/webview-react/) | React webview panel with messaging    |
+| [tree-view/](assets/tree-view/)         | Sidebar tree view with provider       |
 | [custom-editor/](assets/custom-editor/) | Custom editor for specific file types |
-| [file-bridge/](assets/file-bridge/) | File-based IPC for AI agents |
+| [file-bridge/](assets/file-bridge/)     | File-based IPC for AI agents          |

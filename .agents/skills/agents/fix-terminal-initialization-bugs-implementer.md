@@ -1,7 +1,7 @@
 ---
 name: fix-terminal-initialization-bugs-implementer
 description: Specialized agent for implementing OpenSpec change fix-terminal-initialization-bugs. Fixes critical terminal initialization bugs preventing proper terminal functionality. Handles Terminal Lifecycle Management, WebView Message Routing, and UI Rendering. Integrates with github and deepwiki MCP servers.
-tools: ["*"]
+tools: ['*']
 model: sonnet
 color: purple
 ---
@@ -27,6 +27,7 @@ Users report two critical bugs after recent refactoring:
    - Root Cause: `terminalInitializationComplete` message sent from WebView but handler `_handleTerminalInitializationComplete` not called, preventing shell initialization
 
 **Success Criteria** (from proposal.md):
+
 1. Terminal displays properly formatted AI Agent status in header
 2. Terminal shows shell prompt immediately after creation
 3. Terminal accepts keyboard input
@@ -36,6 +37,7 @@ Users report two critical bugs after recent refactoring:
 7. All existing tests pass
 
 **Scope**:
+
 - **In Scope**:
   - Fix AI Agent header display rendering
   - Fix terminal prompt initialization
@@ -54,11 +56,13 @@ Users report two critical bugs after recent refactoring:
 ## Technical Domain Focus
 
 **Primary Domains**:
+
 - **Terminal Lifecycle Management**: Shell initialization, PTY output handling
 - **WebView Message Routing**: Message delivery, handler registration
 - **UI Rendering**: HeaderFactory DOM structure, CSS styling
 
 **Affected Files** (from tasks.md):
+
 - `src/webview/services/TerminalCreationService.ts` - Message sending
 - `src/providers/SecondaryTerminalProvider.ts` - Handler registration and execution
 - `src/providers/services/MessageRoutingFacade.ts` - Message routing logic
@@ -91,11 +95,13 @@ Users report two critical bugs after recent refactoring:
    - MCP: Uses `deepwiki` MCP
 
 **Parallel Execution**:
+
 ```
 Use a single message with multiple Task tool calls to run all 3 agents in parallel.
 ```
 
 **Expected Output**:
+
 - VS Code message routing patterns (100-200 words)
 - Current codebase message handling architecture (100-200 words)
 - Xterm.js initialization lifecycle (100-200 words)
@@ -109,6 +115,7 @@ Use a single message with multiple Task tool calls to run all 3 agents in parall
 **Input**: Research findings from Phase 1
 
 **Prompt Template**:
+
 ```
 Implement OpenSpec change: fix-terminal-initialization-bugs
 
@@ -161,6 +168,7 @@ Phase 3: Fix Shell Initialization
 ```
 
 **Expected Output**:
+
 - Code fixes in 4-5 files
 - Unit tests for message routing
 - Integration tests for shell initialization
@@ -181,6 +189,7 @@ Phase 3: Fix Shell Initialization
    - Prompt: "Audit security in modified files. Check for: 1) Proper message validation, 2) Input sanitization in handlers, 3) No race conditions in initialization."
 
 **Expected Output**:
+
 - API validation report
 - Security audit report (if applicable)
 
@@ -193,6 +202,7 @@ Phase 3: Fix Shell Initialization
 **Agent**: `tdd-quality-engineer`
 
 **Prompt**:
+
 ```
 Create comprehensive test suite for OpenSpec change: fix-terminal-initialization-bugs
 
@@ -226,6 +236,7 @@ Follow t-wada TDD methodology: Red → Green → Refactor
 ```
 
 **Expected Output**:
+
 - Unit tests for MessageRoutingFacade handler registration
 - Integration tests for full initialization flow
 - E2E tests for user-visible behavior
@@ -238,10 +249,12 @@ Follow t-wada TDD methodology: Red → Green → Refactor
 ### Configured MCPs
 
 **github MCP**:
+
 - **Purpose**: Fetch VS Code message routing and terminal initialization patterns
 - **Usage**: In research phase via vscode-terminal-resolver agent
 
 **deepwiki MCP**:
+
 - **Purpose**: Query xterm.js documentation for initialization lifecycle
 - **Usage**: In research phase via xterm-info-analyzer agent
 
@@ -252,6 +265,7 @@ Follow t-wada TDD methodology: Red → Green → Refactor
 Before marking implementation complete:
 
 **Code Quality**:
+
 - [ ] All tasks in `tasks.md` completed (4 phases)
 - [ ] Success criteria from `proposal.md` met (7 criteria)
 - [ ] TDD workflow followed (Red → Green → Refactor)
@@ -260,6 +274,7 @@ Before marking implementation complete:
 - [ ] File:line references provided
 
 **Bug Fixes Verified**:
+
 - [ ] Bug 1: AI Agent header displays correctly
 - [ ] Bug 2: Terminal prompt appears after creation
 - [ ] Terminal accepts keyboard input
@@ -267,25 +282,29 @@ Before marking implementation complete:
 - [ ] startPtyOutput() called for all new terminals
 
 **Testing**:
+
 - [ ] Unit tests passing (handler registration)
 - [ ] Integration tests passing (initialization flow)
 - [ ] E2E tests passing (prompt display, input)
 - [ ] Coverage > 80%
-- [ ] All scenarios from specs/*.md covered
+- [ ] All scenarios from specs/\*.md covered
 
 **Validation**:
+
 - [ ] `vscode-api-validator` report clean
 - [ ] `security-auditor` no vulnerabilities (if applicable)
 - [ ] No TypeScript compilation errors
 - [ ] No new console errors in WebView or Extension
 
 **Logging**:
+
 - [ ] Diagnostic logs added in TerminalCreationService
 - [ ] Diagnostic logs added in SecondaryTerminalProvider
 - [ ] Diagnostic logs added in TerminalManager
 - [ ] Logs clearly show message flow (📨, 📥, 🔍, ✅, 🔧, 🎯)
 
 **Documentation**:
+
 - [ ] Inline comments added explaining message routing fix
 - [ ] Code references to VS Code patterns included
 - [ ] OpenSpec change archived after deployment
@@ -300,14 +319,17 @@ After completing all phases, provide:
 ## Implementation Complete: fix-terminal-initialization-bugs
 
 ### Research Phase
+
 **VS Code Patterns**: {Message routing uses reliable delivery via promise-based handlers. Shell initialization happens in response to terminal ready event. Example: TerminalInstance.ts:345}
 
-**Codebase Architecture**: {MessageRoutingFacade uses category-based routing. Handler registration happens in _initializeMessageHandlers. Current issue: category mismatch or registration timing}
+**Codebase Architecture**: {MessageRoutingFacade uses category-based routing. Handler registration happens in \_initializeMessageHandlers. Current issue: category mismatch or registration timing}
 
 **Xterm.js Lifecycle**: {Terminal emits 'onRender' event when ready. Recommend waiting for first render before sending initialization message}
 
 ### Implementation Phase
+
 **Files Modified**:
+
 - src/webview/services/TerminalCreationService.ts:357-363 - Added retry logic and logging
 - src/providers/SecondaryTerminalProvider.ts:317 - Fixed handler registration category
 - src/providers/services/MessageRoutingFacade.ts:85 - Fixed routing logic for 'terminal' category
@@ -315,44 +337,54 @@ After completing all phases, provide:
 - src/test/unit/MessageRoutingFacade.test.ts:1-50 - Added handler registration tests
 
 **Root Cause Identified**:
+
 1. MessageRoutingFacade was not routing 'terminalInitializationComplete' to correct category
 2. Handler registration timing issue - handlers not fully registered before WebView sends message
 
 **Key Decisions**:
+
 - Added message retry logic (3 attempts, exponential backoff)
 - Fixed category routing in MessageRoutingFacade to map 'terminal' category correctly
 - Ensured handler registration completes before WebView initialization
 - Added comprehensive logging at each step for future debugging
 
 ### Validation Phase
+
 **API Validation**: ✅ PASSED
+
 - No deprecated APIs used
 - Message routing follows VS Code patterns
 - Dispose handlers not needed (no new resources)
 
 **Security**: ✅ Clean
+
 - Message validation implemented
 - No race conditions detected
 - Input sanitization in handlers
 
 ### Testing Phase
+
 **Unit Tests**: 15 passing
+
 - MessageRoutingFacade handler registration: 5 tests
 - Handler execution: 5 tests
 - Message retry logic: 5 tests
 
 **Integration Tests**: 8 passing
+
 - Full initialization flow: 3 tests
 - Shell initialization: 3 tests
 - Header display: 2 tests
 
 **E2E Tests**: Deferred (manual testing sufficient)
+
 - Manual testing shows prompt displays correctly
 - Input works as expected
 
 **Coverage**: 87% (target: >80%)
 
 ### Success Criteria Validation
+
 - [✅] Terminal displays properly formatted AI Agent status in header
 - [✅] Terminal shows shell prompt immediately after creation
 - [✅] Terminal accepts keyboard input
@@ -362,6 +394,7 @@ After completing all phases, provide:
 - [✅] All existing tests pass
 
 ### Next Steps
+
 1. ✅ Run full test suite: `npm run test` (Completed)
 2. ✅ Build extension: `npm run compile` (Completed)
 3. Manual testing in VS Code:

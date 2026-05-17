@@ -5,18 +5,20 @@ The extension currently heavily relies on synchronous `fs` methods (e.g., `fs.re
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Convert synchronous `fs.*Sync` calls in `SkillTreeProvider.ts` and `extension.ts` to their asynchronous counterparts (`fs.promises.*`).
 - Ensure the tree hierarchy algorithm maintains $O(N)$ efficiency.
 - Prevent race conditions during mass toggles by awaiting promises safely.
 
 **Non-Goals:**
+
 - Completely rewriting the tree structure; the hierarchy logic established in the previous refactor is correct, we are just optimizing its execution.
 
 ## Decisions
 
 - **Asynchronous File System**: Replace `fs.readdirSync` with `fs.promises.readdir` and `fs.existsSync` with try/catch blocks around `fs.promises.stat` or `fs.promises.access`. This will yield the event loop back to VS Code during I/O.
 - **Mass Toggle Concurrency**: In `extension.ts`, the mass toggle iterates over children and calls `moveFolder` asynchronously. To avoid slamming the file system with too many concurrent rename locks, we will execute these moves sequentially inside the `for...of` loop by properly `await`ing each one before proceeding to the next.
-- **Algorithm Optimization**: The current `scanAgentRoots` uses a nested loop structure. While it looks like $O(N^3)$, the bounds are strictly limited (3 agent roots * 2 container names * max depth 1). It is effectively $O(F)$ where F is the total number of files in those specific shallow directories. We will retain this structure as it is mathematically optimal, but the async conversion will make it non-blocking.
+- **Algorithm Optimization**: The current `scanAgentRoots` uses a nested loop structure. While it looks like $O(N^3)$, the bounds are strictly limited (3 agent roots _ 2 container names _ max depth 1). It is effectively $O(F)$ where F is the total number of files in those specific shallow directories. We will retain this structure as it is mathematically optimal, but the async conversion will make it non-blocking.
 
 ## Risks / Trade-offs
 

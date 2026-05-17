@@ -58,6 +58,7 @@ The extension manifest defines metadata, capabilities, and contributions.
 ### Field Descriptions
 
 **Identity:**
+
 - `name`: Unique identifier (lowercase, no spaces)
 - `displayName`: Human-readable name shown in marketplace
 - `description`: Brief explanation of functionality
@@ -65,10 +66,12 @@ The extension manifest defines metadata, capabilities, and contributions.
 - `publisher`: Marketplace publisher ID
 
 **Engine:**
+
 - `engines.vscode`: Minimum VS Code version
 - Example: `"^1.85.0"` means 1.85.0 or higher
 
 **Categories** (choose relevant ones):
+
 - `Programming Languages`
 - `Snippets`
 - `Linters`
@@ -87,6 +90,7 @@ The extension manifest defines metadata, capabilities, and contributions.
 - `Testing`
 
 **Entry Point:**
+
 - `main`: Path to compiled JavaScript entry file
 - Usually `./out/extension.js` or `./dist/extension.js`
 
@@ -129,6 +133,7 @@ Declare extension capabilities:
 ```
 
 **Fields:**
+
 - `command`: Unique identifier (use prefix)
 - `title`: Display name in Command Palette
 - `category`: Group commands together (optional)
@@ -162,6 +167,7 @@ Add commands to context menus:
 ```
 
 **Menu locations:**
+
 - `editor/context`: Right-click in editor
 - `editor/title`: Top-right toolbar
 - `explorer/context`: Right-click in file explorer
@@ -213,6 +219,7 @@ User settings for extension:
 ```
 
 Read settings in code:
+
 ```typescript
 const config = vscode.workspace.getConfiguration('myExtension');
 const enabled = config.get<boolean>('enable');
@@ -287,12 +294,9 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('Extension activated');
 
   // Register commands, providers, etc.
-  let disposable = vscode.commands.registerCommand(
-    'extension.myCommand',
-    () => {
-      vscode.window.showInformationMessage('Hello World!');
-    }
-  );
+  let disposable = vscode.commands.registerCommand('extension.myCommand', () => {
+    vscode.window.showInformationMessage('Hello World!');
+  });
 
   // Add to subscriptions for cleanup
   context.subscriptions.push(disposable);
@@ -310,6 +314,7 @@ export function deactivate() {
 The `ExtensionContext` provides:
 
 **Storage:**
+
 ```typescript
 // Global state (persists across workspaces)
 context.globalState.update('key', value);
@@ -324,33 +329,36 @@ const token = await context.secrets.get('token');
 ```
 
 **Paths:**
+
 ```typescript
 // Extension installation directory
-context.extensionPath
+context.extensionPath;
 
 // Global storage path
-context.globalStorageUri
+context.globalStorageUri;
 
 // Workspace storage path
-context.storageUri
+context.storageUri;
 
 // Log directory
-context.logUri
+context.logUri;
 ```
 
 **Subscriptions:**
+
 ```typescript
 // Auto-disposed when extension deactivates
 context.subscriptions.push(disposable);
 ```
 
 **Extension Info:**
+
 ```typescript
 // Extension's package.json
-context.extension.packageJSON
+context.extension.packageJSON;
 
 // Extension ID
-context.extension.id
+context.extension.id;
 ```
 
 ### Disposables
@@ -376,6 +384,7 @@ context.subscriptions.push(service);
 ```
 
 **Common disposables:**
+
 - Command registrations
 - Event listeners
 - File watchers
@@ -406,9 +415,7 @@ Only activate when needed:
 
 ```json
 {
-  "activationEvents": [
-    "onCommand:extension.myCommand"
-  ]
+  "activationEvents": ["onCommand:extension.myCommand"]
 }
 ```
 
@@ -438,6 +445,7 @@ Standard `tsconfig.json`:
 ```
 
 Key settings:
+
 - `module: "commonjs"`: Node.js compatibility
 - `target: "ES2020"`: Modern JavaScript features
 - `strict: true`: Enable all strict checks
@@ -455,12 +463,8 @@ Key settings:
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/out/**/*.js"
-      ],
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
       "preLaunchTask": "${defaultBuildTask}"
     },
     {
@@ -471,9 +475,7 @@ Key settings:
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
       ],
-      "outFiles": [
-        "${workspaceFolder}/out/test/**/*.js"
-      ],
+      "outFiles": ["${workspaceFolder}/out/test/**/*.js"],
       "preLaunchTask": "${defaultBuildTask}"
     }
   ]
@@ -524,6 +526,7 @@ Essential dependencies:
 ```
 
 **Key packages:**
+
 - `@types/vscode`: VS Code API type definitions
 - `@types/node`: Node.js type definitions
 - `typescript`: TypeScript compiler
@@ -546,6 +549,7 @@ src/**
 ```
 
 Only include:
+
 - Compiled JavaScript (`out/` or `dist/`)
 - README, CHANGELOG, LICENSE
 - Assets (icons, images)
@@ -632,11 +636,11 @@ class MyService {
 
 ```typescript
 context.subscriptions.push(
-  vscode.workspace.onDidChangeConfiguration(e => {
+  vscode.workspace.onDidChangeConfiguration((e) => {
     if (e.affectsConfiguration('myExtension')) {
       // Reload configuration
     }
-  })
+  }),
 );
 ```
 
@@ -647,11 +651,10 @@ try {
   // Extension logic
 } catch (error) {
   vscode.window.showErrorMessage(
-    `Extension error: ${error instanceof Error ? error.message : 'Unknown error'}`
+    `Extension error: ${error instanceof Error ? error.message : 'Unknown error'}`,
   );
   console.error(error);
 }
 ```
 
 This reference covers the complete anatomy of VS Code extensions. Use it when setting up project structure, configuring the manifest, or understanding the extension lifecycle.
-

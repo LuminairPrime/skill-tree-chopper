@@ -28,6 +28,7 @@ Build skills that trigger correctly, execute reliably, and stay concise.
 ## 1) Define Use Cases
 
 Capture for each use case:
+
 - User phrasing (what they actually say)
 - Intended result
 - Multi-step workflow and required tools (built-in and/or MCP)
@@ -40,21 +41,26 @@ If use cases are vague, ask targeted follow-up questions before authoring.
 Write only what is needed to trigger correctly.
 
 Required fields:
+
 - `name`: kebab-case, matches folder name
 - `description`: include BOTH
   - What the skill does
   - When to use it (trigger phrases/context/file types)
 
 Description formula:
+
 - `[What it does] + [When to use it] + [Key capabilities]`
 
 Good pattern:
+
 - "Processes PDF legal documents for contract review. Use when users ask for clause extraction, risk flags, or redline summaries from .pdf contracts."
 
 Bad pattern:
+
 - "Helps with projects."
 
 Precision controls:
+
 - Add negative triggers to reduce over-triggering.
 - Mention relevant file types when applicable.
 - Keep wording aligned with real user phrases from use cases.
@@ -66,6 +72,7 @@ Precision controls:
 - `assets/`: templates and artifacts used in outputs
 
 Rules:
+
 - Keep `SKILL.md` compact; link to `references/`.
 - Avoid extra docs in skill folder (`README.md`, changelog, etc.).
 
@@ -74,6 +81,7 @@ Rules:
 Write imperative, testable steps.
 
 Include:
+
 - Clear step order and dependencies
 - Validation checkpoints
 - Common errors with concrete fixes
@@ -92,11 +100,13 @@ Run these three test groups.
 - Should NOT trigger on unrelated requests
 
 Target benchmark:
+
 - Trigger on ~90% of relevant prompts in a 10-20 prompt suite
 
 ### B. Functional Tests
 
 Validate:
+
 - Correct outputs
 - Tool/API call success
 - Error handling paths
@@ -105,6 +115,7 @@ Validate:
 ### C. Performance Comparison
 
 Compare with vs without skill:
+
 - Number of clarification turns
 - Failed tool/API calls
 - Token usage
@@ -113,22 +124,28 @@ Compare with vs without skill:
 ## 6) Iteration Rules
 
 Under-triggering signals:
+
 - Skill does not load when expected
 - Users keep manually invoking it
 
 Fix:
+
 - Add clearer trigger phrases and technical terms to `description`.
 
 Over-triggering signals:
+
 - Skill loads for unrelated requests
 
 Fix:
+
 - Add negative triggers and tighten scope language.
 
 Execution issues:
+
 - Inconsistent outputs, retries, user corrections
 
 Fix:
+
 - Tighten instructions, add explicit validations, and script critical checks.
 
 ## Troubleshooting Quick Guide

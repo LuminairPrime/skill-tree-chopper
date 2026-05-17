@@ -16,20 +16,18 @@ export class MyTreeProvider implements vscode.TreeDataProvider<MyTreeItem> {
       name: 'Category A',
       children: [
         { id: '1-1', name: 'Item A1' },
-        { id: '1-2', name: 'Item A2' }
-      ]
+        { id: '1-2', name: 'Item A2' },
+      ],
     },
     {
       id: '2',
       name: 'Category B',
-      children: [
-        { id: '2-1', name: 'Item B1' }
-      ]
+      children: [{ id: '2-1', name: 'Item B1' }],
     },
     {
       id: '3',
-      name: 'Item C'
-    }
+      name: 'Item C',
+    },
   ];
 
   refresh(): void {
@@ -49,10 +47,10 @@ export class MyTreeProvider implements vscode.TreeDataProvider<MyTreeItem> {
 
   private removeItemById(items: ItemData[], id: string): ItemData[] {
     return items
-      .filter(item => item.id !== id)
-      .map(item => ({
+      .filter((item) => item.id !== id)
+      .map((item) => ({
         ...item,
-        children: item.children ? this.removeItemById(item.children, id) : undefined
+        children: item.children ? this.removeItemById(item.children, id) : undefined,
       }));
   }
 
@@ -63,13 +61,13 @@ export class MyTreeProvider implements vscode.TreeDataProvider<MyTreeItem> {
   getChildren(element?: MyTreeItem): MyTreeItem[] {
     if (!element) {
       // Root items
-      return this.items.map(item => this.createTreeItem(item));
+      return this.items.map((item) => this.createTreeItem(item));
     }
 
     // Children of element
     const itemData = this.findItemById(this.items, element.id);
     if (itemData?.children) {
-      return itemData.children.map(child => this.createTreeItem(child));
+      return itemData.children.map((child) => this.createTreeItem(child));
     }
 
     return [];
@@ -87,7 +85,7 @@ export class MyTreeProvider implements vscode.TreeDataProvider<MyTreeItem> {
       data.name,
       hasChildren
         ? vscode.TreeItemCollapsibleState.Collapsed
-        : vscode.TreeItemCollapsibleState.None
+        : vscode.TreeItemCollapsibleState.None,
     );
   }
 
@@ -118,7 +116,7 @@ export class MyTreeItem extends vscode.TreeItem {
   constructor(
     public readonly id: string,
     public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
   ) {
     super(label, collapsibleState);
 

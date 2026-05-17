@@ -13,7 +13,7 @@ function activate(context) {
     const treeView = vscode.window.createTreeView('aiSkillAuditor', {
         treeDataProvider: treeProvider,
         showCollapseAll: true,
-        manageCheckboxStateManually: true
+        manageCheckboxStateManually: true,
     });
     const moveSkillFolder = async (currentFsPath, isChecking) => {
         const targetFsPath = (0, skillFolderState_1.getSkillFolderMoveTarget)(currentFsPath, isChecking);

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * VS Code Shell Integration Service
  *
@@ -9,311 +9,315 @@
  * - Shell prompt detection
  * - Command link providers
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.ShellIntegrationService = void 0;
-const vscode = require("vscode");
-const logger_1 = require("../utils/logger");
-const common_1 = require("../utils/common");
+const vscode = require('vscode');
+const logger_1 = require('../utils/logger');
+const common_1 = require('../utils/common');
 class ShellIntegrationService {
-    constructor(terminalManager, context) {
-        this.terminalManager = terminalManager;
-        this.states = new Map();
-        this.cwdDetectionPatterns = [];
-        this.promptPatterns = [];
-        this.commandStartTime = new Map();
-        this.shellIntegrationPermissionGranted = undefined;
-        // VS Code standard shell integration sequences
-        this.OSC_SEQUENCES = {
-            COMMAND_START: '\x1b]633;A\x07',
-            COMMAND_EXECUTED: '\x1b]633;B\x07',
-            COMMAND_FINISHED: '\x1b]633;C\x07',
-            CWD: '\x1b]633;P;Cwd=',
-            PROMPT_START: '\x1b]633;D\x07',
-            PROMPT_END: '\x1b]633;E\x07',
-        };
-        this.initializePatterns();
-        // Don't setup event listeners in constructor - wait for terminal creation
-        // Store context for persistent settings
-        if (context) {
-            this.context = context;
-            // Load previously saved permission
-            this.shellIntegrationPermissionGranted = context.globalState.get('shellIntegrationPermission');
-        }
-        else {
-            // Fallback if no context provided (for backward compatibility)
-            this.context = null;
-        }
+  constructor(terminalManager, context) {
+    this.terminalManager = terminalManager;
+    this.states = new Map();
+    this.cwdDetectionPatterns = [];
+    this.promptPatterns = [];
+    this.commandStartTime = new Map();
+    this.shellIntegrationPermissionGranted = undefined;
+    // VS Code standard shell integration sequences
+    this.OSC_SEQUENCES = {
+      COMMAND_START: '\x1b]633;A\x07',
+      COMMAND_EXECUTED: '\x1b]633;B\x07',
+      COMMAND_FINISHED: '\x1b]633;C\x07',
+      CWD: '\x1b]633;P;Cwd=',
+      PROMPT_START: '\x1b]633;D\x07',
+      PROMPT_END: '\x1b]633;E\x07',
+    };
+    this.initializePatterns();
+    // Don't setup event listeners in constructor - wait for terminal creation
+    // Store context for persistent settings
+    if (context) {
+      this.context = context;
+      // Load previously saved permission
+      this.shellIntegrationPermissionGranted = context.globalState.get(
+        'shellIntegrationPermission'
+      );
+    } else {
+      // Fallback if no context provided (for backward compatibility)
+      this.context = null;
     }
-    initializePatterns() {
-        try {
-            // Common shell prompt patterns
-            this.promptPatterns = [
-                /^[^@]+@[^:]+:[^$#]+[$#]\s*$/, // user@host:path$
-                /^.*\$\s*$/, // basic $ prompt
-                /^.*#\s*$/, // root # prompt
-                /^>\s*$/, // PowerShell
-                /^PS\s+.*>\s*$/, // PowerShell with path
-                /^❯\s*$/, // Starship/fancy prompts
-                /^➜\s*$/, // Oh My Zsh
-            ];
-            // CWD detection patterns
-            this.cwdDetectionPatterns = [
-                /^cd\s+(.+)\s*$/, // cd command
-                /^pushd\s+(.+)\s*$/, // pushd command
-                /^z\s+(.+)\s*$/, // zoxide
-                /\x1b\]633;P;Cwd=([^\x07]+)\x07/, // VS Code OSC sequence
-            ];
-        }
-        catch (error) {
-            (0, logger_1.terminal)('Failed to initialize shell integration patterns:', error);
-            // Initialize with empty arrays to prevent crashes
-            this.promptPatterns = [];
-            this.cwdDetectionPatterns = [];
-        }
+  }
+  initializePatterns() {
+    try {
+      // Common shell prompt patterns
+      this.promptPatterns = [
+        /^[^@]+@[^:]+:[^$#]+[$#]\s*$/, // user@host:path$
+        /^.*\$\s*$/, // basic $ prompt
+        /^.*#\s*$/, // root # prompt
+        /^>\s*$/, // PowerShell
+        /^PS\s+.*>\s*$/, // PowerShell with path
+        /^❯\s*$/, // Starship/fancy prompts
+        /^➜\s*$/, // Oh My Zsh
+      ];
+      // CWD detection patterns
+      this.cwdDetectionPatterns = [
+        /^cd\s+(.+)\s*$/, // cd command
+        /^pushd\s+(.+)\s*$/, // pushd command
+        /^z\s+(.+)\s*$/, // zoxide
+        /\x1b\]633;P;Cwd=([^\x07]+)\x07/, // VS Code OSC sequence
+      ];
+    } catch (error) {
+      (0, logger_1.terminal)('Failed to initialize shell integration patterns:', error);
+      // Initialize with empty arrays to prevent crashes
+      this.promptPatterns = [];
+      this.cwdDetectionPatterns = [];
     }
-    /**
-     * Process terminal data directly - called by TerminalManager
-     */
-    processTerminalData(terminalId, data) {
-        if (terminalId && data) {
-            this.processTerminalOutput(terminalId, data);
-        }
+  }
+  /**
+   * Process terminal data directly - called by TerminalManager
+   */
+  processTerminalData(terminalId, data) {
+    if (terminalId && data) {
+      this.processTerminalOutput(terminalId, data);
     }
-    /**
-     * Process terminal output for shell integration sequences
-     */
-    processTerminalOutput(terminalId, data) {
-        const state = this.getOrCreateState(terminalId);
-        // Check for VS Code OSC sequences
-        if (data.includes(this.OSC_SEQUENCES.COMMAND_START)) {
-            this.handleCommandStart(state);
-        }
-        // Check for sequences that might have arguments (check prefix without terminator)
-        const cmdExecutedPrefix = this.OSC_SEQUENCES.COMMAND_EXECUTED.replace('\x07', '');
-        if (data.includes(cmdExecutedPrefix)) {
-            this.handleCommandExecuted(state, data);
-        }
-        const cmdFinishedPrefix = this.OSC_SEQUENCES.COMMAND_FINISHED.replace('\x07', '');
-        if (data.includes(cmdFinishedPrefix)) {
-            this.handleCommandFinished(state, data);
-        }
-        // Check for CWD change
-        const cwdMatch = data.match(/\x1b\]633;P;Cwd=([^\x07]+)\x07/);
-        if (cwdMatch && cwdMatch[1]) {
-            this.handleCwdChange(state, cwdMatch[1]);
-        }
-        // Fallback prompt detection for shells without integration
-        if (!data.includes('\x1b]633')) {
-            this.detectPromptFallback(state, data);
-        }
+  }
+  /**
+   * Process terminal output for shell integration sequences
+   */
+  processTerminalOutput(terminalId, data) {
+    const state = this.getOrCreateState(terminalId);
+    // Check for VS Code OSC sequences
+    if (data.includes(this.OSC_SEQUENCES.COMMAND_START)) {
+      this.handleCommandStart(state);
     }
-    handleCommandStart(state) {
-        state.isExecuting = true;
-        this.commandStartTime.set(state.terminalId, Date.now());
-        // Send status update to webview
-        this.sendStatusUpdate(state.terminalId, 'executing');
+    // Check for sequences that might have arguments (check prefix without terminator)
+    const cmdExecutedPrefix = this.OSC_SEQUENCES.COMMAND_EXECUTED.replace('\x07', '');
+    if (data.includes(cmdExecutedPrefix)) {
+      this.handleCommandExecuted(state, data);
     }
-    handleCommandExecuted(state, data) {
-        // Extract command from data if available
-        const commandMatch = data.match(/\x1b\]633;B;([^\x07]+)\x07/);
-        if (commandMatch && commandMatch[1]) {
-            state.currentCommand = commandMatch[1];
-        }
+    const cmdFinishedPrefix = this.OSC_SEQUENCES.COMMAND_FINISHED.replace('\x07', '');
+    if (data.includes(cmdFinishedPrefix)) {
+      this.handleCommandFinished(state, data);
     }
-    handleCommandFinished(state, data) {
-        // Extract exit code if available
-        const exitCodeMatch = data.match(/\x1b\]633;C;(\d+)\x07/);
-        const exitCode = exitCodeMatch && exitCodeMatch[1] ? parseInt(exitCodeMatch[1], 10) : undefined;
-        // Calculate duration
-        const startTime = this.commandStartTime.get(state.terminalId);
-        const duration = startTime ? Date.now() - startTime : undefined;
-        // Add to history
-        if (state.currentCommand) {
-            const command = {
-                command: state.currentCommand,
-                cwd: state.currentCwd,
-                exitCode,
-                duration,
-                timestamp: Date.now(),
-            };
-            state.commandHistory.push(command);
-            // Limit history size
-            if (state.commandHistory.length > 100) {
-                state.commandHistory.shift();
-            }
-        }
-        state.isExecuting = false;
-        state.currentCommand = undefined;
-        this.commandStartTime.delete(state.terminalId);
-        // Send status update
-        this.sendStatusUpdate(state.terminalId, exitCode === 0 ? 'success' : 'error');
+    // Check for CWD change
+    const cwdMatch = data.match(/\x1b\]633;P;Cwd=([^\x07]+)\x07/);
+    if (cwdMatch && cwdMatch[1]) {
+      this.handleCwdChange(state, cwdMatch[1]);
     }
-    handleCwdChange(state, cwd) {
-        if (cwd) {
-            state.currentCwd = cwd;
-            try {
-                this.terminalManager.updateTerminalCwd(state.terminalId, cwd);
-            }
-            catch (error) {
-                (0, logger_1.terminal)('Failed to update terminal cwd:', error);
-            }
-            // Send CWD update to webview
-            this.sendCwdUpdate(state.terminalId, cwd);
-        }
+    // Fallback prompt detection for shells without integration
+    if (!data.includes('\x1b]633')) {
+      this.detectPromptFallback(state, data);
     }
-    detectPromptFallback(state, data) {
-        // Try to detect prompts using patterns
-        for (const pattern of this.promptPatterns) {
-            if (pattern.test(data)) {
-                state.lastPrompt = data;
-                if (state.isExecuting) {
-                    // Command likely finished
-                    state.isExecuting = false;
-                    this.sendStatusUpdate(state.terminalId, 'ready');
-                }
-                break;
-            }
-        }
-        // Try to detect CWD changes
-        for (const pattern of this.cwdDetectionPatterns) {
-            const match = data.match(pattern);
-            if (match && match[1]) {
-                this.handleCwdChange(state, match[1]);
-                break;
-            }
-        }
+  }
+  handleCommandStart(state) {
+    state.isExecuting = true;
+    this.commandStartTime.set(state.terminalId, Date.now());
+    // Send status update to webview
+    this.sendStatusUpdate(state.terminalId, 'executing');
+  }
+  handleCommandExecuted(state, data) {
+    // Extract command from data if available
+    const commandMatch = data.match(/\x1b\]633;B;([^\x07]+)\x07/);
+    if (commandMatch && commandMatch[1]) {
+      state.currentCommand = commandMatch[1];
     }
-    getOrCreateState(terminalId) {
-        if (!this.states.has(terminalId)) {
-            this.states.set(terminalId, {
-                terminalId,
-                currentCwd: (0, common_1.safeProcessCwd)(),
-                commandHistory: [],
-                isExecuting: false,
-            });
-        }
-        return this.states.get(terminalId);
+  }
+  handleCommandFinished(state, data) {
+    // Extract exit code if available
+    const exitCodeMatch = data.match(/\x1b\]633;C;(\d+)\x07/);
+    const exitCode = exitCodeMatch && exitCodeMatch[1] ? parseInt(exitCodeMatch[1], 10) : undefined;
+    // Calculate duration
+    const startTime = this.commandStartTime.get(state.terminalId);
+    const duration = startTime ? Date.now() - startTime : undefined;
+    // Add to history
+    if (state.currentCommand) {
+      const command = {
+        command: state.currentCommand,
+        cwd: state.currentCwd,
+        exitCode,
+        duration,
+        timestamp: Date.now(),
+      };
+      state.commandHistory.push(command);
+      // Limit history size
+      if (state.commandHistory.length > 100) {
+        state.commandHistory.shift();
+      }
     }
-    /**
-     * Send status update to webview
-     */
-    sendStatusUpdate(terminalId, status) {
-        vscode.commands.executeCommand('secondaryTerminal.updateShellStatus', {
-            terminalId,
-            status,
-        });
+    state.isExecuting = false;
+    state.currentCommand = undefined;
+    this.commandStartTime.delete(state.terminalId);
+    // Send status update
+    this.sendStatusUpdate(state.terminalId, exitCode === 0 ? 'success' : 'error');
+  }
+  handleCwdChange(state, cwd) {
+    if (cwd) {
+      state.currentCwd = cwd;
+      try {
+        this.terminalManager.updateTerminalCwd(state.terminalId, cwd);
+      } catch (error) {
+        (0, logger_1.terminal)('Failed to update terminal cwd:', error);
+      }
+      // Send CWD update to webview
+      this.sendCwdUpdate(state.terminalId, cwd);
     }
-    /**
-     * Send CWD update to webview
-     */
-    sendCwdUpdate(terminalId, cwd) {
-        vscode.commands.executeCommand('secondaryTerminal.updateCwd', {
-            terminalId,
-            cwd,
-        });
+  }
+  detectPromptFallback(state, data) {
+    // Try to detect prompts using patterns
+    for (const pattern of this.promptPatterns) {
+      if (pattern.test(data)) {
+        state.lastPrompt = data;
+        if (state.isExecuting) {
+          // Command likely finished
+          state.isExecuting = false;
+          this.sendStatusUpdate(state.terminalId, 'ready');
+        }
+        break;
+      }
     }
-    /**
-     * Get command history for a terminal
-     */
-    getCommandHistory(terminalId) {
-        const state = this.states.get(terminalId);
-        return state ? [...state.commandHistory] : [];
+    // Try to detect CWD changes
+    for (const pattern of this.cwdDetectionPatterns) {
+      const match = data.match(pattern);
+      if (match && match[1]) {
+        this.handleCwdChange(state, match[1]);
+        break;
+      }
     }
-    /**
-     * Get current working directory for a terminal
-     */
-    getCurrentCwd(terminalId) {
-        const state = this.states.get(terminalId);
-        return state ? state.currentCwd : (0, common_1.safeProcessCwd)();
+  }
+  getOrCreateState(terminalId) {
+    if (!this.states.has(terminalId)) {
+      this.states.set(terminalId, {
+        terminalId,
+        currentCwd: (0, common_1.safeProcessCwd)(),
+        commandHistory: [],
+        isExecuting: false,
+      });
     }
-    /**
-     * Check if terminal is executing a command
-     */
-    isExecuting(terminalId) {
-        const state = this.states.get(terminalId);
-        return state ? state.isExecuting : false;
+    return this.states.get(terminalId);
+  }
+  /**
+   * Send status update to webview
+   */
+  sendStatusUpdate(terminalId, status) {
+    vscode.commands.executeCommand('secondaryTerminal.updateShellStatus', {
+      terminalId,
+      status,
+    });
+  }
+  /**
+   * Send CWD update to webview
+   */
+  sendCwdUpdate(terminalId, cwd) {
+    vscode.commands.executeCommand('secondaryTerminal.updateCwd', {
+      terminalId,
+      cwd,
+    });
+  }
+  /**
+   * Get command history for a terminal
+   */
+  getCommandHistory(terminalId) {
+    const state = this.states.get(terminalId);
+    return state ? [...state.commandHistory] : [];
+  }
+  /**
+   * Get current working directory for a terminal
+   */
+  getCurrentCwd(terminalId) {
+    const state = this.states.get(terminalId);
+    return state ? state.currentCwd : (0, common_1.safeProcessCwd)();
+  }
+  /**
+   * Check if terminal is executing a command
+   */
+  isExecuting(terminalId) {
+    const state = this.states.get(terminalId);
+    return state ? state.isExecuting : false;
+  }
+  /**
+   * Inject shell integration script
+   * This is called when a new terminal is created
+   */
+  async injectShellIntegration(_terminalId, shell, ptyProcess) {
+    // Check if shell integration is enabled in settings
+    const config = vscode.workspace.getConfiguration('secondaryTerminal');
+    const shellIntegrationEnabled = config.get('enableShellIntegration', true);
+    if (!shellIntegrationEnabled) {
+      (0, logger_1.terminal)('Shell integration disabled in settings');
+      return;
     }
-    /**
-     * Inject shell integration script
-     * This is called when a new terminal is created
-     */
-    async injectShellIntegration(_terminalId, shell, ptyProcess) {
-        // Check if shell integration is enabled in settings
-        const config = vscode.workspace.getConfiguration('secondaryTerminal');
-        const shellIntegrationEnabled = config.get('enableShellIntegration', true);
-        if (!shellIntegrationEnabled) {
-            (0, logger_1.terminal)('Shell integration disabled in settings');
-            return;
-        }
-        // Check if user has granted permission for shell integration
-        if (this.shellIntegrationPermissionGranted === undefined) {
-            // First time - ask for permission
-            const granted = await this.requestShellIntegrationPermission();
-            if (!granted) {
-                (0, logger_1.terminal)('Shell integration permission denied by user');
-                return;
-            }
-        }
-        else if (this.shellIntegrationPermissionGranted === false) {
-            // User previously denied permission
-            return;
-        }
-        // Permission granted - inject shell integration
-        // Detect shell type and inject appropriate integration
-        if ((shell && shell.includes('bash')) || (shell && shell.includes('zsh'))) {
-            this.injectBashZshIntegration(ptyProcess);
-        }
-        else if (shell && shell.includes('fish')) {
-            this.injectFishIntegration(ptyProcess);
-        }
-        else if (shell && (shell.includes('powershell') || shell.includes('pwsh'))) {
-            this.injectPowerShellIntegration(ptyProcess);
-        }
+    // Check if user has granted permission for shell integration
+    if (this.shellIntegrationPermissionGranted === undefined) {
+      // First time - ask for permission
+      const granted = await this.requestShellIntegrationPermission();
+      if (!granted) {
+        (0, logger_1.terminal)('Shell integration permission denied by user');
+        return;
+      }
+    } else if (this.shellIntegrationPermissionGranted === false) {
+      // User previously denied permission
+      return;
     }
-    /**
-     * Request user permission to inject shell integration scripts
-     *
-     * Displays a modal dialog asking the user for permission to inject shell
-     * integration scripts. The user's choice can be saved persistently.
-     *
-     * @returns Promise<boolean> - true if permission granted, false otherwise
-     */
-    async requestShellIntegrationPermission() {
-        const { MAIN_MESSAGE, BUTTON_ALLOW, BUTTON_ALWAYS_ALLOW, BUTTON_DENY, BUTTON_NEVER_ALLOW } = ShellIntegrationService.PERMISSION_MESSAGES;
-        const result = await vscode.window.showWarningMessage(MAIN_MESSAGE, { modal: true }, BUTTON_ALLOW, BUTTON_ALWAYS_ALLOW, BUTTON_DENY, BUTTON_NEVER_ALLOW);
-        // Handle user's choice
-        switch (result) {
-            case BUTTON_ALLOW:
-                // Allow for this session only
-                this.shellIntegrationPermissionGranted = true;
-                (0, logger_1.terminal)('Shell integration allowed for this session');
-                return true;
-            case BUTTON_ALWAYS_ALLOW:
-                // Always allow - save to persistent storage
-                this.shellIntegrationPermissionGranted = true;
-                if (this.context) {
-                    await this.context.globalState.update('shellIntegrationPermission', true);
-                }
-                (0, logger_1.terminal)('Shell integration always allowed (saved to settings)');
-                return true;
-            case BUTTON_NEVER_ALLOW:
-                // Never allow - save to persistent storage
-                this.shellIntegrationPermissionGranted = false;
-                if (this.context) {
-                    await this.context.globalState.update('shellIntegrationPermission', false);
-                }
-                (0, logger_1.terminal)('Shell integration never allowed (saved to settings)');
-                return false;
-            default:
-                // Deny for this session (user dismissed dialog or clicked Deny)
-                this.shellIntegrationPermissionGranted = false;
-                (0, logger_1.terminal)('Shell integration denied for this session');
-                return false;
-        }
+    // Permission granted - inject shell integration
+    // Detect shell type and inject appropriate integration
+    if ((shell && shell.includes('bash')) || (shell && shell.includes('zsh'))) {
+      this.injectBashZshIntegration(ptyProcess);
+    } else if (shell && shell.includes('fish')) {
+      this.injectFishIntegration(ptyProcess);
+    } else if (shell && (shell.includes('powershell') || shell.includes('pwsh'))) {
+      this.injectPowerShellIntegration(ptyProcess);
     }
-    injectBashZshIntegration(ptyProcess) {
-        // VS Code standard shell integration for bash/zsh with enhanced history support
-        const script = `
+  }
+  /**
+   * Request user permission to inject shell integration scripts
+   *
+   * Displays a modal dialog asking the user for permission to inject shell
+   * integration scripts. The user's choice can be saved persistently.
+   *
+   * @returns Promise<boolean> - true if permission granted, false otherwise
+   */
+  async requestShellIntegrationPermission() {
+    const { MAIN_MESSAGE, BUTTON_ALLOW, BUTTON_ALWAYS_ALLOW, BUTTON_DENY, BUTTON_NEVER_ALLOW } =
+      ShellIntegrationService.PERMISSION_MESSAGES;
+    const result = await vscode.window.showWarningMessage(
+      MAIN_MESSAGE,
+      { modal: true },
+      BUTTON_ALLOW,
+      BUTTON_ALWAYS_ALLOW,
+      BUTTON_DENY,
+      BUTTON_NEVER_ALLOW
+    );
+    // Handle user's choice
+    switch (result) {
+      case BUTTON_ALLOW:
+        // Allow for this session only
+        this.shellIntegrationPermissionGranted = true;
+        (0, logger_1.terminal)('Shell integration allowed for this session');
+        return true;
+      case BUTTON_ALWAYS_ALLOW:
+        // Always allow - save to persistent storage
+        this.shellIntegrationPermissionGranted = true;
+        if (this.context) {
+          await this.context.globalState.update('shellIntegrationPermission', true);
+        }
+        (0, logger_1.terminal)('Shell integration always allowed (saved to settings)');
+        return true;
+      case BUTTON_NEVER_ALLOW:
+        // Never allow - save to persistent storage
+        this.shellIntegrationPermissionGranted = false;
+        if (this.context) {
+          await this.context.globalState.update('shellIntegrationPermission', false);
+        }
+        (0, logger_1.terminal)('Shell integration never allowed (saved to settings)');
+        return false;
+      default:
+        // Deny for this session (user dismissed dialog or clicked Deny)
+        this.shellIntegrationPermissionGranted = false;
+        (0, logger_1.terminal)('Shell integration denied for this session');
+        return false;
+    }
+  }
+  injectBashZshIntegration(ptyProcess) {
+    // VS Code standard shell integration for bash/zsh with enhanced history support
+    const script = `
 # VS Code Shell Integration with History Support
 __vsc_prompt_cmd() {
   printf "\\033]633;A\\007"
@@ -374,11 +378,11 @@ fi
 # Enable history expansion
 set +H 2>/dev/null || true
 `;
-        ptyProcess.write(script + '\n');
-    }
-    injectFishIntegration(ptyProcess) {
-        // VS Code standard shell integration for fish with enhanced history support
-        const script = `
+    ptyProcess.write(script + '\n');
+  }
+  injectFishIntegration(ptyProcess) {
+    // VS Code standard shell integration for fish with enhanced history support
+    const script = `
 # VS Code Shell Integration for Fish with History Support
 function __vsc_preexec --on-event fish_preexec
   printf "\\033]633;B;%s\\007" "$argv"
@@ -408,11 +412,11 @@ function fish_user_key_bindings
   bind -k down history-search-forward 2>/dev/null
 end
 `;
-        ptyProcess.write(script + '\n');
-    }
-    injectPowerShellIntegration(ptyProcess) {
-        // VS Code standard shell integration for PowerShell with enhanced history support
-        const script = `
+    ptyProcess.write(script + '\n');
+  }
+  injectPowerShellIntegration(ptyProcess) {
+    // VS Code standard shell integration for PowerShell with enhanced history support
+    const script = `
 # VS Code Shell Integration for PowerShell with History Support
 function Global:__VSCode-Prompt-Start { 
   Write-Host -NoNewline "]633;A$([char]7)" 
@@ -440,19 +444,19 @@ function Global:prompt {
   __VSCode-Prompt-End
 }
 `;
-        ptyProcess.write(script + '\n');
-    }
-    /**
-     * Clean up resources for a terminal
-     */
-    disposeTerminal(terminalId) {
-        this.states.delete(terminalId);
-        this.commandStartTime.delete(terminalId);
-    }
-    dispose() {
-        this.states.clear();
-        this.commandStartTime.clear();
-    }
+    ptyProcess.write(script + '\n');
+  }
+  /**
+   * Clean up resources for a terminal
+   */
+  disposeTerminal(terminalId) {
+    this.states.delete(terminalId);
+    this.commandStartTime.delete(terminalId);
+  }
+  dispose() {
+    this.states.clear();
+    this.commandStartTime.clear();
+  }
 }
 exports.ShellIntegrationService = ShellIntegrationService;
 /**
@@ -462,10 +466,11 @@ exports.ShellIntegrationService = ShellIntegrationService;
  * shell integration scripts into their terminal sessions.
  */
 ShellIntegrationService.PERMISSION_MESSAGES = {
-    MAIN_MESSAGE: 'Secondary Terminal wants to enable Shell Integration to provide enhanced features like command tracking and history. This requires modifying your shell startup script.',
-    BUTTON_ALLOW: 'Allow',
-    BUTTON_DENY: 'Deny',
-    BUTTON_ALWAYS_ALLOW: 'Always Allow',
-    BUTTON_NEVER_ALLOW: 'Never Allow',
+  MAIN_MESSAGE:
+    'Secondary Terminal wants to enable Shell Integration to provide enhanced features like command tracking and history. This requires modifying your shell startup script.',
+  BUTTON_ALLOW: 'Allow',
+  BUTTON_DENY: 'Deny',
+  BUTTON_ALWAYS_ALLOW: 'Always Allow',
+  BUTTON_NEVER_ALLOW: 'Never Allow',
 };
 //# sourceMappingURL=ShellIntegrationService.js.map

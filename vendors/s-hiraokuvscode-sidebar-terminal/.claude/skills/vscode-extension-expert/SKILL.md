@@ -79,14 +79,14 @@ export function deactivate() {
 
 Choose the most specific activation event to minimize startup impact:
 
-| Event | Use Case | Example |
-|-------|----------|---------|
-| `onLanguage:<lang>` | Language-specific features | `onLanguage:python` |
-| `onCommand:<command>` | Command-driven extensions | `onCommand:ext.showPanel` |
-| `onView:<viewId>` | Sidebar view expansion | `onView:myTreeView` |
-| `workspaceContains:<glob>` | Project-specific features | `workspaceContains:**/.eslintrc*` |
-| `onFileSystem:<scheme>` | Custom file systems | `onFileSystem:sftp` |
-| `onStartupFinished` | Background tasks | (prefer over `*`) |
+| Event                      | Use Case                   | Example                           |
+| -------------------------- | -------------------------- | --------------------------------- |
+| `onLanguage:<lang>`        | Language-specific features | `onLanguage:python`               |
+| `onCommand:<command>`      | Command-driven extensions  | `onCommand:ext.showPanel`         |
+| `onView:<viewId>`          | Sidebar view expansion     | `onView:myTreeView`               |
+| `workspaceContains:<glob>` | Project-specific features  | `workspaceContains:**/.eslintrc*` |
+| `onFileSystem:<scheme>`    | Custom file systems        | `onFileSystem:sftp`               |
+| `onStartupFinished`        | Background tasks           | (prefer over `*`)                 |
 
 **Critical**: Avoid using `*` as it activates on every VS Code startup.
 
@@ -97,12 +97,14 @@ Choose the most specific activation event to minimize startup impact:
 ```json
 {
   "contributes": {
-    "commands": [{
-      "command": "ext.doSomething",
-      "title": "Do Something",
-      "category": "My Extension",
-      "icon": "$(symbol-method)"
-    }]
+    "commands": [
+      {
+        "command": "ext.doSomething",
+        "title": "Do Something",
+        "category": "My Extension",
+        "icon": "$(symbol-method)"
+      }
+    ]
   }
 }
 ```
@@ -132,17 +134,21 @@ Choose the most specific activation event to minimize startup impact:
 {
   "contributes": {
     "views": {
-      "explorer": [{
-        "id": "myTreeView",
-        "name": "My View"
-      }]
+      "explorer": [
+        {
+          "id": "myTreeView",
+          "name": "My View"
+        }
+      ]
     },
     "viewsContainers": {
-      "activitybar": [{
-        "id": "myContainer",
-        "title": "My Extension",
-        "icon": "resources/icon.svg"
-      }]
+      "activitybar": [
+        {
+          "id": "myContainer",
+          "title": "My Extension",
+          "icon": "resources/icon.svg"
+        }
+      ]
     }
   }
 }
@@ -176,7 +182,9 @@ const value = config.get<boolean>('enabled');
 
 // Watch files
 const watcher = vscode.workspace.createFileSystemWatcher('**/*.ts');
-watcher.onDidChange(uri => { /* handle change */ });
+watcher.onDidChange((uri) => {
+  /* handle change */
+});
 
 // Open documents
 const doc = await vscode.workspace.openTextDocument(uri);
@@ -236,7 +244,7 @@ function getWebviewContent(webview: vscode.Webview): string {
 panel.webview.postMessage({ type: 'update', data: payload });
 
 // WebView → Extension
-panel.webview.onDidReceiveMessage(message => {
+panel.webview.onDidReceiveMessage((message) => {
   switch (message.type) {
     case 'action':
       handleAction(message.data);
@@ -245,7 +253,7 @@ panel.webview.onDidReceiveMessage(message => {
 });
 
 // In WebView JavaScript
-window.addEventListener('message', event => {
+window.addEventListener('message', (event) => {
   const message = event.data;
   // Handle message
 });
@@ -289,14 +297,14 @@ import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-lan
 
 const serverOptions: ServerOptions = {
   run: { module: serverPath, transport: TransportKind.ipc },
-  debug: { module: serverPath, transport: TransportKind.ipc }
+  debug: { module: serverPath, transport: TransportKind.ipc },
 };
 
 const clientOptions: LanguageClientOptions = {
   documentSelector: [{ scheme: 'file', language: 'mylang' }],
   synchronize: {
-    fileEvents: vscode.workspace.createFileSystemWatcher('**/*.mylang')
-  }
+    fileEvents: vscode.workspace.createFileSystemWatcher('**/*.mylang'),
+  },
 };
 
 const client = new LanguageClient('mylang', 'My Language', serverOptions, clientOptions);
@@ -317,15 +325,13 @@ connection.onInitialize((params) => {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Incremental,
       completionProvider: { resolveProvider: true },
-      hoverProvider: true
-    }
+      hoverProvider: true,
+    },
   };
 });
 
 connection.onCompletion((params) => {
-  return [
-    { label: 'suggestion1', kind: CompletionItemKind.Text }
-  ];
+  return [{ label: 'suggestion1', kind: CompletionItemKind.Text }];
 });
 
 documents.listen(connection);
@@ -346,14 +352,14 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<MyItem> {
   getTreeItem(element: MyItem): vscode.TreeItem {
     return {
       label: element.name,
-      collapsibleState: element.children ?
-        vscode.TreeItemCollapsibleState.Collapsed :
-        vscode.TreeItemCollapsibleState.None,
+      collapsibleState: element.children
+        ? vscode.TreeItemCollapsibleState.Collapsed
+        : vscode.TreeItemCollapsibleState.None,
       command: {
         command: 'ext.selectItem',
         title: 'Select',
-        arguments: [element]
-      }
+        arguments: [element],
+      },
     };
   }
 
@@ -402,7 +408,7 @@ esbuild.build({
   format: 'cjs',
   platform: 'node',
   minify: process.env.NODE_ENV === 'production',
-  sourcemap: true
+  sourcemap: true,
 });
 ```
 
@@ -438,8 +444,8 @@ module.exports = defineConfig({
   version: 'stable',
   workspaceFolder: './test-fixtures',
   mocha: {
-    timeout: 20000  // Note: @vscode/test-cli uses Mocha for VS Code extension host tests
-  }
+    timeout: 20000, // Note: @vscode/test-cli uses Mocha for VS Code extension host tests
+  },
 });
 ```
 
@@ -516,9 +522,11 @@ suite('Extension Test Suite', () => {
 ## Resources
 
 For detailed reference documentation, see:
+
 - `references/api-reference.md` - Complete VS Code API documentation
 - `references/webview-security.md` - WebView security guidelines
 - `references/lsp-guide.md` - Language Server Protocol implementation guide
 
 For working examples, reference the official samples:
+
 - https://github.com/microsoft/vscode-extension-samples

@@ -18,13 +18,12 @@ Activates when a command is invoked.
 
 ```json
 {
-  "activationEvents": [
-    "onCommand:extension.myCommand"
-  ]
+  "activationEvents": ["onCommand:extension.myCommand"]
 }
 ```
 
 **Use when:**
+
 - Extension provides commands
 - No need for background processing
 - Simple command-based extensions
@@ -37,14 +36,12 @@ Activates when a file of a specific language is opened.
 
 ```json
 {
-  "activationEvents": [
-    "onLanguage:javascript",
-    "onLanguage:typescript"
-  ]
+  "activationEvents": ["onLanguage:javascript", "onLanguage:typescript"]
 }
 ```
 
 **Language identifiers:**
+
 - `javascript`, `typescript`
 - `python`, `java`, `csharp`, `go`, `rust`
 - `html`, `css`, `scss`, `json`, `yaml`
@@ -52,6 +49,7 @@ Activates when a file of a specific language is opened.
 - Custom language IDs
 
 **Use when:**
+
 - Providing language-specific features
 - Syntax highlighting, IntelliSense
 - Language diagnostics
@@ -64,13 +62,12 @@ Activates when a custom view is expanded.
 
 ```json
 {
-  "activationEvents": [
-    "onView:myCustomView"
-  ]
+  "activationEvents": ["onView:myCustomView"]
 }
 ```
 
 **Use when:**
+
 - Extension provides tree views
 - Data needed only when view is visible
 - Custom sidebar panels
@@ -83,20 +80,19 @@ Activates when a file/folder from a specific file system scheme is opened.
 
 ```json
 {
-  "activationEvents": [
-    "onFileSystem:ftp",
-    "onFileSystem:sftp"
-  ]
+  "activationEvents": ["onFileSystem:ftp", "onFileSystem:sftp"]
 }
 ```
 
 **Common schemes:**
+
 - `file`: Local file system (default)
 - `untitled`: New unsaved files
 - `vscode-remote`: Remote files
 - Custom schemes
 
 **Use when:**
+
 - Implementing custom file system providers
 - Virtual file systems
 - Remote file access
@@ -109,13 +105,12 @@ Activates after VS Code finishes loading, similar to `*` but with less startup i
 
 ```json
 {
-  "activationEvents": [
-    "onStartupFinished"
-  ]
+  "activationEvents": ["onStartupFinished"]
 }
 ```
 
 **Use when:**
+
 - Need to run on startup but not critical
 - Background initialization acceptable
 - Can wait until VS Code fully loads
@@ -130,14 +125,12 @@ Activates when a workspace contains files matching a glob pattern.
 
 ```json
 {
-  "activationEvents": [
-    "workspaceContains:**/.eslintrc.*",
-    "workspaceContains:**/package.json"
-  ]
+  "activationEvents": ["workspaceContains:**/.eslintrc.*", "workspaceContains:**/package.json"]
 }
 ```
 
 **Use when:**
+
 - Extension relevant for specific project types
 - Detecting configuration files
 - Project-specific tooling
@@ -152,18 +145,18 @@ Activates when a URI with the extension's scheme is opened.
 
 ```json
 {
-  "activationEvents": [
-    "onUri"
-  ]
+  "activationEvents": ["onUri"]
 }
 ```
 
 **Example URIs:**
+
 - `vscode://publisher.extension/path`
 - Used for OAuth callbacks
 - Deep linking into extension
 
 **Use when:**
+
 - Handling deep links
 - OAuth authentication flows
 - External protocol handlers
@@ -176,13 +169,12 @@ Activates when a webview of a specific type is restored.
 
 ```json
 {
-  "activationEvents": [
-    "onWebviewPanel:myWebview"
-  ]
+  "activationEvents": ["onWebviewPanel:myWebview"]
 }
 ```
 
 **Use when:**
+
 - Extension creates persistent webviews
 - Restoring webview state after reload
 - Custom editors
@@ -195,20 +187,18 @@ Activates when a debug session starts.
 
 ```json
 {
-  "activationEvents": [
-    "onDebug",
-    "onDebugInitialConfigurations",
-    "onDebugResolve:node"
-  ]
+  "activationEvents": ["onDebug", "onDebugInitialConfigurations", "onDebugResolve:node"]
 }
 ```
 
 **Variants:**
+
 - `onDebug`: Any debug session
 - `onDebugInitialConfigurations`: Providing launch.json defaults
 - `onDebugResolve:type`: Resolving debug config for specific type
 
 **Use when:**
+
 - Implementing debugger extensions
 - Debug configuration providers
 - Debug adapters
@@ -221,14 +211,12 @@ Activates when a task of a specific type is executed.
 
 ```json
 {
-  "activationEvents": [
-    "onTaskType:npm",
-    "onTaskType:gulp"
-  ]
+  "activationEvents": ["onTaskType:npm", "onTaskType:gulp"]
 }
 ```
 
 **Use when:**
+
 - Providing custom task providers
 - Task detection
 - Build system integration
@@ -241,13 +229,12 @@ Activates when a custom editor is needed for a file.
 
 ```json
 {
-  "activationEvents": [
-    "onCustomEditor:myCustomEditor"
-  ]
+  "activationEvents": ["onCustomEditor:myCustomEditor"]
 }
 ```
 
 **Use when:**
+
 - Implementing custom editors
 - Special file type viewers
 - Binary file editors
@@ -260,13 +247,12 @@ Activates when authentication is requested.
 
 ```json
 {
-  "activationEvents": [
-    "onAuthenticationRequest:github"
-  ]
+  "activationEvents": ["onAuthenticationRequest:github"]
 }
 ```
 
 **Use when:**
+
 - Providing authentication providers
 - OAuth flows
 - Custom login systems
@@ -275,26 +261,26 @@ Activates when authentication is requested.
 
 ## Special Activation Events
 
-### * (Star)
+### \* (Star)
 
 Activates on VS Code startup.
 
 ```json
 {
-  "activationEvents": [
-    "*"
-  ]
+  "activationEvents": ["*"]
 }
 ```
 
 **⚠️ Warning:** Avoid unless absolutely necessary!
 
 **Impact:**
+
 - Slows VS Code startup
 - Uses memory even if extension not used
 - Poor user experience
 
 **Only use when:**
+
 - Extension must run immediately
 - Background services absolutely required
 - No other activation event works
@@ -324,10 +310,7 @@ Extension activates when **any** event occurs (OR logic).
 
 ```json
 {
-  "activationEvents": [
-    "onCommand:extension.formatJson",
-    "onCommand:extension.validateJson"
-  ]
+  "activationEvents": ["onCommand:extension.formatJson", "onCommand:extension.validateJson"]
 }
 ```
 
@@ -337,10 +320,7 @@ Simplest pattern. Extension loads when command invoked.
 
 ```json
 {
-  "activationEvents": [
-    "onLanguage:javascript",
-    "onLanguage:typescript"
-  ]
+  "activationEvents": ["onLanguage:javascript", "onLanguage:typescript"]
 }
 ```
 
@@ -350,10 +330,7 @@ Loads when JavaScript/TypeScript file opens.
 
 ```json
 {
-  "activationEvents": [
-    "workspaceContains:**/package.json",
-    "onCommand:extension.npmInstall"
-  ]
+  "activationEvents": ["workspaceContains:**/package.json", "onCommand:extension.npmInstall"]
 }
 ```
 
@@ -363,9 +340,7 @@ Activates for Node.js projects or when command used.
 
 ```json
 {
-  "activationEvents": [
-    "onStartupFinished"
-  ]
+  "activationEvents": ["onStartupFinished"]
 }
 ```
 
@@ -375,10 +350,7 @@ Loads after startup, runs in background.
 
 ```json
 {
-  "activationEvents": [
-    "onView:myTreeView",
-    "onCommand:extension.refreshView"
-  ]
+  "activationEvents": ["onView:myTreeView", "onCommand:extension.refreshView"]
 }
 ```
 
@@ -415,9 +387,9 @@ Test extension activation impact:
 ```typescript
 export function activate(context: vscode.ExtensionContext) {
   console.time('Extension Activation');
-  
+
   // Extension initialization
-  
+
   console.timeEnd('Extension Activation');
 }
 ```
@@ -439,6 +411,7 @@ export function activate(context: vscode.ExtensionContext) {
 ### View Activation Events
 
 Developer: Show Running Extensions
+
 - Shows all active extensions
 - Displays activation time
 - Identifies slow activations
@@ -464,9 +437,7 @@ Developer: Show Running Extensions
 ```json
 // ✅ GOOD
 {
-  "activationEvents": [
-    "onCommand:extension.myCommand"
-  ]
+  "activationEvents": ["onCommand:extension.myCommand"]
 }
 ```
 
@@ -476,10 +447,12 @@ Developer: Show Running Extensions
 // ❌ Command not executable
 {
   "contributes": {
-    "commands": [{
-      "command": "extension.myCommand",
-      "title": "My Command"
-    }]
+    "commands": [
+      {
+        "command": "extension.myCommand",
+        "title": "My Command"
+      }
+    ]
   }
   // Missing activation event!
 }
@@ -488,14 +461,14 @@ Developer: Show Running Extensions
 ```json
 // ✅ Command will work
 {
-  "activationEvents": [
-    "onCommand:extension.myCommand"
-  ],
+  "activationEvents": ["onCommand:extension.myCommand"],
   "contributes": {
-    "commands": [{
-      "command": "extension.myCommand",
-      "title": "My Command"
-    }]
+    "commands": [
+      {
+        "command": "extension.myCommand",
+        "title": "My Command"
+      }
+    ]
   }
 }
 ```
@@ -505,18 +478,14 @@ Developer: Show Running Extensions
 ```json
 // ❌ Matches too many files
 {
-  "activationEvents": [
-    "workspaceContains:**/*.json"
-  ]
+  "activationEvents": ["workspaceContains:**/*.json"]
 }
 ```
 
 ```json
 // ✅ Specific file
 {
-  "activationEvents": [
-    "workspaceContains:**/tsconfig.json"
-  ]
+  "activationEvents": ["workspaceContains:**/tsconfig.json"]
 }
 ```
 
@@ -531,7 +500,7 @@ export function activate(context: vscode.ExtensionContext) {
   if (!config.get<boolean>('enabled')) {
     return; // Don't initialize
   }
-  
+
   // Initialize extension
 }
 ```
@@ -543,6 +512,7 @@ export function activate(context: vscode.ExtensionContext) {
 ### From `*` to Specific Events
 
 **Before:**
+
 ```json
 {
   "activationEvents": ["*"]
@@ -550,11 +520,10 @@ export function activate(context: vscode.ExtensionContext) {
 ```
 
 **After:**
+
 ```json
 {
-  "activationEvents": [
-    "onStartupFinished"
-  ]
+  "activationEvents": ["onStartupFinished"]
 }
 ```
 
@@ -562,16 +531,14 @@ Or even better, identify specific triggers:
 
 ```json
 {
-  "activationEvents": [
-    "onCommand:extension.myCommand",
-    "onLanguage:javascript"
-  ]
+  "activationEvents": ["onCommand:extension.myCommand", "onLanguage:javascript"]
 }
 ```
 
 ### From `onLanguage:*` to Specific Languages
 
 **Before:**
+
 ```json
 {
   "activationEvents": ["onLanguage:*"]
@@ -579,36 +546,39 @@ Or even better, identify specific triggers:
 ```
 
 **After:**
+
 ```json
 {
-  "activationEvents": [
-    "onLanguage:javascript",
-    "onLanguage:typescript",
-    "onLanguage:python"
-  ]
+  "activationEvents": ["onLanguage:javascript", "onLanguage:typescript", "onLanguage:python"]
 }
 ```
 
 ## Decision Tree
 
 **Does extension provide commands?**
+
 - Yes → Use `onCommand:command.id`
 
 **Does extension work with specific languages?**
+
 - Yes → Use `onLanguage:languageId`
 
 **Does extension provide a view?**
+
 - Yes → Use `onView:viewId`
 
 **Does extension need to run on startup?**
+
 - Critical → Consider `*` (but avoid if possible)
 - Can wait → Use `onStartupFinished`
 - No → Use specific event
 
 **Does extension work with specific project types?**
+
 - Yes → Use `workspaceContains:pattern`
 
 **None of above?**
+
 - Review available activation events
 - Consider if extension should lazy load
 - Use `onStartupFinished` as last resort
@@ -623,4 +593,3 @@ Or even better, identify specific triggers:
 - **Test:** Verify extension activates at right time
 
 Choose the most specific activation event possible for best performance and user experience.
-

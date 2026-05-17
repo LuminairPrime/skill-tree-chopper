@@ -16,14 +16,17 @@ When this command is invoked (e.g., `/terminal-implement Add terminal tab comple
 Launch all three research agents in parallel using a single message with multiple Task tool calls:
 
 **Agent 1: vscode-terminal-resolver**
+
 - Task description: "Analyze VS Code terminal implementation"
 - Prompt: "Search the VS Code repository for how it implements: {ARGUMENTS}. Focus on terminal-related source code in src/vs/workbench/contrib/terminal/. Provide code references, implementation patterns, and key architectural decisions. Summary: 100-200 words."
 
 **Agent 2: serena-semantic-search**
+
 - Task description: "Search codebase semantically"
 - Prompt: "Use Serena MCP to semantically search the current codebase for implementations related to: {ARGUMENTS}. Focus on TerminalManager, WebView managers, and xterm.js integrations. Identify existing patterns and architectural decisions. Provide file paths and line numbers. Summary: 100-200 words."
 
 **Agent 3: xterm-info-analyzer**
+
 - Task description: "Get xterm.js documentation"
 - Prompt: "Retrieve xterm.js documentation and best practices for: {ARGUMENTS}. Include API references, configuration options, usage examples, and performance considerations. Summary: 100-200 words."
 
@@ -32,6 +35,7 @@ Launch all three research agents in parallel using a single message with multipl
 After research agents complete, launch the implementation agent:
 
 **Agent 4: terminal-implementer**
+
 - Task description: "Implement terminal feature"
 - Prompt: "Implement: {ARGUMENTS}
 
@@ -47,6 +51,7 @@ After research agents complete, launch the implementation agent:
 {xterm-info-analyzer summary}
 
 **Implementation Requirements:**
+
 1. Follow TDD workflow: Write tests first (Red), implement (Green), refactor (Refactor)
 2. Use patterns from VS Code research findings
 3. Integrate with existing managers identified in codebase search
@@ -55,6 +60,7 @@ After research agents complete, launch the implementation agent:
 6. Provide file:line references in implementation
 
 **Deliverables:**
+
 - Production-ready code with tests
 - Implementation summary (100-200 words)
 - File references with line numbers"
@@ -82,15 +88,18 @@ After all agents complete, provide a comprehensive implementation report:
 {terminal-implementer summary}
 
 **Files Modified:**
+
 - src/path/to/file.ts:line - Description
 - src/test/unit/file.test.ts:line - Test coverage
 
 **Key Decisions:**
+
 - Architectural pattern chosen: [pattern]
 - VS Code pattern followed: [reference]
 - Xterm.js API used: [API]
 
 **Next Steps:**
+
 1. Run `npm run test:unit` to verify tests
 2. Run `npm run compile` to build
 3. Test feature manually in extension
@@ -100,21 +109,25 @@ After all agents complete, provide a comprehensive implementation report:
 ## Example Usage
 
 ### Simple Feature
+
 ```bash
 /terminal-implement Add keyboard shortcut to clear terminal
 ```
 
 ### Complex Feature
+
 ```bash
 /terminal-implement Implement terminal tab completion with fuzzy matching
 ```
 
 ### Performance Optimization
+
 ```bash
 /terminal-implement Optimize terminal rendering for high-frequency output
 ```
 
 ### Bug Fix
+
 ```bash
 /terminal-implement Fix terminal scrollback restoration after window reload
 ```
@@ -147,11 +160,13 @@ Phase 2: Implementation
 ## Important Notes
 
 ### Sequential Execution
+
 - **Phase 1**: All 3 research agents run in parallel
 - **Phase 2**: After Phase 1 completes, launch implementer with aggregated findings
 - Do NOT launch all 4 agents at once (implementer needs research results)
 
 ### Agent Communication
+
 - Research agents provide concise summaries (100-200 words each)
 - Pass all 3 research summaries to terminal-implementer
 - Implementer uses research to guide implementation decisions
@@ -159,10 +174,12 @@ Phase 2: Implementation
 ### Error Handling
 
 **If research agents find no results:**
+
 - Proceed with implementation using general best practices
 - Document in implementation report that specific patterns weren't found
 
 **If implementer encounters issues:**
+
 - Report blockers clearly
 - Suggest additional research needed
 - Provide partial implementation if possible
@@ -170,6 +187,7 @@ Phase 2: Implementation
 ## Quality Gates
 
 The terminal-implementer agent will ensure:
+
 - ✅ TDD compliance (tests written first)
 - ✅ Type safety (no `any` types)
 - ✅ Dispose handlers implemented
@@ -180,6 +198,7 @@ The terminal-implementer agent will ensure:
 ## Testing After Implementation
 
 After the command completes, run:
+
 ```bash
 # Verify tests pass
 npm run test:unit
@@ -197,12 +216,14 @@ code . (and launch extension)
 ## When to Use This Command
 
 **Use `/terminal-implement` when:**
+
 - Adding new terminal features
 - Fixing terminal-related bugs
 - Optimizing terminal performance
 - Implementing missing VS Code patterns
 
 **Don't use this command for:**
+
 - Non-terminal features
 - Simple text changes
 - Documentation-only updates
@@ -221,18 +242,23 @@ code . (and launch extension)
 ## Advanced Usage
 
 ### Research-Only Mode
+
 If you only want research without implementation, use:
+
 ```bash
 /terminal-research <query>
 ```
 
 ### Implementation-Only Mode
+
 If you already have research and want to implement:
+
 ```bash
 # Directly invoke terminal-implementer agent with research context
 ```
 
 ### Iterative Development
+
 ```bash
 # Implement core feature
 /terminal-implement Add terminal split view support
@@ -264,10 +290,12 @@ The command enforces t-wada's TDD methodology:
 ## Command Composition
 
 This command combines:
+
 - `/terminal-research` (Phase 1: Research)
 - `terminal-implementer` agent (Phase 2: Implementation)
 
 For complex workflows, you can break it down:
+
 ```bash
 # Step 1: Research first
 /terminal-research How does VS Code handle terminal sessions?
@@ -279,6 +307,7 @@ For complex workflows, you can break it down:
 ## Documentation
 
 For complete command reference and usage examples, see:
+
 - Command overview: `.claude/docs/TERMINAL_COMMANDS_README.md`
 - Research guide: `.claude/docs/TERMINAL_RESEARCH_GUIDE.md`
 - Implementation agent: `.claude/agents/terminal-implementer.md`

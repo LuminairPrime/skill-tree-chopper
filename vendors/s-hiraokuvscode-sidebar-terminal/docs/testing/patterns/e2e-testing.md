@@ -40,9 +40,9 @@ VS Code拡張機能のE2Eテストには、必ず `@vscode/test-electron` を使
 {
   "devDependencies": {
     "@vscode/test-electron": "^2.4.0",
-    "@types/mocha": "^10.0.0",  // Required by @vscode/test-electron
+    "@types/mocha": "^10.0.0", // Required by @vscode/test-electron
     "@types/node": "^20.0.0",
-    "mocha": "^10.0.0"  // Required by @vscode/test-electron for E2E tests
+    "mocha": "^10.0.0" // Required by @vscode/test-electron for E2E tests
   }
 }
 ```
@@ -67,8 +67,8 @@ async function main() {
       extensionDevelopmentPath,
       extensionTestsPath,
       launchArgs: [
-        '--disable-extensions',  // 他の拡張機能を無効化
-        '--disable-gpu',         // GPU無効化（CI用）
+        '--disable-extensions', // 他の拡張機能を無効化
+        '--disable-gpu', // GPU無効化（CI用）
         '--disable-workspace-trust', // ワークスペーストラストを無効化
       ],
     });
@@ -103,12 +103,12 @@ export async function run(): Promise<void> {
   const files = await glob('**/*.e2e.test.js', { cwd: testsRoot });
 
   // テストファイルを追加
-  files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
+  files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
 
   return new Promise<void>((resolve, reject) => {
     try {
       // テストを実行
-      mocha.run(failures => {
+      mocha.run((failures) => {
         if (failures > 0) {
           reject(new Error(`${failures} tests failed.`));
         } else {
@@ -162,11 +162,8 @@ describe('E2E: Extension Activation', () => {
       'secondaryTerminal.switchTerminal',
     ];
 
-    extensionCommands.forEach(cmd => {
-      assert.ok(
-        commands.includes(cmd),
-        `Command ${cmd} should be registered`
-      );
+    extensionCommands.forEach((cmd) => {
+      assert.ok(commands.includes(cmd), `Command ${cmd} should be registered`);
     });
   });
 });
@@ -200,15 +197,14 @@ describe('E2E: Webview Integration', () => {
 
     // Then: Webviewパネルが作成される
     // 注: 実際のパネル取得にはextension contextが必要
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const activeEditor = vscode.window.activeTextEditor;
     const visibleTextEditors = vscode.window.visibleTextEditors;
 
     // Webviewが表示されていることを確認
     assert.ok(
-      vscode.window.activeTextEditor !== undefined ||
-      visibleTextEditors.length > 0,
+      vscode.window.activeTextEditor !== undefined || visibleTextEditors.length > 0,
       'Webview should be visible'
     );
   });
@@ -216,7 +212,7 @@ describe('E2E: Webview Integration', () => {
   it('should handle webview messages', async () => {
     // Given: Webviewパネルが存在する
     await vscode.commands.executeCommand('secondaryTerminal.show');
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // When: Webviewにメッセージを送信
     const messageReceived = new Promise<boolean>((resolve) => {
@@ -264,7 +260,7 @@ async function waitForWebviewReady(timeout = 5000): Promise<void> {
     } catch (err) {
       // まだ準備できていない
     }
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
   throw new Error('Webview did not become ready');
 }
@@ -294,28 +290,21 @@ describe('E2E: Command Execution', () => {
       await vscode.commands.executeCommand('secondaryTerminal.createTerminal');
 
       // Then: ターミナルが作成されたことを確認
-      const state = await vscode.commands.executeCommand<any>(
-        'secondaryTerminal.getState'
-      );
+      const state = await vscode.commands.executeCommand<any>('secondaryTerminal.getState');
 
       assert.ok(state.terminals.length > 0, 'Terminal should be created');
     });
 
     it('should create terminal with custom options', async () => {
       // When: オプション付きでターミナル作成
-      await vscode.commands.executeCommand(
-        'secondaryTerminal.createTerminal',
-        {
-          name: 'Custom Terminal',
-          cwd: '/home/user/project',
-          shell: '/bin/zsh'
-        }
-      );
+      await vscode.commands.executeCommand('secondaryTerminal.createTerminal', {
+        name: 'Custom Terminal',
+        cwd: '/home/user/project',
+        shell: '/bin/zsh',
+      });
 
       // Then: オプションが反映される
-      const state = await vscode.commands.executeCommand<any>(
-        'secondaryTerminal.getState'
-      );
+      const state = await vscode.commands.executeCommand<any>('secondaryTerminal.getState');
 
       const terminal = state.terminals[state.terminals.length - 1];
       assert.strictEqual(terminal.name, 'Custom Terminal');
@@ -329,21 +318,14 @@ describe('E2E: Command Execution', () => {
       await vscode.commands.executeCommand('secondaryTerminal.createTerminal');
       await vscode.commands.executeCommand('secondaryTerminal.createTerminal');
 
-      const stateBefore = await vscode.commands.executeCommand<any>(
-        'secondaryTerminal.getState'
-      );
+      const stateBefore = await vscode.commands.executeCommand<any>('secondaryTerminal.getState');
       const terminalToDelete = stateBefore.terminals[0];
 
       // When: ターミナルを削除
-      await vscode.commands.executeCommand(
-        'secondaryTerminal.deleteTerminal',
-        terminalToDelete.id
-      );
+      await vscode.commands.executeCommand('secondaryTerminal.deleteTerminal', terminalToDelete.id);
 
       // Then: ターミナルが削除される
-      const stateAfter = await vscode.commands.executeCommand<any>(
-        'secondaryTerminal.getState'
-      );
+      const stateAfter = await vscode.commands.executeCommand<any>('secondaryTerminal.getState');
 
       assert.strictEqual(
         stateAfter.terminals.length,
@@ -351,9 +333,7 @@ describe('E2E: Command Execution', () => {
         'Terminal count should decrease'
       );
 
-      const stillExists = stateAfter.terminals.some(
-        (t: any) => t.id === terminalToDelete.id
-      );
+      const stillExists = stateAfter.terminals.some((t: any) => t.id === terminalToDelete.id);
       assert.strictEqual(stillExists, false, 'Deleted terminal should not exist');
     });
   });
@@ -371,19 +351,17 @@ describe('E2E: UI Interactions', () => {
   it('should show terminal picker', async () => {
     // Given: 複数のターミナルが存在
     await vscode.commands.executeCommand('secondaryTerminal.createTerminal', {
-      name: 'Terminal 1'
+      name: 'Terminal 1',
     });
     await vscode.commands.executeCommand('secondaryTerminal.createTerminal', {
-      name: 'Terminal 2'
+      name: 'Terminal 2',
     });
 
     // When: ターミナル選択UIを表示
-    const pickPromise = vscode.commands.executeCommand(
-      'secondaryTerminal.selectTerminal'
-    );
+    const pickPromise = vscode.commands.executeCommand('secondaryTerminal.selectTerminal');
 
     // QuickPickが表示されるまで待機
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Then: QuickPickを操作（実際の選択は自動化が難しい）
     // E2Eテストでは、QuickPickが表示されることの確認まで
@@ -423,7 +401,7 @@ describe('E2E: Session Persistence', () => {
     // Given: ターミナルを作成
     await vscode.commands.executeCommand('secondaryTerminal.createTerminal', {
       name: 'Persistent Terminal',
-      cwd: '/home/user/test'
+      cwd: '/home/user/test',
     });
 
     // セッションを保存
@@ -434,13 +412,11 @@ describe('E2E: Session Persistence', () => {
 
     // 注: 実際のウィンドウリロードはテスト環境によって動作が異なる
     // 代替として、セッション復元コマンドを直接呼ぶ
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     await vscode.commands.executeCommand('secondaryTerminal.restoreSession');
 
     // Then: ターミナルが復元される
-    const state = await vscode.commands.executeCommand<any>(
-      'secondaryTerminal.getState'
-    );
+    const state = await vscode.commands.executeCommand<any>('secondaryTerminal.getState');
 
     const restored = state.terminals.find((t: any) => t.name === 'Persistent Terminal');
     assert.ok(restored, 'Terminal should be restored');
@@ -468,9 +444,7 @@ describe('E2E: Session Persistence', () => {
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--extensionTestsPath=${workspaceFolder}/out/test/suite/e2e/index"
       ],
-      "outFiles": [
-        "${workspaceFolder}/out/**/*.js"
-      ],
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
       "preLaunchTask": "npm: compile-tests"
     }
   ]
@@ -492,7 +466,7 @@ describe('E2E: With Logging', () => {
     outputChannel.appendLine('Terminal created');
 
     // ログを確認できるように少し待機
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     outputChannel.dispose();
   });
@@ -516,13 +490,13 @@ describe('E2E: Visual Testing', () => {
 ## タイムアウトとリトライ
 
 ```typescript
-describe('E2E Tests', function() {
+describe('E2E Tests', function () {
   // E2Eテストは時間がかかるため、タイムアウトを長めに設定
   this.timeout(30000); // 30秒
 
   this.retries(2); // 失敗時に2回リトライ
 
-  it('should handle slow operations', async function() {
+  it('should handle slow operations', async function () {
     // 個別のテストでさらに延長も可能
     this.timeout(60000); // 60秒
 

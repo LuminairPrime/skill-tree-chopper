@@ -8,9 +8,6 @@
     "5. 📝 Create incident report",
     "6. 🔧 Fix issue in development branch"
   ],
-  "emergencyContacts": [
-    "Extension Marketplace Support",
-    "Development Team Lead"
-  ],
+  "emergencyContacts": ["Extension Marketplace Support", "Development Team Lead"],
   "rollbackCommand": "npm run rollback:emergency"
 }

@@ -35,12 +35,12 @@ Coordinate four independent skills in parallel using the **Task tool**.
 
 Define one clear objective and divide it:
 
-| Track | Skill | Typical Scope |
-|-------|-------|---------------|
-| Docs | `synapse-docs` | README.md, guides/, CLAUDE.md |
-| Simplify | `/simplify` (built-in) | Recently changed `.py` files |
-| Sync | `sync-plugin-skills` | plugins/synapse-a2a/skills/ |
-| Pages | `github-pages-sync` | site-docs/ |
+| Track    | Skill                  | Typical Scope                 |
+| -------- | ---------------------- | ----------------------------- |
+| Docs     | `synapse-docs`         | README.md, guides/, CLAUDE.md |
+| Simplify | `/simplify` (built-in) | Recently changed `.py` files  |
+| Sync     | `sync-plugin-skills`   | plugins/synapse-a2a/skills/   |
+| Pages    | `github-pages-sync`    | site-docs/                    |
 
 ### Step 2: Launch four Task tool calls in a single message
 

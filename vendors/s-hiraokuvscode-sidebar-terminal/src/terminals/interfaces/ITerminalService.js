@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * ITerminalService Interface
  *
@@ -7,5 +7,5 @@
  *
  * Based on: src/vs/workbench/contrib/terminal/browser/terminal.ts (ITerminalService)
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 //# sourceMappingURL=ITerminalService.js.map

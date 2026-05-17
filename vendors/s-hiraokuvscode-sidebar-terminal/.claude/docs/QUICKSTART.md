@@ -23,6 +23,7 @@ This guide shows you how to use the new meta-command system to automatically gen
 ### 1. Verify MCP Configuration
 
 **Check if MCPs are configured**:
+
 ```bash
 # macOS/Linux
 cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
@@ -40,6 +41,7 @@ cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ### 2. Restart Claude Desktop
 
 After MCP configuration changes:
+
 ```bash
 # Quit Claude Desktop completely
 # Restart Claude Desktop
@@ -71,11 +73,13 @@ Let's say you want to implement a new terminal feature. Here's the fastest path:
 ```
 
 **You'll be prompted for**:
+
 - Change ID (e.g., `add-terminal-profile-sync`)
 - Problem statement
 - Affected capabilities
 
 **Generated**:
+
 - `openspec/changes/add-terminal-profile-sync/proposal.md`
 - `openspec/changes/add-terminal-profile-sync/tasks.md`
 - `openspec/changes/add-terminal-profile-sync/specs/{capability}/spec.md`
@@ -87,12 +91,14 @@ Let's say you want to implement a new terminal feature. Here's the fastest path:
 ```
 
 **What happens**:
+
 - Analyzes your OpenSpec specification
 - Identifies technical domains (Terminal, WebView, etc.)
 - Selects appropriate MCP servers
 - Configures agent workflow
 
 **Generated**:
+
 - `.claude/agents/add-terminal-profile-sync-implementer.md`
 - `.claude/commands/implement-add-terminal-profile-sync.md`
 
@@ -103,6 +109,7 @@ Let's say you want to implement a new terminal feature. Here's the fastest path:
 ```
 
 **Automatic execution**:
+
 1. **Research** (parallel):
    - VS Code patterns via `github` MCP
    - Current codebase via `serena-semantic-search`
@@ -129,6 +136,7 @@ Let's say you want to implement a new terminal feature. Here's the fastest path:
 ```
 
 **Done!** Feature implemented with:
+
 - ✅ Production code
 - ✅ Comprehensive tests
 - ✅ API validation
@@ -153,11 +161,13 @@ This example shows the complete workflow from bug discovery to resolution.
 ```
 
 **Fill in details**:
+
 - **Change ID**: `fix-terminal-initialization-bugs`
 - **Problem**: Terminal prompt not displayed, initialization message not routed
 - **Affected capabilities**: `terminal-lifecycle-management`, `webview-message-routing`
 
 **Generated files**:
+
 ```
 openspec/changes/fix-terminal-initialization-bugs/
 ├── proposal.md          ← Problem statement, success criteria
@@ -170,23 +180,28 @@ openspec/changes/fix-terminal-initialization-bugs/
 #### 3. Define Tasks
 
 **Edit `tasks.md`**:
+
 ```markdown
 ## Phase 1: Add Diagnostic Logging (30min)
+
 - Task 1.1: Add WebView message sending logs
 - Task 1.2: Add Extension message reception logs
 - Task 1.3: Add shell initialization logs
 
 ## Phase 2: Fix Message Routing (1h)
+
 - Task 2.1: Verify handler registration
 - Task 2.2: Fix routing logic
 - Task 2.3: Verify handler execution
 
 ## Phase 3: Fix Shell Initialization (1h)
+
 - Task 3.1: Verify handler implementation
 - Task 3.2: Ensure initializeShellForTerminal() called
 - Task 3.3: Ensure startPtyOutput() called
 
 ## Phase 4: Testing (1.5h)
+
 - Unit tests for message routing
 - Integration tests for initialization flow
 ```
@@ -198,6 +213,7 @@ openspec/changes/fix-terminal-initialization-bugs/
 ```
 
 **Output**:
+
 ```
 ✅ Agent created: .claude/agents/fix-terminal-initialization-bugs-implementer.md
 ✅ Command created: .claude/commands/implement-fix-terminal-initialization-bugs.md
@@ -225,31 +241,38 @@ Agents configured:
 
 ```markdown
 ## OpenSpec Context
+
 **Change ID**: fix-terminal-initialization-bugs
 **Problem**: Terminal prompt not displayed - message routing broken
 
 ## Success Criteria (from proposal.md):
+
 - [✓] Terminal shows shell prompt immediately
 - [✓] Terminal accepts keyboard input
 - [✓] initializeShellForTerminal() is called
 - [✓] startPtyOutput() is called
 
 ## Workflow:
+
 ### Phase 1: Research (30min) - Parallel execution
+
 - vscode-terminal-resolver → VS Code message routing patterns
 - serena-semantic-search → Current message handling
 - xterm-info-analyzer → Terminal lifecycle
 
 ### Phase 2: Implementation (1.5h)
+
 - terminal-implementer with TDD workflow
 - Fix MessageRoutingFacade
 - Add diagnostic logging
 
 ### Phase 3: Validation (30min)
+
 - vscode-api-validator → API checks
 - security-auditor → Security audit
 
 ### Phase 4: Testing (1.5h)
+
 - tdd-quality-engineer → Unit/Integration tests
 ```
 
@@ -320,6 +343,7 @@ All success criteria met ✓
 #### 7. Verify Implementation
 
 **Manual testing**:
+
 ```bash
 # Build extension
 npm run compile
@@ -341,6 +365,7 @@ npm run test
 ```
 
 **Result**:
+
 ```
 ✅ Change archived to openspec/changes/archive/
 ✅ Updated archive index
@@ -358,15 +383,18 @@ npm run test
 **Purpose**: Generate implementation-specialized agent from OpenSpec spec
 
 **Example**:
+
 ```bash
 /openspec:agents-gen add-terminal-profile-sync
 ```
 
 **Generates**:
+
 - `.claude/agents/{change-id}-implementer.md`
 - `.claude/commands/implement-{change-id}.md`
 
 **When to use**:
+
 - After creating OpenSpec proposal
 - Before starting implementation
 - To automate agent configuration
@@ -380,6 +408,7 @@ npm run test
 **Purpose**: Create new OpenSpec change proposal
 
 **Interactive prompts for**:
+
 - Change ID
 - Problem statement
 - Affected capabilities
@@ -403,11 +432,13 @@ After running `/openspec:agents-gen`, you get a custom command:
 **Purpose**: Execute full implementation workflow
 
 **Example**:
+
 ```bash
 /implement-fix-terminal-initialization-bugs
 ```
 
 **Workflow**:
+
 1. Research (parallel agent execution)
 2. Implementation (TDD workflow)
 3. Validation (API/performance/security)
@@ -424,14 +455,16 @@ After running `/openspec:agents-gen`, you get a custom command:
 **Purpose**: Automate OpenSpec change creation
 
 **Usage**:
+
 ```bash
 Task(openspec-scaffolder): "Create OpenSpec change for add-terminal-profile-sync"
 ```
 
 **Generates**:
+
 - proposal.md with problem statement
 - tasks.md with phase structure
-- specs/*.md with scenario templates
+- specs/\*.md with scenario templates
 - Validates with `openspec validate --strict`
 
 **Time savings**: 30min → 5min (6x faster)
@@ -443,17 +476,20 @@ Task(openspec-scaffolder): "Create OpenSpec change for add-terminal-profile-sync
 **Purpose**: Profile terminal performance and identify bottlenecks
 
 **Usage**:
+
 ```bash
 Task(terminal-performance-analyzer): "Analyze terminal creation performance"
 ```
 
 **Analyzes**:
+
 - Terminal creation time (<500ms target)
 - Rendering FPS (60fps normal, 250fps AI agents)
 - Memory usage (<20MB per terminal)
 - Scrollback efficiency
 
 **Output**:
+
 - Current metrics vs targets
 - Bottlenecks with file:line references
 - Optimization recommendations
@@ -466,11 +502,13 @@ Task(terminal-performance-analyzer): "Analyze terminal creation performance"
 **Purpose**: Validate VS Code API usage
 
 **Usage**:
+
 ```bash
 Task(vscode-api-validator): "Validate API usage in modified files"
 ```
 
 **Checks**:
+
 - Deprecated API usage → Provides replacements
 - Missing dispose handlers → Shows where to add
 - Incorrect WebView patterns → Fixes
@@ -553,10 +591,12 @@ Task(vscode-api-validator): "Validate API usage in modified files"
 ### Issue: MCPs not loading
 
 **Symptoms**:
+
 - Agents can't access github/deepwiki
 - Error: "MCP server not available"
 
 **Solution**:
+
 ```bash
 # 1. Check MCP config file exists
 cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
@@ -576,10 +616,12 @@ cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ### Issue: Generated agent missing context
 
 **Symptoms**:
+
 - Agent doesn't know about success criteria
 - Missing task breakdown
 
 **Solution**:
+
 ```bash
 # 1. Ensure proposal.md has all required sections:
 # - Problem Statement
@@ -599,9 +641,11 @@ cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ### Issue: Implementation command not found
 
 **Symptoms**:
+
 - `/implement-<change-id>` not recognized
 
 **Solution**:
+
 ```bash
 # 1. Verify command file was created:
 ls .claude/commands/implement-<change-id>.md
@@ -620,10 +664,12 @@ chmod 644 .claude/commands/implement-<change-id>.md
 ### Issue: Tests failing after implementation
 
 **Symptoms**:
+
 - Unit tests fail
 - Integration tests timeout
 
 **Solution**:
+
 ```bash
 # 1. Check TypeScript compilation:
 npm run compile
@@ -645,6 +691,7 @@ Task(playwright-test-healer): "Debug failing test in terminal-initialization.spe
 ### Q: How long does the full workflow take?
 
 **A**: Typical timeline:
+
 - OpenSpec proposal creation: **5-10 min**
 - Agent generation: **1 min**
 - Implementation execution: **3-8 hours** (depends on complexity)
@@ -654,6 +701,7 @@ Task(playwright-test-healer): "Debug failing test in terminal-initialization.spe
   - Testing: 1-2h
 
 **Total**: About the same as manual implementation, but with:
+
 - Higher code quality
 - Complete test coverage
 - Proper validation
@@ -667,13 +715,17 @@ Task(playwright-test-healer): "Debug failing test in terminal-initialization.spe
 
 ```markdown
 # Modify workflow phases
+
 ## Phase 2: Implementation (YOUR CUSTOM TIME)
+
 - Add your own tasks
 - Change agent prompts
 - Adjust MCP usage
 
 # Change success criteria
+
 **Success Criteria**:
+
 - Add your own criteria
 - Modify existing ones
 ```
@@ -687,10 +739,12 @@ Re-run `/implement-{change-id}` with updated agent.
 **A**: The system gracefully degrades:
 
 **With github MCP**:
+
 - ✅ 10x faster VS Code research
 - ✅ Direct source code access
 
 **Without github MCP**:
+
 - ⚠️ Falls back to WebFetch (slower)
 - ⚠️ Limited source code access
 
@@ -703,15 +757,18 @@ Re-run `/implement-{change-id}` with updated agent.
 **A**: Partially:
 
 **Yes, you can use**:
+
 - Individual agents (openspec-scaffolder, terminal-performance-analyzer, vscode-api-validator)
 - MCP servers (github, filesystem, npm, etc.)
 - Research workflow (vscode-terminal-resolver + serena-semantic-search)
 
 **No, you cannot use**:
+
 - `/openspec:agents-gen` (requires OpenSpec structure)
 - Generated `/implement-<change-id>` commands (OpenSpec-specific)
 
 **Alternative**: Use agents directly via `Task` tool:
+
 ```bash
 Task(terminal-performance-analyzer): "Analyze current terminal performance"
 ```
@@ -745,6 +802,7 @@ git push
 **A**: In this project:
 
 **Agent** = Specialized AI assistant with:
+
 - Specific purpose (e.g., "implement terminal features")
 - Pre-configured tools
 - Defined workflow
@@ -753,6 +811,7 @@ git push
 **Skill** = Same as Agent (terms used interchangeably)
 
 **MCP** = External server providing tools:
+
 - github MCP → GitHub API access
 - filesystem MCP → File operations
 - Agents/Skills use MCPs to accomplish tasks
@@ -764,6 +823,7 @@ git push
 **A**: Yes, but carefully:
 
 **Parallel research** (safe):
+
 ```bash
 # Research for two features simultaneously
 Task(vscode-terminal-resolver): "Research feature A"
@@ -771,6 +831,7 @@ Task(serena-semantic-search): "Research feature B"
 ```
 
 **Parallel implementation** (risky):
+
 ```bash
 # DON'T do this - file conflicts
 /implement-feature-a

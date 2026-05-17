@@ -29,62 +29,62 @@ The framework automatically handles routing - you don't need to know where the m
 
 ### A2A Compliant
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/.well-known/agent.json` | GET | Agent Card |
-| `/tasks/send` | POST | Send message |
-| `/tasks/{id}` | GET | Get task status |
-| `/tasks` | GET | List tasks |
-| `/tasks/{id}/cancel` | POST | Cancel task |
-| `/status` | GET | READY/PROCESSING status |
+| Endpoint                  | Method | Description             |
+| ------------------------- | ------ | ----------------------- |
+| `/.well-known/agent.json` | GET    | Agent Card              |
+| `/tasks/send`             | POST   | Send message            |
+| `/tasks/{id}`             | GET    | Get task status         |
+| `/tasks`                  | GET    | List tasks              |
+| `/tasks/{id}/cancel`      | POST   | Cancel task             |
+| `/status`                 | GET    | READY/PROCESSING status |
 
 ### Synapse Extensions
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/tasks/send-priority` | POST | Send with priority (1-5, 5=interrupt) |
-| `/tasks/create` | POST | Create task without PTY send (for `--response`) |
-| `/reply-stack/list` | GET | List sender IDs available for reply (`synapse reply --list-targets`) |
-| `/reply-stack/get` | GET | Get sender info without removing (supports `?sender_id=`) |
-| `/reply-stack/pop` | GET | Pop sender info from reply map (supports `?sender_id=`) |
+| Endpoint               | Method | Description                                                          |
+| ---------------------- | ------ | -------------------------------------------------------------------- |
+| `/tasks/send-priority` | POST   | Send with priority (1-5, 5=interrupt)                                |
+| `/tasks/create`        | POST   | Create task without PTY send (for `--response`)                      |
+| `/reply-stack/list`    | GET    | List sender IDs available for reply (`synapse reply --list-targets`) |
+| `/reply-stack/get`     | GET    | Get sender info without removing (supports `?sender_id=`)            |
+| `/reply-stack/pop`     | GET    | Pop sender info from reply map (supports `?sender_id=`)              |
 
 ### Agent Teams Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/tasks/board` | GET | List shared task board |
-| `/tasks/board` | POST | Create task on board |
-| `/tasks/board/{id}/claim` | POST | Claim task atomically |
-| `/tasks/board/{id}/complete` | POST | Complete task (auto-unblocks dependents) |
-| `/tasks/{id}/approve` | POST | Approve a plan |
-| `/tasks/{id}/reject` | POST | Reject a plan with reason |
-| `/team/start` | POST | Start multiple agents in terminal panes (agent-initiated) |
-| `/spawn` | POST | Spawn a single agent in a new terminal pane |
+| Endpoint                     | Method | Description                                               |
+| ---------------------------- | ------ | --------------------------------------------------------- |
+| `/tasks/board`               | GET    | List shared task board                                    |
+| `/tasks/board`               | POST   | Create task on board                                      |
+| `/tasks/board/{id}/claim`    | POST   | Claim task atomically                                     |
+| `/tasks/board/{id}/complete` | POST   | Complete task (auto-unblocks dependents)                  |
+| `/tasks/{id}/approve`        | POST   | Approve a plan                                            |
+| `/tasks/{id}/reject`         | POST   | Reject a plan with reason                                 |
+| `/team/start`                | POST   | Start multiple agents in terminal panes (agent-initiated) |
+| `/spawn`                     | POST   | Spawn a single agent in a new terminal pane               |
 
 ### Webhook Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/webhooks` | POST | Register a webhook for task notifications |
-| `/webhooks` | GET | List all registered webhooks |
-| `/webhooks` | DELETE | Unregister a webhook (query param: `url`) |
-| `/webhooks/deliveries` | GET | Get recent webhook delivery attempts |
+| Endpoint               | Method | Description                               |
+| ---------------------- | ------ | ----------------------------------------- |
+| `/webhooks`            | POST   | Register a webhook for task notifications |
+| `/webhooks`            | GET    | List all registered webhooks              |
+| `/webhooks`            | DELETE | Unregister a webhook (query param: `url`) |
+| `/webhooks/deliveries` | GET    | Get recent webhook delivery attempts      |
 
 ### SSE Streaming
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/tasks/{id}/subscribe` | GET | Subscribe to task updates via Server-Sent Events |
+| Endpoint                | Method | Description                                      |
+| ----------------------- | ------ | ------------------------------------------------ |
+| `/tasks/{id}/subscribe` | GET    | Subscribe to task updates via Server-Sent Events |
 
 ### External Agent Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/external/discover` | POST | Discover and register external A2A agent |
-| `/external/agents` | GET | List registered external agents |
-| `/external/agents/{alias}` | GET | Get external agent details |
-| `/external/agents/{alias}` | DELETE | Remove external agent |
-| `/external/agents/{alias}/send` | POST | Send message to external agent |
+| Endpoint                        | Method | Description                              |
+| ------------------------------- | ------ | ---------------------------------------- |
+| `/external/discover`            | POST   | Discover and register external A2A agent |
+| `/external/agents`              | GET    | List registered external agents          |
+| `/external/agents/{alias}`      | GET    | Get external agent details               |
+| `/external/agents/{alias}`      | DELETE | Remove external agent                    |
+| `/external/agents/{alias}/send` | POST   | Send message to external agent           |
 
 ## Roundtrip Communication (`--response` Flow)
 
@@ -100,12 +100,12 @@ This flow ensures reliable request-response patterns between agents.
 
 ## Priority Levels
 
-| Priority | Use Case |
-|----------|----------|
-| 1-2 | Low priority, background tasks |
-| 3 | Normal tasks (`send` default) |
-| 4 | Urgent follow-ups |
-| 5 | Emergency interrupt (sends SIGINT first) |
+| Priority | Use Case                                 |
+| -------- | ---------------------------------------- |
+| 1-2      | Low priority, background tasks           |
+| 3        | Normal tasks (`send` default)            |
+| 4        | Urgent follow-ups                        |
+| 5        | Emergency interrupt (sends SIGINT first) |
 
 **Note:** `broadcast` defaults to priority 1 (low), while `send` defaults to priority 3 (normal).
 
@@ -121,11 +121,11 @@ Please read this file to get the complete message.
 
 **Configuration:**
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `SYNAPSE_LONG_MESSAGE_THRESHOLD` | Character threshold for file storage | `200` |
-| `SYNAPSE_LONG_MESSAGE_TTL` | TTL for message files (seconds) | `3600` |
-| `SYNAPSE_LONG_MESSAGE_DIR` | Directory for message files | System temp |
+| Variable                         | Description                          | Default     |
+| -------------------------------- | ------------------------------------ | ----------- |
+| `SYNAPSE_LONG_MESSAGE_THRESHOLD` | Character threshold for file storage | `200`       |
+| `SYNAPSE_LONG_MESSAGE_TTL`       | TTL for message files (seconds)      | `3600`      |
+| `SYNAPSE_LONG_MESSAGE_DIR`       | Directory for message files          | System temp |
 
 **Cleanup:** Files are automatically cleaned up after TTL expires.
 
@@ -136,6 +136,7 @@ Please read this file to get the complete message.
 ```text
 Error: No agent found matching 'xyz'
 ```
+
 **Solution:** Use `synapse list` to see available agents.
 
 ### Multiple Agents Found
@@ -143,6 +144,7 @@ Error: No agent found matching 'xyz'
 ```text
 Error: Ambiguous target 'codex'. Multiple agents found.
 ```
+
 **Solution:** Use custom name (e.g., `my-codex`) or specific identifier (e.g., `codex-8120`).
 
 ### Agent Not Responding
@@ -150,4 +152,5 @@ Error: Ambiguous target 'codex'. Multiple agents found.
 ```text
 Error: Agent 'synapse-claude-8100' server on port 8100 is not responding.
 ```
+
 **Solution:** Restart the agent with `synapse claude`.

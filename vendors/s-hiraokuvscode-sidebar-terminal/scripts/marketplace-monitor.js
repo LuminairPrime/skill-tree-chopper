@@ -48,7 +48,6 @@ class MarketplaceMonitor {
       }
 
       return { stats, healthCheck, alerts };
-
     } catch (error) {
       console.error('❌ Monitoring failed:', error.message);
       return null;
@@ -60,8 +59,7 @@ class MarketplaceMonitor {
 
     try {
       // VS Code Marketplace APIから統計情報を取得
-      const result = execSync(`npx @vscode/vsce show ${extensionId} --json`,
-        { encoding: 'utf8' });
+      const result = execSync(`npx @vscode/vsce show ${extensionId} --json`, { encoding: 'utf8' });
 
       const extensionData = JSON.parse(result);
 
@@ -72,12 +70,11 @@ class MarketplaceMonitor {
         ratingCount: extensionData.statistics?.ratingcount || 0,
         lastUpdated: extensionData.versions[0].lastUpdated,
         publisher: extensionData.publisher.publisherName,
-        displayName: extensionData.displayName
+        displayName: extensionData.displayName,
       };
 
       console.log(`✅ Stats retrieved for v${stats.version}`);
       return stats;
-
     } catch (error) {
       console.warn('⚠️  Could not fetch marketplace stats:', error.message);
       return {
@@ -86,7 +83,7 @@ class MarketplaceMonitor {
         rating: 0,
         ratingCount: 0,
         lastUpdated: new Date().toISOString(),
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -99,7 +96,7 @@ class MarketplaceMonitor {
       downloadTrend: 'stable',
       ratingHealth: 'good',
       recentActivity: 'normal',
-      issues: []
+      issues: [],
     };
 
     // バージョン整合性チェック
@@ -107,7 +104,7 @@ class MarketplaceMonitor {
       healthCheck.issues.push({
         severity: 'high',
         type: 'version_mismatch',
-        message: `Expected v${expectedVersion}, but marketplace shows v${stats.version}`
+        message: `Expected v${expectedVersion}, but marketplace shows v${stats.version}`,
       });
     }
 
@@ -117,7 +114,7 @@ class MarketplaceMonitor {
       healthCheck.issues.push({
         severity: 'medium',
         type: 'low_rating',
-        message: `Rating dropped to ${stats.rating} (${stats.ratingCount} reviews)`
+        message: `Rating dropped to ${stats.rating} (${stats.ratingCount} reviews)`,
       });
     }
 
@@ -132,7 +129,7 @@ class MarketplaceMonitor {
         healthCheck.issues.push({
           severity: 'medium',
           type: 'download_decline',
-          message: `Downloads declined from ${previousStats.downloadCount} to ${stats.downloadCount}`
+          message: `Downloads declined from ${previousStats.downloadCount} to ${stats.downloadCount}`,
         });
       }
     }
@@ -147,22 +144,22 @@ class MarketplaceMonitor {
     const alerts = {
       criticalIssues: [],
       warnings: [],
-      recommendations: []
+      recommendations: [],
     };
 
     // 重大な問題の判定
-    healthCheck.issues.forEach(issue => {
+    healthCheck.issues.forEach((issue) => {
       if (issue.severity === 'high') {
         alerts.criticalIssues.push({
           ...issue,
           action: 'consider_rollback',
-          urgency: 'immediate'
+          urgency: 'immediate',
         });
       } else if (issue.severity === 'medium') {
         alerts.warnings.push({
           ...issue,
           action: 'monitor_closely',
-          urgency: 'within_24h'
+          urgency: 'within_24h',
         });
       }
     });
@@ -174,11 +171,13 @@ class MarketplaceMonitor {
         type: 'rollback_recommended',
         message: 'Multiple critical issues detected - rollback recommended',
         action: 'execute_rollback',
-        urgency: 'immediate'
+        urgency: 'immediate',
       });
     }
 
-    console.log(`🚨 Alert evaluation: ${alerts.criticalIssues.length} critical, ${alerts.warnings.length} warnings`);
+    console.log(
+      `🚨 Alert evaluation: ${alerts.criticalIssues.length} critical, ${alerts.warnings.length} warnings`
+    );
     return alerts;
   }
 
@@ -190,8 +189,9 @@ class MarketplaceMonitor {
       alerts,
       summary: {
         overallHealth: alerts.criticalIssues.length === 0 ? 'healthy' : 'unhealthy',
-        recommendedAction: alerts.criticalIssues.length > 0 ? 'consider_rollback' : 'continue_monitoring'
-      }
+        recommendedAction:
+          alerts.criticalIssues.length > 0 ? 'consider_rollback' : 'continue_monitoring',
+      },
     };
 
     // 履歴ファイルに追加
@@ -212,8 +212,12 @@ class MarketplaceMonitor {
     fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
 
     // 即座のレポートファイル
-    const reportPath = path.join(__dirname, '..', '.version-backups',
-      `monitoring-report-${Date.now()}.json`);
+    const reportPath = path.join(
+      __dirname,
+      '..',
+      '.version-backups',
+      `monitoring-report-${Date.now()}.json`
+    );
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
     console.log(`📄 Monitoring report generated: ${reportPath}`);
@@ -223,15 +227,15 @@ class MarketplaceMonitor {
   async handleCriticalAlerts(alerts) {
     console.log('🚨 CRITICAL ALERTS DETECTED - Initiating automated response...');
 
-    const rollbackRecommended = alerts.criticalIssues.some(alert =>
-      alert.type === 'rollback_recommended' || alert.action === 'execute_rollback'
+    const rollbackRecommended = alerts.criticalIssues.some(
+      (alert) => alert.type === 'rollback_recommended' || alert.action === 'execute_rollback'
     );
 
     if (rollbackRecommended) {
       console.log('🔄 AUTOMATIC ROLLBACK RECOMMENDED');
       console.log('📋 Critical issues detected:');
 
-      alerts.criticalIssues.forEach(alert => {
+      alerts.criticalIssues.forEach((alert) => {
         console.log(`   ❌ ${alert.type}: ${alert.message}`);
       });
 
@@ -272,17 +276,19 @@ class MarketplaceMonitor {
           timestamp: new Date().toISOString(),
           action: 'automatic_rollback_executed',
           status: 'success',
-          trigger: 'marketplace_monitoring'
+          trigger: 'marketplace_monitoring',
         };
 
-        const notificationPath = path.join(__dirname, '..', '.version-backups',
-          `auto-rollback-${Date.now()}.json`);
+        const notificationPath = path.join(
+          __dirname,
+          '..',
+          '.version-backups',
+          `auto-rollback-${Date.now()}.json`
+        );
         fs.writeFileSync(notificationPath, JSON.stringify(notificationRecord, null, 2));
-
       } else {
         throw new Error('Automatic rollback failed');
       }
-
     } catch (error) {
       console.error('❌ AUTOMATIC ROLLBACK FAILED:', error.message);
       console.log('📝 Falling back to manual rollback plan generation...');
@@ -299,26 +305,30 @@ class MarketplaceMonitor {
         '2. Execute: npm run rollback:emergency:publish',
         '3. Monitor marketplace for successful rollback',
         '4. Notify users of temporary rollback',
-        '5. Investigate and fix underlying issues'
+        '5. Investigate and fix underlying issues',
       ],
       commands: [
         'npm run rollback:list',
         'npm run rollback:emergency:publish',
-        'npm run rollback:verify'
+        'npm run rollback:verify',
       ],
       contactInfo: {
         team: 'Development Team',
-        escalation: 'VS Code Marketplace Support'
-      }
+        escalation: 'VS Code Marketplace Support',
+      },
     };
 
-    const planPath = path.join(__dirname, '..', '.version-backups',
-      `critical-rollback-plan-${Date.now()}.json`);
+    const planPath = path.join(
+      __dirname,
+      '..',
+      '.version-backups',
+      `critical-rollback-plan-${Date.now()}.json`
+    );
     fs.writeFileSync(planPath, JSON.stringify(rollbackPlan, null, 2));
 
     console.log(`📋 Critical rollback plan generated: ${planPath}`);
     console.log('\n🚨 IMMEDIATE ACTION REQUIRED:');
-    rollbackPlan.immediateActions.forEach(action => {
+    rollbackPlan.immediateActions.forEach((action) => {
       console.log(`   ${action}`);
     });
 

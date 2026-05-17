@@ -3,6 +3,7 @@
 ## Current Architecture Overview
 
 ### **Extension Architecture**
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    VS Code Extension Host (Node.js)             │
@@ -29,24 +30,28 @@
 ## 🚨 Critical Issues Identified
 
 ### 1. **RefactoredTerminalWebviewManager** - God Object Anti-Pattern
+
 - **2,293 lines** violating Single Responsibility Principle
 - **78 methods** handling: UI, lifecycle, messages, debugging, state management
 - **Complex dependencies**: 26+ manager properties creating tight coupling
 - **State synchronization**: Complex logic spread across multiple methods
 
 ### 2. **SecondaryTerminalProvider** - Message Handler Bloat
+
 - **2,654 lines** with 92 methods managing WebView ↔ Extension communication
 - **20+ `_handle*` methods** with scattered message routing logic
 - **Mixed responsibilities**: HTML generation + message handling + terminal lifecycle
 - **Deep nesting**: Complex conditional flows in message processing
 
 ### 3. **TerminalManager** - Heavy State Management
+
 - **1,755 lines** with 65 methods managing node-pty processes
 - **Complex buffering**: Multiple timers, data buffers, and state tracking
 - **Mixed concerns**: CLI agent detection mixed with core terminal functionality
 - **Deep call stacks**: Terminal creation/deletion with complex error handling
 
 ### 4. **Manager Architecture** - Coordination Complexity
+
 ```
 RefactoredTerminalWebviewManager (Central Coordinator)
 ├─ webViewApiManager
@@ -69,6 +74,7 @@ RefactoredTerminalWebviewManager (Central Coordinator)
 ```
 
 **Issues:**
+
 - **Circular dependencies** between managers
 - **Unclear boundaries** - overlapping responsibilities
 - **Resource cleanup** dependencies are complex and error-prone
@@ -77,6 +83,7 @@ RefactoredTerminalWebviewManager (Central Coordinator)
 ## 🎯 Refactoring Strategy
 
 ### Phase 1: Message Flow Simplification
+
 1. **Extract Message Router Service**
    - Consolidate SecondaryTerminalProvider's 20+ `_handle*` methods
    - Create dedicated message routing with clear interfaces
@@ -88,6 +95,7 @@ RefactoredTerminalWebviewManager (Central Coordinator)
    - Implement request/response pattern for async operations
 
 ### Phase 2: Break Down God Object (RefactoredTerminalWebviewManager)
+
 1. **Extract Terminal Coordinator Service**
    - Move terminal lifecycle management to dedicated service
    - Separate UI management from business logic
@@ -99,6 +107,7 @@ RefactoredTerminalWebviewManager (Central Coordinator)
    - Allow managers to register/deregister capabilities
 
 ### Phase 3: Service Layer Architecture
+
 1. **Terminal Service Layer**
    - Extract core terminal operations from TerminalManager
    - Separate CLI agent detection into dedicated service
@@ -110,6 +119,7 @@ RefactoredTerminalWebviewManager (Central Coordinator)
    - Create state validation and rollback mechanisms
 
 ### Phase 4: Event-Driven Architecture
+
 1. **Replace Direct Coupling with Events**
    - Implement domain events for terminal operations
    - Create event sourcing for state changes
@@ -123,6 +133,7 @@ RefactoredTerminalWebviewManager (Central Coordinator)
 ## 🛠️ Implementation Priority
 
 ### High Priority (Immediate Impact)
+
 1. **RefactoredTerminalWebviewManager decomposition**
    - Split into TerminalCoordinator + UIController + MessageBridge
    - Extract debug functionality to separate service
@@ -134,6 +145,7 @@ RefactoredTerminalWebviewManager (Central Coordinator)
    - Remove message handling complexity from coordinators
 
 ### Medium Priority (Architecture Improvement)
+
 1. **Manager registry pattern**
    - Replace direct dependencies with registry pattern
    - Implement event-driven manager communication
@@ -145,6 +157,7 @@ RefactoredTerminalWebviewManager (Central Coordinator)
    - Implement data buffering service
 
 ### Low Priority (Code Quality)
+
 1. **Event sourcing implementation**
    - Add domain events for all operations
    - Implement event replay for debugging
@@ -153,16 +166,19 @@ RefactoredTerminalWebviewManager (Central Coordinator)
 ## 📈 Expected Benefits
 
 ### Maintainability
+
 - **Reduced complexity**: Smaller, focused classes with single responsibilities
 - **Clear boundaries**: Well-defined interfaces between components
 - **Easier testing**: Smaller units with clear dependencies
 
 ### Performance
+
 - **Reduced coupling**: Faster startup and better memory usage
 - **Event-driven updates**: Only necessary components react to changes
 - **Better resource management**: Clear ownership and cleanup
 
 ### Developer Experience
+
 - **Easier debugging**: Clear separation of concerns
 - **Faster development**: Smaller, focused files are easier to work with
 - **Better error handling**: Centralized error management with proper context

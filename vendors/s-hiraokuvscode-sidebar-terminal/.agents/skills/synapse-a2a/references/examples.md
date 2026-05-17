@@ -419,6 +419,7 @@ git push
 ```
 
 You receive `systemMessage` notifications:
+
 - `[CI Monitor] CI PASSED on feature/x (abc1234)` — all green
 - `[CI Monitor] CI FAILED on feature/x (abc1234)` — suggests `/fix-ci`
 - `[PR Monitor] Merge conflict detected on PR #42` — suggests `/fix-conflict`
@@ -482,11 +483,13 @@ synapse canvas post-raw '{"type":"render","agent_id":"cli","title":"Release Plan
 ### Agent Not Responding
 
 1. Check status:
+
    ```bash
    synapse list
    ```
 
 2. If PROCESSING for too long:
+
    ```bash
    synapse send <agent> "Status?" --priority 4 --wait
    ```

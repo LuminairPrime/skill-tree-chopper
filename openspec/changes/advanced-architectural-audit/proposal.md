@@ -12,9 +12,11 @@ We have acquired critical expert insights from community VS Code extension skill
 ## Capabilities
 
 ### New Capabilities
+
 - `advanced-architectural-audit`: Establishes the enterprise-grade baseline for VS Code Extension memory management, asynchronous event handling, and algorithmic safety.
 
 ### Modified Capabilities
+
 <!-- No requirement changes to existing capabilities, strictly internal optimization. -->
 
 ## Impact

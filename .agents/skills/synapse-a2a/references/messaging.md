@@ -53,11 +53,11 @@ synapse interrupt my-claude "Urgent" --force
 
 Choose the response mode based on whether you need a result:
 
-| Flag | Behavior | When to use |
-|------|----------|-------------|
-| `--notify` | Async notification on completion (default) | General task delegation |
-| `--wait` | Synchronous blocking until reply | Questions, reviews, analysis -- anything where you need an immediate answer |
-| `--silent` | Fire-and-forget, no notification | Informational messages, delegated work where results are checked separately |
+| Flag       | Behavior                                   | When to use                                                                 |
+| ---------- | ------------------------------------------ | --------------------------------------------------------------------------- |
+| `--notify` | Async notification on completion (default) | General task delegation                                                     |
+| `--wait`   | Synchronous blocking until reply           | Questions, reviews, analysis -- anything where you need an immediate answer |
+| `--silent` | Fire-and-forget, no notification           | Informational messages, delegated work where results are checked separately |
 
 ```bash
 # Block until reply arrives
@@ -128,6 +128,7 @@ A2A: [From: NAME (SENDER_ID)] [Task: XXXXXXXX] [REPLY EXPECTED] <message content
 - **REPLY EXPECTED**: The sender is blocking, waiting for your response.
 
 Fallback formats when sender info is unavailable:
+
 - `A2A: [From: SENDER_ID] <message content>`
 - `A2A: <message content>` (backward-compatible)
 
@@ -142,6 +143,7 @@ synapse send gemini "Write tests for auth module" --task --silent
 ```
 
 This single command:
+
 1. Creates a board task (subject = first 80 chars of message, `assignee_hint` = target)
 2. Sends the message with `x-board-task-id` metadata
 3. PTY displays `[Task: XXXXXXXX]` tag in the delivered message
@@ -165,12 +167,14 @@ synapse reply "Here is my analysis..." --from $SYNAPSE_AGENT_ID
 ```
 
 **Example -- question received (reply expected):**
+
 ```
 Received: A2A: [From: Claude (synapse-claude-8100)] [REPLY EXPECTED] What is the project structure?
 Reply:    synapse reply "The project has src/, tests/..."
 ```
 
 **Example -- delegation received (no reply needed):**
+
 ```
 Received: A2A: [From: Gemini (synapse-gemini-8110)] Run the tests and fix failures
 Action:   Do the task. No reply needed unless you have questions.
@@ -178,12 +182,12 @@ Action:   Do the task. No reply needed unless you have questions.
 
 ## Priority Levels
 
-| Priority | Description | Use Case |
-|----------|-------------|----------|
-| 1-2 | Low | Background tasks |
-| 3 | Normal | Standard tasks |
-| 4 | Urgent | Follow-ups, status checks |
-| 5 | Interrupt | Emergency -- sends SIGINT first, bypasses Readiness Gate |
+| Priority | Description | Use Case                                                 |
+| -------- | ----------- | -------------------------------------------------------- |
+| 1-2      | Low         | Background tasks                                         |
+| 3        | Normal      | Standard tasks                                           |
+| 4        | Urgent      | Follow-ups, status checks                                |
+| 5        | Interrupt   | Emergency -- sends SIGINT first, bypasses Readiness Gate |
 
 Default priority: `send` = 3 (normal), `broadcast` = 1 (low). Broadcast defaults to low priority because it fans out to all agents, and most broadcast messages are informational rather than urgent.
 
@@ -203,13 +207,13 @@ synapse send codex "STOP" --priority 5
 
 ## Agent Status
 
-| Status | Meaning | Color |
-|--------|---------|-------|
-| READY | Idle, waiting for input | Green |
-| WAITING | Awaiting user input (selection, confirmation); auto-expires after `waiting_expiry` seconds (default 10s) | Cyan |
-| PROCESSING | Busy handling a task | Yellow |
-| DONE | Task completed (auto-clears after 10s) | Blue |
-| SHUTTING_DOWN | Graceful shutdown in progress | Red |
+| Status        | Meaning                                                                                                  | Color  |
+| ------------- | -------------------------------------------------------------------------------------------------------- | ------ |
+| READY         | Idle, waiting for input                                                                                  | Green  |
+| WAITING       | Awaiting user input (selection, confirmation); auto-expires after `waiting_expiry` seconds (default 10s) | Cyan   |
+| PROCESSING    | Busy handling a task                                                                                     | Yellow |
+| DONE          | Task completed (auto-clears after 10s)                                                                   | Blue   |
+| SHUTTING_DOWN | Graceful shutdown in progress                                                                            | Red    |
 
 ### Compound Signal Detection
 
@@ -255,15 +259,15 @@ Messages sent to an agent that has not yet reached READY for the first time are 
 
 `synapse list` provides keyboard-driven agent management:
 
-| Key | Action |
-|-----|--------|
-| `1-9` | Select agent row directly |
-| Up/Down | Navigate agent rows |
-| `Enter` or `j` | Jump to selected agent's terminal |
-| `k` | Kill selected agent (with confirmation) |
-| `/` | Filter by TYPE, NAME, or WORKING_DIR |
-| `ESC` | Clear filter first, then clear selection |
-| `q` | Quit |
+| Key            | Action                                   |
+| -------------- | ---------------------------------------- |
+| `1-9`          | Select agent row directly                |
+| Up/Down        | Navigate agent rows                      |
+| `Enter` or `j` | Jump to selected agent's terminal        |
+| `k`            | Kill selected agent (with confirmation)  |
+| `/`            | Filter by TYPE, NAME, or WORKING_DIR     |
+| `ESC`          | Clear filter first, then clear selection |
+| `q`            | Quit                                     |
 
 ### Supported Terminals
 

@@ -42,10 +42,7 @@ export default tseslint.config(
     },
     rules: {
       // ESLint Comments (from .eslintrc.json - previously not enforced in CI)
-      '@eslint-community/eslint-comments/disable-enable-pair': [
-        'warn',
-        { allowWholeFile: false },
-      ],
+      '@eslint-community/eslint-comments/disable-enable-pair': ['warn', { allowWholeFile: false }],
       '@eslint-community/eslint-comments/no-aggregating-enable': 'warn',
       '@eslint-community/eslint-comments/no-duplicate-disable': 'warn',
       '@eslint-community/eslint-comments/no-unlimited-disable': 'warn',
@@ -120,7 +117,7 @@ export default tseslint.config(
         'warn',
         {
           selector:
-            "CallExpression[callee.property.name=/^on(Did|Will)/]:not(:has(VariableDeclarator))",
+            'CallExpression[callee.property.name=/^on(Did|Will)/]:not(:has(VariableDeclarator))',
           message:
             'Event subscriptions should be stored in a variable for proper disposal. Consider using DisposableStore.',
         },
@@ -181,5 +178,5 @@ export default tseslint.config(
   },
 
   // Prettier config (disables conflicting rules) - must be last
-  eslintConfigPrettier,
+  eslintConfigPrettier
 );

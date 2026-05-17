@@ -64,26 +64,30 @@ Structure feedback as:
 ## Review: <PR title or file>
 
 ### Must Fix
+
 - [ ] **file.py:42** — [Correctness] Description of the issue and suggested fix
 
 ### Should Fix
+
 - [ ] **file.py:78** — [Readability] Description and suggestion
 
 ### Consider
+
 - [ ] **file.py:100** — [Performance] Optional improvement
 
 ### Positive
+
 - file.py:15 — Good use of context manager for resource cleanup
 ```
 
 **Severity levels:**
 
-| Level | Meaning | Merge? |
-|-------|---------|--------|
-| Must Fix | Bug, security issue, or broken contract | Block |
-| Should Fix | Significant readability/maintainability concern | Request changes |
-| Consider | Optional improvement, style preference | Approve with comment |
-| Positive | Good patterns worth highlighting | - |
+| Level      | Meaning                                         | Merge?               |
+| ---------- | ----------------------------------------------- | -------------------- |
+| Must Fix   | Bug, security issue, or broken contract         | Block                |
+| Should Fix | Significant readability/maintainability concern | Request changes      |
+| Consider   | Optional improvement, style preference          | Approve with comment |
+| Positive   | Good patterns worth highlighting                | -                    |
 
 ## Guidelines
 

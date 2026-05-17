@@ -1,306 +1,306 @@
-"use strict";
+'use strict';
 /**
  * Terminal Links Service - VS Code standard link detection and activation
  * Detects and handles URLs, file paths, and other links in terminal output
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.TerminalLinksService = void 0;
-const vscode = require("vscode");
-const path = require("path");
-const fs = require("fs");
-const logger_1 = require("../utils/logger");
+const vscode = require('vscode');
+const path = require('path');
+const fs = require('fs');
+const logger_1 = require('../utils/logger');
 class TerminalLinksService {
-    constructor() {
-        this._links = new Map();
-        this._linkProviders = [];
-        this._linkEmitter = new vscode.EventEmitter();
-        this.onLinksDetected = this._linkEmitter.event;
+  constructor() {
+    this._links = new Map();
+    this._linkProviders = [];
+    this._linkEmitter = new vscode.EventEmitter();
+    this.onLinksDetected = this._linkEmitter.event;
+    this._settings = this.loadSettings();
+    this._workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
+    // Monitor configuration changes
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (
+        e.affectsConfiguration('secondaryTerminal.links') ||
+        e.affectsConfiguration('terminal.integrated.allowedLinkSchemes')
+      ) {
         this._settings = this.loadSettings();
-        this._workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
-        // Monitor configuration changes
-        vscode.workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration('secondaryTerminal.links') ||
-                e.affectsConfiguration('terminal.integrated.allowedLinkSchemes')) {
-                this._settings = this.loadSettings();
-                (0, logger_1.terminal)('🔗 [LINKS] Settings updated:', this._settings);
-            }
-        });
+        (0, logger_1.terminal)('🔗 [LINKS] Settings updated:', this._settings);
+      }
+    });
+  }
+  /**
+   * Load link detection settings from VS Code configuration
+   */
+  loadSettings() {
+    const config = vscode.workspace.getConfiguration();
+    // Use VS Code standard allowed schemes setting
+    const allowedSchemes = config.get('terminal.integrated.allowedLinkSchemes', [
+      'http',
+      'https',
+      'file',
+      'mailto',
+      'vscode',
+      'vscode-insiders',
+    ]);
+    const sidebarConfig = config.get('secondaryTerminal.links', {});
+    return {
+      enabled: sidebarConfig.enabled ?? true,
+      allowedSchemes: sidebarConfig.allowedSchemes ?? allowedSchemes,
+      detectFileLinks: sidebarConfig.detectFileLinks ?? true,
+      detectWebLinks: sidebarConfig.detectWebLinks ?? true,
+      detectEmailLinks: sidebarConfig.detectEmailLinks ?? true,
+      maxLinksPerLine: sidebarConfig.maxLinksPerLine ?? 10,
+    };
+  }
+  /**
+   * Register a custom terminal link provider
+   */
+  registerLinkProvider(provider) {
+    this._linkProviders.push(provider);
+    (0, logger_1.terminal)('🔗 [LINKS] Registered custom link provider');
+    return {
+      dispose: () => {
+        const index = this._linkProviders.indexOf(provider);
+        if (index >= 0) {
+          this._linkProviders.splice(index, 1);
+          (0, logger_1.terminal)('🔗 [LINKS] Disposed custom link provider');
+        }
+      },
+    };
+  }
+  /**
+   * Detect links in terminal line text
+   */
+  async detectLinks(terminalId, line, text) {
+    if (!this._settings.enabled || !text.trim()) {
+      return [];
     }
-    /**
-     * Load link detection settings from VS Code configuration
-     */
-    loadSettings() {
-        const config = vscode.workspace.getConfiguration();
-        // Use VS Code standard allowed schemes setting
-        const allowedSchemes = config.get('terminal.integrated.allowedLinkSchemes', [
-            'http',
-            'https',
-            'file',
-            'mailto',
-            'vscode',
-            'vscode-insiders',
-        ]);
-        const sidebarConfig = config.get('secondaryTerminal.links', {});
-        return {
-            enabled: sidebarConfig.enabled ?? true,
-            allowedSchemes: sidebarConfig.allowedSchemes ?? allowedSchemes,
-            detectFileLinks: sidebarConfig.detectFileLinks ?? true,
-            detectWebLinks: sidebarConfig.detectWebLinks ?? true,
-            detectEmailLinks: sidebarConfig.detectEmailLinks ?? true,
-            maxLinksPerLine: sidebarConfig.maxLinksPerLine ?? 10,
-        };
+    const links = [];
+    // Built-in link detection
+    if (this._settings.detectWebLinks) {
+      links.push(...this.detectWebLinks(terminalId, line, text));
     }
-    /**
-     * Register a custom terminal link provider
-     */
-    registerLinkProvider(provider) {
-        this._linkProviders.push(provider);
-        (0, logger_1.terminal)('🔗 [LINKS] Registered custom link provider');
-        return {
-            dispose: () => {
-                const index = this._linkProviders.indexOf(provider);
-                if (index >= 0) {
-                    this._linkProviders.splice(index, 1);
-                    (0, logger_1.terminal)('🔗 [LINKS] Disposed custom link provider');
-                }
-            },
-        };
+    if (this._settings.detectFileLinks) {
+      links.push(...(await this.detectFileLinks(terminalId, line, text)));
     }
-    /**
-     * Detect links in terminal line text
-     */
-    async detectLinks(terminalId, line, text) {
-        if (!this._settings.enabled || !text.trim()) {
-            return [];
-        }
-        const links = [];
-        // Built-in link detection
-        if (this._settings.detectWebLinks) {
-            links.push(...this.detectWebLinks(terminalId, line, text));
-        }
-        if (this._settings.detectFileLinks) {
-            links.push(...(await this.detectFileLinks(terminalId, line, text)));
-        }
-        if (this._settings.detectEmailLinks) {
-            links.push(...this.detectEmailLinks(terminalId, line, text));
-        }
-        // Custom link providers
-        for (const provider of this._linkProviders) {
-            try {
-                if (provider.provideTerminalLinks) {
-                    const customLinks = await provider.provideTerminalLinks({ line: text, terminal: undefined }, // Mock context
-                    undefined // Mock token
-                    );
-                    if (customLinks) {
-                        links.push(...customLinks.map((link, index) => ({
-                            id: `${terminalId}-${line}-custom-${index}`,
-                            terminalId,
-                            text: text.substring(link.startIndex, link.startIndex + link.length),
-                            startIndex: link.startIndex,
-                            endIndex: link.startIndex + link.length,
-                            line,
-                            type: 'custom',
-                            activationData: link,
-                            tooltip: link.tooltip,
-                        })));
-                    }
-                }
-            }
-            catch (error) {
-                (0, logger_1.terminal)(`⚠️ [LINKS] Custom link provider error: ${error}`);
-            }
-        }
-        // Limit links per line for performance
-        const limitedLinks = links.slice(0, this._settings.maxLinksPerLine);
-        if (limitedLinks.length > 0) {
-            const terminalLinks = this._links.get(terminalId) || [];
-            // Remove existing links for this line
-            const filteredLinks = terminalLinks.filter((l) => l.line !== line);
-            filteredLinks.push(...limitedLinks);
-            this._links.set(terminalId, filteredLinks);
-            this._linkEmitter.fire({
+    if (this._settings.detectEmailLinks) {
+      links.push(...this.detectEmailLinks(terminalId, line, text));
+    }
+    // Custom link providers
+    for (const provider of this._linkProviders) {
+      try {
+        if (provider.provideTerminalLinks) {
+          const customLinks = await provider.provideTerminalLinks(
+            { line: text, terminal: undefined }, // Mock context
+            undefined // Mock token
+          );
+          if (customLinks) {
+            links.push(
+              ...customLinks.map((link, index) => ({
+                id: `${terminalId}-${line}-custom-${index}`,
                 terminalId,
-                links: [...filteredLinks],
-            });
+                text: text.substring(link.startIndex, link.startIndex + link.length),
+                startIndex: link.startIndex,
+                endIndex: link.startIndex + link.length,
+                line,
+                type: 'custom',
+                activationData: link,
+                tooltip: link.tooltip,
+              }))
+            );
+          }
         }
-        return limitedLinks;
+      } catch (error) {
+        (0, logger_1.terminal)(`⚠️ [LINKS] Custom link provider error: ${error}`);
+      }
     }
-    /**
-     * Detect web URLs in text
-     */
-    detectWebLinks(terminalId, line, text) {
-        const urlRegex = /(https?:\/\/[^\s]+)/gi;
-        const links = [];
-        let match;
-        while ((match = urlRegex.exec(text)) !== null) {
-            const url = match[0];
-            const scheme = new URL(url).protocol.slice(0, -1);
-            if (this._settings.allowedSchemes.includes(scheme)) {
-                links.push({
-                    id: `${terminalId}-${line}-url-${match.index}`,
-                    terminalId,
-                    text: url,
-                    startIndex: match.index,
-                    endIndex: match.index + url.length,
-                    line,
-                    type: 'url',
-                    tooltip: `Open ${url}`,
-                });
-            }
-        }
-        return links;
+    // Limit links per line for performance
+    const limitedLinks = links.slice(0, this._settings.maxLinksPerLine);
+    if (limitedLinks.length > 0) {
+      const terminalLinks = this._links.get(terminalId) || [];
+      // Remove existing links for this line
+      const filteredLinks = terminalLinks.filter((l) => l.line !== line);
+      filteredLinks.push(...limitedLinks);
+      this._links.set(terminalId, filteredLinks);
+      this._linkEmitter.fire({
+        terminalId,
+        links: [...filteredLinks],
+      });
     }
-    /**
-     * Detect file and folder paths in text
-     */
-    async detectFileLinks(terminalId, line, text) {
-        // Match various file path patterns
-        const filePatterns = [
-            // Absolute paths
-            /(?:^|\s)(\/[^\s]+)/g,
-            // Relative paths with common extensions
-            /(?:^|\s)((?:\.{1,2}\/)?[^\s]*\.(?:js|ts|json|md|txt|py|java|c|cpp|h|hpp|rs|go|rb|php|css|html|xml|yaml|yml|toml|ini|cfg|conf|log))/gi,
-            // Quoted paths
-            /"([^"]+)"/g,
-            /'([^']+)'/g,
-        ];
-        const links = [];
-        for (const pattern of filePatterns) {
-            let match;
-            while ((match = pattern.exec(text)) !== null) {
-                const filePath = match[1];
-                if (!filePath)
-                    continue;
-                const resolvedPath = path.isAbsolute(filePath)
-                    ? filePath
-                    : path.resolve(this._workspaceRoot, filePath);
-                try {
-                    const stat = await fs.promises.stat(resolvedPath);
-                    const isDirectory = stat.isDirectory();
-                    links.push({
-                        id: `${terminalId}-${line}-file-${match.index}`,
-                        terminalId,
-                        text: filePath,
-                        startIndex: match.index + (match[0].length - filePath.length),
-                        endIndex: match.index + match[0].length,
-                        line,
-                        type: isDirectory ? 'folder' : 'file',
-                        activationData: { path: resolvedPath },
-                        tooltip: `${isDirectory ? 'Open folder' : 'Open file'}: ${resolvedPath}`,
-                    });
-                }
-                catch {
-                    // File doesn't exist, skip
-                }
-            }
-        }
-        return links;
-    }
-    /**
-     * Detect email addresses in text
-     */
-    detectEmailLinks(terminalId, line, text) {
-        const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-        const links = [];
-        let match;
-        while ((match = emailRegex.exec(text)) !== null) {
-            const email = match[0];
-            if (this._settings.allowedSchemes.includes('mailto')) {
-                links.push({
-                    id: `${terminalId}-${line}-email-${match.index}`,
-                    terminalId,
-                    text: email,
-                    startIndex: match.index,
-                    endIndex: match.index + email.length,
-                    line,
-                    type: 'email',
-                    tooltip: `Send email to ${email}`,
-                });
-            }
-        }
-        return links;
-    }
-    /**
-     * Activate a terminal link
-     */
-    async activateLink(link) {
-        try {
-            (0, logger_1.terminal)(`🔗 [LINKS] Activating link: ${link.text} (${link.type})`);
-            switch (link.type) {
-                case 'url':
-                    return await vscode.env.openExternal(vscode.Uri.parse(link.text));
-                case 'file':
-                    if (link.activationData?.path) {
-                        const document = await vscode.workspace.openTextDocument(link.activationData.path);
-                        await vscode.window.showTextDocument(document);
-                        return true;
-                    }
-                    break;
-                case 'folder':
-                    if (link.activationData?.path) {
-                        const uri = vscode.Uri.file(link.activationData.path);
-                        await vscode.commands.executeCommand('revealFileInOS', uri);
-                        return true;
-                    }
-                    break;
-                case 'email':
-                    return await vscode.env.openExternal(vscode.Uri.parse(`mailto:${link.text}`));
-                case 'custom':
-                    if (link.activationData && this._linkProviders.length > 0) {
-                        // Find the provider that created this link and handle it
-                        for (const provider of this._linkProviders) {
-                            if (provider.handleTerminalLink) {
-                                try {
-                                    await provider.handleTerminalLink(link.activationData);
-                                    return true;
-                                }
-                                catch (error) {
-                                    (0, logger_1.terminal)(`⚠️ [LINKS] Custom link activation error: ${error}`);
-                                }
-                            }
-                        }
-                    }
-                    break;
-            }
-            return false;
-        }
-        catch (error) {
-            (0, logger_1.terminal)(`❌ [LINKS] Link activation failed: ${error}`);
-            return false;
-        }
-    }
-    /**
-     * Get links for a terminal
-     */
-    getLinks(terminalId) {
-        return this._links.get(terminalId) || [];
-    }
-    /**
-     * Clear links for a terminal
-     */
-    clearLinks(terminalId) {
-        this._links.delete(terminalId);
-        this._linkEmitter.fire({
-            terminalId,
-            links: [],
+    return limitedLinks;
+  }
+  /**
+   * Detect web URLs in text
+   */
+  detectWebLinks(terminalId, line, text) {
+    const urlRegex = /(https?:\/\/[^\s]+)/gi;
+    const links = [];
+    let match;
+    while ((match = urlRegex.exec(text)) !== null) {
+      const url = match[0];
+      const scheme = new URL(url).protocol.slice(0, -1);
+      if (this._settings.allowedSchemes.includes(scheme)) {
+        links.push({
+          id: `${terminalId}-${line}-url-${match.index}`,
+          terminalId,
+          text: url,
+          startIndex: match.index,
+          endIndex: match.index + url.length,
+          line,
+          type: 'url',
+          tooltip: `Open ${url}`,
         });
-        (0, logger_1.terminal)(`🔗 [LINKS] Cleared links for terminal ${terminalId}`);
+      }
     }
-    /**
-     * Get current link detection settings
-     */
-    getSettings() {
-        return { ...this._settings };
+    return links;
+  }
+  /**
+   * Detect file and folder paths in text
+   */
+  async detectFileLinks(terminalId, line, text) {
+    // Match various file path patterns
+    const filePatterns = [
+      // Absolute paths
+      /(?:^|\s)(\/[^\s]+)/g,
+      // Relative paths with common extensions
+      /(?:^|\s)((?:\.{1,2}\/)?[^\s]*\.(?:js|ts|json|md|txt|py|java|c|cpp|h|hpp|rs|go|rb|php|css|html|xml|yaml|yml|toml|ini|cfg|conf|log))/gi,
+      // Quoted paths
+      /"([^"]+)"/g,
+      /'([^']+)'/g,
+    ];
+    const links = [];
+    for (const pattern of filePatterns) {
+      let match;
+      while ((match = pattern.exec(text)) !== null) {
+        const filePath = match[1];
+        if (!filePath) continue;
+        const resolvedPath = path.isAbsolute(filePath)
+          ? filePath
+          : path.resolve(this._workspaceRoot, filePath);
+        try {
+          const stat = await fs.promises.stat(resolvedPath);
+          const isDirectory = stat.isDirectory();
+          links.push({
+            id: `${terminalId}-${line}-file-${match.index}`,
+            terminalId,
+            text: filePath,
+            startIndex: match.index + (match[0].length - filePath.length),
+            endIndex: match.index + match[0].length,
+            line,
+            type: isDirectory ? 'folder' : 'file',
+            activationData: { path: resolvedPath },
+            tooltip: `${isDirectory ? 'Open folder' : 'Open file'}: ${resolvedPath}`,
+          });
+        } catch {
+          // File doesn't exist, skip
+        }
+      }
     }
-    /**
-     * Dispose of resources
-     */
-    dispose() {
-        this._linkEmitter.dispose();
-        this._links.clear();
-        this._linkProviders.length = 0;
-        (0, logger_1.terminal)('🧹 [LINKS] Service disposed');
+    return links;
+  }
+  /**
+   * Detect email addresses in text
+   */
+  detectEmailLinks(terminalId, line, text) {
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+    const links = [];
+    let match;
+    while ((match = emailRegex.exec(text)) !== null) {
+      const email = match[0];
+      if (this._settings.allowedSchemes.includes('mailto')) {
+        links.push({
+          id: `${terminalId}-${line}-email-${match.index}`,
+          terminalId,
+          text: email,
+          startIndex: match.index,
+          endIndex: match.index + email.length,
+          line,
+          type: 'email',
+          tooltip: `Send email to ${email}`,
+        });
+      }
     }
+    return links;
+  }
+  /**
+   * Activate a terminal link
+   */
+  async activateLink(link) {
+    try {
+      (0, logger_1.terminal)(`🔗 [LINKS] Activating link: ${link.text} (${link.type})`);
+      switch (link.type) {
+        case 'url':
+          return await vscode.env.openExternal(vscode.Uri.parse(link.text));
+        case 'file':
+          if (link.activationData?.path) {
+            const document = await vscode.workspace.openTextDocument(link.activationData.path);
+            await vscode.window.showTextDocument(document);
+            return true;
+          }
+          break;
+        case 'folder':
+          if (link.activationData?.path) {
+            const uri = vscode.Uri.file(link.activationData.path);
+            await vscode.commands.executeCommand('revealFileInOS', uri);
+            return true;
+          }
+          break;
+        case 'email':
+          return await vscode.env.openExternal(vscode.Uri.parse(`mailto:${link.text}`));
+        case 'custom':
+          if (link.activationData && this._linkProviders.length > 0) {
+            // Find the provider that created this link and handle it
+            for (const provider of this._linkProviders) {
+              if (provider.handleTerminalLink) {
+                try {
+                  await provider.handleTerminalLink(link.activationData);
+                  return true;
+                } catch (error) {
+                  (0, logger_1.terminal)(`⚠️ [LINKS] Custom link activation error: ${error}`);
+                }
+              }
+            }
+          }
+          break;
+      }
+      return false;
+    } catch (error) {
+      (0, logger_1.terminal)(`❌ [LINKS] Link activation failed: ${error}`);
+      return false;
+    }
+  }
+  /**
+   * Get links for a terminal
+   */
+  getLinks(terminalId) {
+    return this._links.get(terminalId) || [];
+  }
+  /**
+   * Clear links for a terminal
+   */
+  clearLinks(terminalId) {
+    this._links.delete(terminalId);
+    this._linkEmitter.fire({
+      terminalId,
+      links: [],
+    });
+    (0, logger_1.terminal)(`🔗 [LINKS] Cleared links for terminal ${terminalId}`);
+  }
+  /**
+   * Get current link detection settings
+   */
+  getSettings() {
+    return { ...this._settings };
+  }
+  /**
+   * Dispose of resources
+   */
+  dispose() {
+    this._linkEmitter.dispose();
+    this._links.clear();
+    this._linkProviders.length = 0;
+    (0, logger_1.terminal)('🧹 [LINKS] Service disposed');
+  }
 }
 exports.TerminalLinksService = TerminalLinksService;
 //# sourceMappingURL=TerminalLinksService.js.map

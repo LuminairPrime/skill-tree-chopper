@@ -161,6 +161,7 @@ src/test/
 ### テストがタイムアウトする
 
 **対処法**:
+
 ```typescript
 // 特定のテストのタイムアウトを延長
 it('should handle long operation', async () => {
@@ -171,6 +172,7 @@ it('should handle long operation', async () => {
 ### モックが期待通りに動作しない
 
 **対処法**:
+
 ```typescript
 import { resetTestEnvironment } from '../../shared/TestSetup';
 

@@ -15,12 +15,14 @@ This extension implements **privacy-respecting telemetry** using Visual Studio C
 We collect **anonymous usage data** including:
 
 #### Extension Lifecycle
+
 - Extension activation time
 - Extension version
 - Platform (Windows, macOS, Linux)
 - Node.js version
 
 #### Terminal Operations
+
 - Number of terminals created
 - Number of terminals deleted
 - Terminal focus events
@@ -28,27 +30,32 @@ We collect **anonymous usage data** including:
 - Terminal profile selection (whether custom profile is used, not the profile content)
 
 #### CLI Agent Detection
+
 - CLI agent type detected (e.g., 'claude', 'gemini', 'copilot')
 - CLI agent connection/disconnection events
 - Session duration
 
 #### Command Execution
+
 - Command IDs executed (e.g., 'secondaryTerminal.createTerminal')
 - Success/failure status
 - Execution time
 
 #### Error Events
+
 - Error messages
 - Error types
 - Error context (which operation failed)
 - Stack traces (sanitized)
 
 #### Session Management
+
 - Number of terminals saved
 - Number of terminals restored
 - Success/failure status
 
 #### Performance Metrics
+
 - Operation execution duration
 - Success/failure status
 
@@ -84,7 +91,7 @@ This extension **automatically respects** VS Code's telemetry settings:
 
 ```json
 {
-  "telemetry.telemetryLevel": "off"  // Disables all telemetry
+  "telemetry.telemetryLevel": "off" // Disables all telemetry
 }
 ```
 
@@ -95,6 +102,7 @@ If you have opted out of telemetry in VS Code settings, **no data will be collec
 You can disable telemetry in three ways:
 
 #### Option 1: VS Code Telemetry Setting (Recommended)
+
 1. Open VS Code Settings (`Ctrl+,` or `Cmd+,`)
 2. Search for "telemetry"
 3. Set **"Telemetry: Telemetry Level"** to `"off"`
@@ -102,6 +110,7 @@ You can disable telemetry in three ways:
 This will disable telemetry for **all extensions** that respect VS Code's telemetry API.
 
 #### Option 2: Global VS Code Setting
+
 Add to your `settings.json`:
 
 ```json
@@ -111,6 +120,7 @@ Add to your `settings.json`:
 ```
 
 #### Option 3: Workspace-Specific Setting
+
 Add to your workspace `.vscode/settings.json`:
 
 ```json
@@ -131,15 +141,18 @@ VS Code supports the following telemetry levels:
 ## Data Security
 
 ### Encryption
+
 - All telemetry data is transmitted over **HTTPS** (encrypted in transit)
 - No sensitive data is included in telemetry
 
 ### Anonymization
+
 - All data is **anonymous**
 - No user identification or tracking across sessions
 - No persistent user IDs
 
 ### Data Retention
+
 - Telemetry data may be stored for analysis purposes
 - Data is aggregated and anonymized
 - Individual events cannot be traced back to specific users
@@ -151,6 +164,7 @@ We **do not share, sell, or distribute** your telemetry data to third parties.
 ## Changes to This Policy
 
 We may update this privacy policy from time to time. Changes will be:
+
 - Documented in this file
 - Included in extension updates
 - Announced in release notes
@@ -165,6 +179,7 @@ If you have questions or concerns about privacy:
 ## Compliance
 
 This extension complies with:
+
 - ✅ VS Code Extension Guidelines
 - ✅ VS Code Telemetry Best Practices
 - ✅ GDPR principles (minimal data collection, user consent)
@@ -173,6 +188,7 @@ This extension complies with:
 ## Summary
 
 **TL;DR:**
+
 - ✅ Anonymous usage data only
 - ✅ No terminal content, commands, or file paths
 - ✅ Respects VS Code telemetry opt-out

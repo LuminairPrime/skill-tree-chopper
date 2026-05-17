@@ -25,7 +25,7 @@ class AutomatedRollbackPublisher {
       lintPassing: false,
       compilationSuccessful: false,
       marketplaceTokenAvailable: false,
-      versionValidated: false
+      versionValidated: false,
     };
   }
 
@@ -54,7 +54,6 @@ class AutomatedRollbackPublisher {
 
       console.log('🎉 EMERGENCY ROLLBACK AND PUBLISH COMPLETED SUCCESSFULLY!');
       return true;
-
     } catch (error) {
       console.error('❌ EMERGENCY ROLLBACK AND PUBLISH FAILED:', error.message);
       await this.handlePublishFailure(error);
@@ -85,10 +84,15 @@ class AutomatedRollbackPublisher {
       fromVersion: currentVersion,
       toVersion: targetVersion,
       reason: 'Emergency rollback triggered',
-      automated: true
+      automated: true,
     };
 
-    const recordPath = path.join(__dirname, '..', '.version-backups', `emergency-${Date.now()}.json`);
+    const recordPath = path.join(
+      __dirname,
+      '..',
+      '.version-backups',
+      `emergency-${Date.now()}.json`
+    );
     fs.writeFileSync(recordPath, JSON.stringify(emergencyRecord, null, 2));
 
     console.log(`📝 Emergency record created: ${recordPath}`);
@@ -122,7 +126,6 @@ class AutomatedRollbackPublisher {
 
       console.log('✅ All safety checks passed');
       return true;
-
     } catch (error) {
       throw new Error(`Safety checks failed: ${error.message}`);
     }
@@ -192,7 +195,6 @@ class AutomatedRollbackPublisher {
       } catch (testError) {
         console.warn('⚠️  Some tests failed, but proceeding with emergency rollback');
       }
-
     } catch (error) {
       throw new Error(`Automated tests failed: ${error.message}`);
     }
@@ -212,7 +214,6 @@ class AutomatedRollbackPublisher {
 
       console.log('✅ Successfully published to VS Code Marketplace');
       return true;
-
     } catch (error) {
       throw new Error(`Marketplace publication failed: ${error.message}`);
     }
@@ -227,11 +228,13 @@ class AutomatedRollbackPublisher {
     try {
       // Wait a moment for marketplace to update
       console.log('⏳ Waiting for marketplace update...');
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 10000));
 
       // Verify using vsce
-      const result = execSync(`npx @vscode/vsce show ${packageJson.publisher}.${packageJson.name}`,
-        { encoding: 'utf8' });
+      const result = execSync(
+        `npx @vscode/vsce show ${packageJson.publisher}.${packageJson.name}`,
+        { encoding: 'utf8' }
+      );
 
       if (result.includes(publishedVersion)) {
         console.log(`✅ Publication verified - v${publishedVersion} is live`);
@@ -239,7 +242,6 @@ class AutomatedRollbackPublisher {
       } else {
         throw new Error('Version not found in marketplace listing');
       }
-
     } catch (error) {
       console.warn(`⚠️  Publication verification inconclusive: ${error.message}`);
       console.log('📝 Please manually verify the extension is available in VS Code Marketplace');
@@ -260,12 +262,16 @@ class AutomatedRollbackPublisher {
         'Review error logs',
         'Check marketplace token',
         'Manual publish may be required',
-        'Contact marketplace support if needed'
-      ]
+        'Contact marketplace support if needed',
+      ],
     };
 
-    const failureRecordPath = path.join(__dirname, '..', '.version-backups',
-      `publish-failure-${Date.now()}.json`);
+    const failureRecordPath = path.join(
+      __dirname,
+      '..',
+      '.version-backups',
+      `publish-failure-${Date.now()}.json`
+    );
     fs.writeFileSync(failureRecordPath, JSON.stringify(failureRecord, null, 2));
 
     console.log(`📝 Failure record created: ${failureRecordPath}`);
@@ -294,7 +300,6 @@ class AutomatedRollbackPublisher {
 
       console.log('🎉 HOTFIX RELEASE COMPLETED');
       return true;
-
     } catch (error) {
       console.error('❌ HOTFIX RELEASE FAILED:', error.message);
       return false;
@@ -308,7 +313,6 @@ class AutomatedRollbackPublisher {
 
       execSync(`git checkout -b ${branchName}`, { stdio: 'inherit' });
       console.log(`✅ Hotfix branch created: ${branchName}`);
-
     } catch (error) {
       console.warn('⚠️  Could not create git branch:', error.message);
     }
@@ -321,8 +325,14 @@ class AutomatedRollbackPublisher {
       { name: 'Compilation', check: () => execSync('npm run compile', { stdio: 'pipe' }) },
       { name: 'Linting', check: () => execSync('npm run lint', { stdio: 'pipe' }) },
       { name: 'Unit Tests', check: () => execSync('npm run test:unit', { stdio: 'pipe' }) },
-      { name: 'Package Creation', check: () => execSync('npm run vsce:package', { stdio: 'pipe' }) },
-      { name: 'Marketplace Token', check: () => execSync('npx @vscode/vsce ls-publishers', { stdio: 'pipe' }) }
+      {
+        name: 'Package Creation',
+        check: () => execSync('npm run vsce:package', { stdio: 'pipe' }),
+      },
+      {
+        name: 'Marketplace Token',
+        check: () => execSync('npx @vscode/vsce ls-publishers', { stdio: 'pipe' }),
+      },
     ];
 
     const results = {};
@@ -344,7 +354,7 @@ class AutomatedRollbackPublisher {
       console.log(`   ${check}: ${result}`);
     });
 
-    const allPassed = Object.values(results).every(result => result.startsWith('✅'));
+    const allPassed = Object.values(results).every((result) => result.startsWith('✅'));
     console.log(`\n🎯 Overall Status: ${allPassed ? '✅ READY TO PUBLISH' : '❌ NOT READY'}`);
 
     return allPassed;

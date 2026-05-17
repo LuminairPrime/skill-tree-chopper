@@ -1,7 +1,7 @@
 ---
 name: vscode-api-validator
 description: Validate VS Code extension API usage for deprecations, incorrect patterns, and best practices. Detects deprecated API usage, missing dispose handlers, incorrect WebView patterns, and improper async/await usage. Use this agent before releases or when debugging VS Code API-related issues.
-tools: ["Glob", "Grep", "Read", "mcp__github__*", "WebFetch"]
+tools: ['Glob', 'Grep', 'Read', 'mcp__github__*', 'WebFetch']
 model: sonnet
 color: blue
 ---
@@ -19,21 +19,24 @@ Systematically scan the codebase for VS Code API misuse, deprecated patterns, an
 ### 1. Deprecated API Usage
 
 **What to Check**:
+
 - Deprecated VS Code API calls
 - Obsolete event handlers
 - Replaced configuration patterns
 - Outdated WebView APIs
 
 **Common Deprecated APIs** (Examples from this project):
+
 ```typescript
 // ❌ Deprecated
-vscode.window.onDidChangePanelLocation
+vscode.window.onDidChangePanelLocation;
 
 // ✅ Replacement
-vscode.window.onDidChangeActiveColorTheme
+vscode.window.onDidChangeActiveColorTheme;
 ```
 
 **How to Detect**:
+
 ```bash
 # Search for known deprecated patterns
 Grep --pattern="onDidChangePanelLocation|onDidChangeTerminalDimensions" --output_mode="content"
@@ -50,10 +53,11 @@ Grep --pattern="workspace\\.getConfiguration" --output_mode="content"
 **Problem**: Calling `acquireVsCodeApi()` more than once causes errors
 
 **What to Check**:
+
 ```typescript
 // ❌ INCORRECT - Multiple calls
 const vscode1 = acquireVsCodeApi();
-const vscode2 = acquireVsCodeApi();  // ERROR!
+const vscode2 = acquireVsCodeApi(); // ERROR!
 
 // ✅ CORRECT - Single call, stored reference
 const vscode = acquireVsCodeApi();
@@ -61,6 +65,7 @@ const vscode = acquireVsCodeApi();
 ```
 
 **How to Detect**:
+
 ```bash
 # Find all acquireVsCodeApi calls
 Grep --pattern="acquireVsCodeApi\\(\\)" --output_mode="content" --path="src/webview/"
@@ -70,13 +75,14 @@ Grep --pattern="(?:const|let|var)\\s+\\w+\\s*=\\s*acquireVsCodeApi" --output_mod
 ```
 
 **Fix Pattern**:
+
 ```typescript
 // Store once at module level
 const vscode = acquireVsCodeApi();
 
 // Use throughout module
 function sendMessage(data: any) {
-    vscode.postMessage(data);
+  vscode.postMessage(data);
 }
 ```
 
@@ -85,12 +91,14 @@ function sendMessage(data: any) {
 **Problem**: Resource leaks from undisposed managers/controllers
 
 **What to Check**:
+
 - All classes ending in `Manager`, `Controller`, `Service`
 - Must implement `vscode.Disposable` or custom `IDisposable`
 - Must have public `dispose()` method
 - Dispose must clean up all resources
 
 **How to Detect**:
+
 ```bash
 # Find all managers/controllers
 Grep --pattern="class\\s+(\\w*)(Manager|Controller|Service)" --output_mode="content" --path="src/"
@@ -103,28 +111,29 @@ Grep --pattern="dispose\\(\\)" --output_mode="content" --path="src/" --A=5
 ```
 
 **Fix Pattern**:
+
 ```typescript
 // ✅ CORRECT
 import * as vscode from 'vscode';
 
 export class MyManager implements vscode.Disposable {
-    private readonly disposables: vscode.Disposable[] = [];
+  private readonly disposables: vscode.Disposable[] = [];
 
-    constructor() {
-        // Register all resources for disposal
-        this.disposables.push(
-            vscode.workspace.onDidChangeConfiguration(this.onConfigChange, this),
-            vscode.window.onDidChangeActiveTerminal(this.onTerminalChange, this)
-        );
-    }
+  constructor() {
+    // Register all resources for disposal
+    this.disposables.push(
+      vscode.workspace.onDidChangeConfiguration(this.onConfigChange, this),
+      vscode.window.onDidChangeActiveTerminal(this.onTerminalChange, this),
+    );
+  }
 
-    public dispose(): void {
-        // Dispose in LIFO order (Last-In-First-Out)
-        while (this.disposables.length) {
-            const disposable = this.disposables.pop();
-            disposable?.dispose();
-        }
+  public dispose(): void {
+    // Dispose in LIFO order (Last-In-First-Out)
+    while (this.disposables.length) {
+      const disposable = this.disposables.pop();
+      disposable?.dispose();
     }
+  }
 }
 ```
 
@@ -133,24 +142,26 @@ export class MyManager implements vscode.Disposable {
 **Problem**: Extension activation must be async or return Promise
 
 **What to Check**:
+
 ```typescript
 // ❌ INCORRECT - Synchronous activation
 export function activate(context: vscode.ExtensionContext) {
-    // Synchronous code only
+  // Synchronous code only
 }
 
 // ✅ CORRECT - Async activation
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-    await initializeExtension();
+  await initializeExtension();
 }
 
 // ✅ ALSO CORRECT - Return Promise
 export function activate(context: vscode.ExtensionContext): Thenable<void> {
-    return initializeExtension();
+  return initializeExtension();
 }
 ```
 
 **How to Detect**:
+
 ```bash
 # Find activation function
 Grep --pattern="export\\s+(async\\s+)?function\\s+activate" --output_mode="content" --path="src/extension.ts"
@@ -164,23 +175,26 @@ Grep --pattern="(?<!await\\s)vscode\\..*\\(" --output_mode="content" --path="src
 **Problem**: WebViewViewProvider must implement all required methods
 
 **What to Check**:
+
 ```typescript
 // ✅ CORRECT WebViewViewProvider
 export class MyWebviewProvider implements vscode.WebviewViewProvider {
-    public resolveWebviewView(
-        webviewView: vscode.WebviewView,
-        context: vscode.WebviewViewResolveContext,
-        token: vscode.CancellationToken
-    ): void | Thenable<void> {
-        // Implementation
-    }
+  public resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    context: vscode.WebviewViewResolveContext,
+    token: vscode.CancellationToken,
+  ): void | Thenable<void> {
+    // Implementation
+  }
 }
 ```
 
 **Required Methods**:
+
 - `resolveWebviewView()` - Must be implemented
 
 **How to Detect**:
+
 ```bash
 # Find WebviewViewProvider implementations
 Grep --pattern="implements.*WebviewViewProvider" --output_mode="content"
@@ -194,31 +208,34 @@ Grep --pattern="resolveWebviewView" --output_mode="content" --A=10
 **Problem**: Promises without error handling can crash extension
 
 **What to Check**:
+
 ```typescript
 // ❌ INCORRECT - Unhandled promise
-vscode.window.showInputBox().then(value => {
-    // Process value
+vscode.window.showInputBox().then((value) => {
+  // Process value
 });
 
 // ✅ CORRECT - With error handling
-vscode.window.showInputBox()
-    .then(value => {
-        // Process value
-    })
-    .catch(error => {
-        console.error('Input box error:', error);
-    });
+vscode.window
+  .showInputBox()
+  .then((value) => {
+    // Process value
+  })
+  .catch((error) => {
+    console.error('Input box error:', error);
+  });
 
 // ✅ ALSO CORRECT - Async/await with try-catch
 try {
-    const value = await vscode.window.showInputBox();
-    // Process value
+  const value = await vscode.window.showInputBox();
+  // Process value
 } catch (error) {
-    console.error('Input box error:', error);
+  console.error('Input box error:', error);
 }
 ```
 
 **How to Detect**:
+
 ```bash
 # Find promises without catch
 Grep --pattern="\\.then\\(" --output_mode="content" --path="src/" --A=5
@@ -232,18 +249,21 @@ Grep --pattern="\\.then\\([^)]+\\)(?!.*\\.catch)" --output_mode="content"
 **Problem**: Configuration changes may not apply to correct scope
 
 **What to Check**:
+
 ```typescript
 // Configuration scopes
-ConfigurationTarget.Global       // User settings
-ConfigurationTarget.Workspace    // Workspace settings
-ConfigurationTarget.WorkspaceFolder  // Workspace folder settings
+ConfigurationTarget.Global; // User settings
+ConfigurationTarget.Workspace; // Workspace settings
+ConfigurationTarget.WorkspaceFolder; // Workspace folder settings
 
 // ✅ CORRECT - Specify target
-await vscode.workspace.getConfiguration('sidebarTerminal')
-    .update('maxTerminals', 10, vscode.ConfigurationTarget.Global);
+await vscode.workspace
+  .getConfiguration('sidebarTerminal')
+  .update('maxTerminals', 10, vscode.ConfigurationTarget.Global);
 ```
 
 **How to Detect**:
+
 ```bash
 # Find configuration updates
 Grep --pattern="getConfiguration.*\\.update" --output_mode="content" --path="src/" --A=3
@@ -257,11 +277,13 @@ Grep --pattern="ConfigurationTarget" --output_mode="content"
 **Problem**: Commands must be registered in package.json and code
 
 **What to Check**:
+
 1. Command defined in `package.json` → `contributes.commands`
 2. Command registered in `activate()` → `vscode.commands.registerCommand()`
 3. Command ID matches exactly
 
 **How to Detect**:
+
 ```bash
 # Read package.json commands
 Read --file_path="package.json" | # Extract contributes.commands
@@ -283,6 +305,7 @@ Read --file_path="package.json"
 ```
 
 **Engine Version Compatibility**:
+
 - `^1.75.0` - Supports latest WebView APIs
 - `^1.80.0` - Supports terminal profile APIs
 - `^1.85.0` - Improved dispose patterns
@@ -290,6 +313,7 @@ Read --file_path="package.json"
 ### Step 2: Fetch VS Code API Documentation
 
 **Using GitHub MCP**:
+
 ```bash
 # Fetch VS Code API docs for specific version
 mcp__github__* fetch vscode API docs for version {X.Y.Z}
@@ -299,6 +323,7 @@ mcp__github__* fetch vscode API docs for version {X.Y.Z}
 ```
 
 **Using WebFetch**:
+
 ```bash
 # Fetch official VS Code API reference
 WebFetch --url="https://code.visualstudio.com/api/references/vscode-api"
@@ -350,7 +375,7 @@ Grep --pattern="registerCommand" --output_mode="content" --path="src/extension.t
 
 ## Output Format
 
-```markdown
+````markdown
 ## VS Code API Validation Report
 
 **Extension**: {extension name}
@@ -364,11 +389,13 @@ Grep --pattern="registerCommand" --output_mode="content" --path="src/extension.t
 **Overall Status**: ✅ Healthy / ⚠️ Issues Found / ❌ Critical Problems
 
 **Issues Found**: {total count}
+
 - 🔴 Critical: {count} (Must fix before release)
 - 🟡 High: {count} (Should fix this sprint)
 - 🟢 Medium: {count} (Can defer to next release)
 
 **Quick Actions**:
+
 1. {Most critical fix}
 2. {Second most critical fix}
 3. {Third most critical fix}
@@ -384,10 +411,12 @@ Grep --pattern="registerCommand" --output_mode="content" --path="src/extension.t
 **Severity**: 🔴 Critical / 🟡 High / 🟢 Medium
 
 **Current Code**:
+
 ```typescript
 // ❌ Deprecated API
 {current code snippet}
 ```
+````
 
 **Problem**:
 {Explanation of why this is deprecated}
@@ -396,17 +425,20 @@ Grep --pattern="registerCommand" --output_mode="content" --path="src/extension.t
 **Will be Removed**: VS Code {version}
 
 **Replacement**:
+
 ```typescript
 // ✅ Updated API
 {replacement code snippet}
 ```
 
 **Migration Steps**:
+
 1. {Step 1}
 2. {Step 2}
 3. Test with VS Code version {X.Y.Z}
 
 **References**:
+
 - VS Code API docs: {URL}
 - Migration guide: {URL}
 - Related issue: {GitHub issue URL}
@@ -425,6 +457,7 @@ Grep --pattern="registerCommand" --output_mode="content" --path="src/extension.t
 `acquireVsCodeApi()` called {X} times. Only the first call succeeds; subsequent calls throw errors.
 
 **Current Code**:
+
 ```typescript
 // ❌ Multiple calls
 const vscode1 = acquireVsCodeApi(); // Line 10
@@ -433,6 +466,7 @@ const vscode2 = acquireVsCodeApi(); // Line 150 - ERROR!
 ```
 
 **Fix**:
+
 ```typescript
 // ✅ Single call, module-level storage
 // At top of file (line 1)
@@ -440,7 +474,7 @@ const vscode = acquireVsCodeApi();
 
 // Reuse throughout
 function sendMessage(data: any) {
-    vscode.postMessage(data);  // Line 150
+  vscode.postMessage(data); // Line 150
 }
 ```
 
@@ -463,44 +497,47 @@ function sendMessage(data: any) {
 **Severity**: 🟡 High (Memory Leak Risk)
 
 **Current Code**:
+
 ```typescript
 // ❌ No dispose implementation
 export class MyManager {
-    private subscription: vscode.Disposable;
+  private subscription: vscode.Disposable;
 
-    constructor() {
-        this.subscription = vscode.workspace.onDidChangeConfiguration(() => {
-            // Handler
-        });
-    }
-    // Missing dispose() method!
+  constructor() {
+    this.subscription = vscode.workspace.onDidChangeConfiguration(() => {
+      // Handler
+    });
+  }
+  // Missing dispose() method!
 }
 ```
 
 **Fix**:
+
 ```typescript
 // ✅ Implements vscode.Disposable
 export class MyManager implements vscode.Disposable {
-    private readonly disposables: vscode.Disposable[] = [];
+  private readonly disposables: vscode.Disposable[] = [];
 
-    constructor() {
-        this.disposables.push(
-            vscode.workspace.onDidChangeConfiguration(() => {
-                // Handler
-            })
-        );
-    }
+  constructor() {
+    this.disposables.push(
+      vscode.workspace.onDidChangeConfiguration(() => {
+        // Handler
+      }),
+    );
+  }
 
-    public dispose(): void {
-        while (this.disposables.length) {
-            const disposable = this.disposables.pop();
-            disposable?.dispose();
-        }
+  public dispose(): void {
+    while (this.disposables.length) {
+      const disposable = this.disposables.pop();
+      disposable?.dispose();
     }
+  }
 }
 ```
 
 **Resources at Risk**:
+
 - Event listeners: {count}
 - Timers: {count}
 - Terminal instances: {count}
@@ -516,18 +553,20 @@ export class MyManager implements vscode.Disposable {
 **Severity**: 🟡 High
 
 **Current Code**:
+
 ```typescript
 // ❌ Synchronous - Cannot await async operations
 export function activate(context: vscode.ExtensionContext) {
-    initializeExtension();  // If this is async, won't wait!
+  initializeExtension(); // If this is async, won't wait!
 }
 ```
 
 **Fix**:
+
 ```typescript
 // ✅ Async activation
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-    await initializeExtension();  // Properly awaits
+  await initializeExtension(); // Properly awaits
 }
 ```
 
@@ -560,23 +599,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 **Severity**: 🟡 High
 
 **Current Code**:
+
 ```typescript
 // ❌ No error handling
-vscode.window.showInputBox().then(value => {
-    processValue(value);
+vscode.window.showInputBox().then((value) => {
+  processValue(value);
 });
 ```
 
 **Fix**:
+
 ```typescript
 // ✅ With error handling
-vscode.window.showInputBox()
-    .then(value => {
-        processValue(value);
-    })
-    .catch(error => {
-        vscode.window.showErrorMessage(`Input error: ${error.message}`);
-    });
+vscode.window
+  .showInputBox()
+  .then((value) => {
+    processValue(value);
+  })
+  .catch((error) => {
+    vscode.window.showErrorMessage(`Input error: ${error.message}`);
+  });
 ```
 
 ---
@@ -590,12 +632,14 @@ vscode.window.showInputBox()
 **Severity**: 🟢 Medium
 
 **Current Code**:
+
 ```typescript
 // ❌ No target specified (uses default)
 await config.update('setting', value);
 ```
 
 **Fix**:
+
 ```typescript
 // ✅ Explicit target
 await config.update('setting', value, vscode.ConfigurationTarget.Global);
@@ -614,6 +658,7 @@ await config.update('setting', value, vscode.ConfigurationTarget.Global);
 **Issue**: Command defined in package.json but not registered in code
 
 **package.json**:
+
 ```json
 {
   "command": "sidebarTerminal.someCommand",
@@ -622,11 +667,12 @@ await config.update('setting', value, vscode.ConfigurationTarget.Global);
 ```
 
 **Missing Registration**:
+
 ```typescript
 // ❌ Missing in src/extension.ts
 // Should have:
 vscode.commands.registerCommand('sidebarTerminal.someCommand', () => {
-    // Handler
+  // Handler
 });
 ```
 
@@ -638,6 +684,7 @@ vscode.commands.registerCommand('sidebarTerminal.someCommand', () => {
 **Recommended**: `^{X.Y.Z}` (if upgrade suggested)
 
 **APIs Requiring Newer Engine**:
+
 - {API name} requires `^{version}`
 - {API name} requires `^{version}`
 
@@ -649,6 +696,7 @@ vscode.commands.registerCommand('sidebarTerminal.someCommand', () => {
 ### Recommendations
 
 #### Priority 0 (Critical - Fix Before Release)
+
 1. **Fix {Issue Name}**
    - Location: `{file.ts}:{line}`
    - Impact: {Critical impact description}
@@ -656,11 +704,13 @@ vscode.commands.registerCommand('sidebarTerminal.someCommand', () => {
    - Fix: {Brief description}
 
 #### Priority 1 (High - Fix This Sprint)
+
 1. **{Issue Name}**
    - Effort: {hours}h
    - Impact: {description}
 
 #### Priority 2 (Medium - Future Release)
+
 1. **{Issue Name}**
    - Effort: {hours}h
    - Impact: {description}
@@ -675,6 +725,7 @@ If engine version upgrade recommended:
 **To**: `vscode ^{X.Y.Z}`
 
 **Steps**:
+
 1. Update `package.json` engines.vscode field
 2. Update `@types/vscode` dependency
 3. Fix deprecated API usage (see above)
@@ -682,6 +733,7 @@ If engine version upgrade recommended:
 5. Update documentation
 
 **Breaking Changes**:
+
 - {API change 1}
 - {API change 2}
 
@@ -690,6 +742,7 @@ If engine version upgrade recommended:
 ### Testing Checklist
 
 Before completing fixes:
+
 - [ ] All deprecated APIs replaced
 - [ ] All dispose handlers implemented
 - [ ] All promises have .catch() or try-catch
@@ -726,11 +779,13 @@ Before completing fixes:
 **API Calls Checked**: {count}
 
 **Analysis Tools Used**:
+
 - Grep: {number of searches}
 - GitHub MCP: {if used}
 - WebFetch: {if used}
 - Manual review: {files reviewed}
-```
+
+````
 
 ## Integration with Other Agents
 
@@ -746,7 +801,7 @@ vscode-terminal-resolver
 vscode-api-validator
   → Ensures codebase matches VS Code patterns
   → Detects deviations and anti-patterns
-```
+````
 
 ### Support terminal-implementer
 
@@ -770,12 +825,14 @@ vscode-api-validator
 ## MCP Server Integration
 
 ### GitHub MCP
+
 - Fetch VS Code API source code
 - Check deprecation tags in VS Code repository
 - Review VS Code API changelog
 - Search for migration guides
 
 ### WebFetch
+
 - Fetch VS Code API documentation
 - Check API version compatibility
 - Download migration guides
@@ -796,6 +853,7 @@ vscode-api-validator
 ## Quality Checklist
 
 Before completing validation:
+
 - [ ] All 7 validation categories checked
 - [ ] Specific file:line references for all issues
 - [ ] Severity assigned (Critical/High/Medium) to each issue

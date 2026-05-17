@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * Communication Layer - Persistence Port Interface
  *
@@ -7,5 +7,5 @@
  *
  * @see Issue #223 - Phase 2: Persistence Layer Separation
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 //# sourceMappingURL=IPersistencePort.js.map

@@ -17,10 +17,13 @@
 ## テスト終了コードの問題
 
 ### 症状
+
 テスト実行後にプロセスが正常終了しない場合があります。
 
 ### 原因
+
 グローバルリソースのクリーンアップ処理で発生する問題です。主な原因：
+
 - テスト間でリソースが適切に解放されていない
 - イベントリスナーが残留している
 - グローバル状態の不完全なリセット
@@ -30,6 +33,7 @@
 ### 解決方法
 
 #### 方法1: 適切なクリーンアップ処理の実装（推奨）
+
 テストファイルで確実なクリーンアップを行う：
 
 ```typescript
@@ -65,6 +69,7 @@ npx vitest run src/test/vitest/unit/specific-file.test.ts
 ```
 
 ### 参考
+
 - [GitHub Issues](https://github.com/s-hiraoku/vscode-sidebar-terminal/issues)
 - [改善提案書](../../test-environment-improvement-proposal.md)
 
@@ -73,17 +78,20 @@ npx vitest run src/test/vitest/unit/specific-file.test.ts
 ## テストタイムアウト
 
 ### 症状
+
 ```text
 Error: Timeout of 2000ms exceeded
 ```
 
 ### 原因
+
 - 非同期処理の完了を待てない
 - デフォルトタイムアウト（2秒）が短すぎる
 
 ### 解決方法
 
 #### 方法1: 個別テストのタイムアウト延長
+
 ```typescript
 it('should handle async operation', async () => {
   const result = await someAsyncOperation();
@@ -92,6 +100,7 @@ it('should handle async operation', async () => {
 ```
 
 #### 方法2: vitest.config.tsで全体設定
+
 ```typescript
 // vitest.config.ts
 export default defineConfig({
@@ -102,6 +111,7 @@ export default defineConfig({
 ```
 
 ### ベストプラクティス
+
 ```typescript
 // async/await を使用
 it('should process data', async () => {
@@ -111,7 +121,7 @@ it('should process data', async () => {
 
 // Promiseを返す
 it('should save data', () => {
-  return saveData().then(saved => {
+  return saveData().then((saved) => {
     expect(saved).toBe(true);
   });
 });
@@ -130,6 +140,7 @@ Error: Attempted to wrap someFunction which is already wrapped
 **原因**: 同じ関数を複数回stubしようとしている
 
 **解決方法**:
+
 ```typescript
 import { vi, beforeEach, afterEach } from 'vitest';
 
@@ -148,6 +159,7 @@ afterEach(() => {
 **原因**: stubの設定が間違っている
 
 **解決方法**:
+
 ```typescript
 // 戻り値を設定
 stub.returns('value');
@@ -171,6 +183,7 @@ expect(stub).to.have.been.calledWith('expected arg');
 ## VS Code API モックエラー
 
 ### 症状
+
 ```text
 TypeError: Cannot read property 'workspace' of undefined
 ```
@@ -178,6 +191,7 @@ TypeError: Cannot read property 'workspace' of undefined
 **原因**: VS Code APIのモックが正しくセットアップされていない
 
 **解決方法**:
+
 ```typescript
 import { mockVscode, setupTestEnvironment } from '../../shared/TestSetup';
 
@@ -193,6 +207,7 @@ it('should use VS Code API', () => {
 ```
 
 ### カスタム設定が必要な場合
+
 ```typescript
 beforeEach(() => {
   mockVscode.workspace.getConfiguration.callsFake((section) => ({
@@ -212,6 +227,7 @@ beforeEach(() => {
 ## node-ptyエラー
 
 ### 症状
+
 ```text
 Error: Cannot find module '@homebridge/node-pty-prebuilt-multiarch'
 ```
@@ -223,6 +239,7 @@ Error: Cannot find module '@homebridge/node-pty-prebuilt-multiarch'
 テストは自動的にnode-ptyをモックします（`TestSetup.ts`で設定済み）。
 
 明示的にモックが必要な場合：
+
 ```typescript
 // src/test/mocks/node-pty.ts
 export const spawn = () => ({
@@ -241,6 +258,7 @@ export const spawn = () => ({
 ## JSDOM関連エラー
 
 ### 症状
+
 ```text
 ReferenceError: document is not defined
 ```
@@ -248,6 +266,7 @@ ReferenceError: document is not defined
 **原因**: DOM環境がセットアップされていない
 
 **解決方法**:
+
 ```typescript
 import { setupJSDOMEnvironment } from '../../shared/TestSetup';
 
@@ -274,6 +293,7 @@ describe('DOM Tests', () => {
 ```
 
 ### カスタムHTMLが必要な場合
+
 ```typescript
 const htmlContent = `
 <!DOCTYPE html>
@@ -292,31 +312,31 @@ const { dom, document } = setupJSDOMEnvironment(htmlContent);
 ## カバレッジレポート生成エラー
 
 ### 症状
+
 ```text
 Error: No coverage information was collected
 ```
 
 **原因**:
+
 - テストが実行されていない
 - カバレッジ対象ファイルが正しく指定されていない
 
 **解決方法**:
 
 #### 方法1: カバレッジ設定確認
+
 `.nycrc.json`を確認：
+
 ```json
 {
-  "include": [
-    "out/src/**/*.js"
-  ],
-  "exclude": [
-    "out/src/test/**",
-    "out/src/**/*.test.js"
-  ]
+  "include": ["out/src/**/*.js"],
+  "exclude": ["out/src/test/**", "out/src/**/*.test.js"]
 }
 ```
 
 #### 方法2: テストの実行確認
+
 ```bash
 # カバレッジなしで実行（テストが動くか確認）
 npm run compile-tests
@@ -327,6 +347,7 @@ npm run test:coverage
 ```
 
 #### 方法3: キャッシュのクリア
+
 ```bash
 # nycのキャッシュをクリア
 rm -rf .nyc_output coverage
@@ -340,11 +361,13 @@ npm run test:coverage
 ## 並列実行時の問題
 
 ### 症状
+
 並列実行時にテストが失敗する
 
 **原因**: テスト間で状態が共有されている
 
 **解決方法**:
+
 ```typescript
 // 各テストで独立した状態を作成
 describe('Parallel Safe Tests', () => {

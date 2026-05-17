@@ -1,9 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.WebViewHtmlGenerationService = void 0;
-const vscode = require("vscode");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+const vscode = require('vscode');
+const logger_1 = require('../../utils/logger');
+const common_1 = require('../../utils/common');
 /**
  * Service responsible for generating WebView HTML content
  *
@@ -15,28 +15,28 @@ const common_1 = require("../../utils/common");
  * - Maintainability: All HTML/CSS logic in one place for easy updates
  */
 class WebViewHtmlGenerationService {
-    /**
-     * Generate the main WebView HTML content
-     */
-    generateMainHtml(options) {
-        try {
-            (0, logger_1.provider)('🎨 [HtmlGeneration] Generating main WebView HTML');
-            const { webview, extensionUri } = options;
-            // Generate script URIs
-            const scriptUris = this._generateScriptUris(webview, extensionUri);
-            // Generate nonce for CSP
-            const nonce = (0, common_1.generateNonce)();
-            // Generate CSP header
-            const csp = this._generateCSPHeader(webview, nonce);
-            // Generate styles
-            const styles = this._generateMainStyles(options);
-            // Generate body content
-            const bodyContent = this._generateBodyContent();
-            // Generate inline scripts
-            const inlineScripts = this._generateInlineScripts(nonce);
-            // Generate main script tags
-            const scriptTags = this._generateScriptTags(nonce, scriptUris);
-            const html = `<!DOCTYPE html>
+  /**
+   * Generate the main WebView HTML content
+   */
+  generateMainHtml(options) {
+    try {
+      (0, logger_1.provider)('🎨 [HtmlGeneration] Generating main WebView HTML');
+      const { webview, extensionUri } = options;
+      // Generate script URIs
+      const scriptUris = this._generateScriptUris(webview, extensionUri);
+      // Generate nonce for CSP
+      const nonce = (0, common_1.generateNonce)();
+      // Generate CSP header
+      const csp = this._generateCSPHeader(webview, nonce);
+      // Generate styles
+      const styles = this._generateMainStyles(options);
+      // Generate body content
+      const bodyContent = this._generateBodyContent();
+      // Generate inline scripts
+      const inlineScripts = this._generateInlineScripts(nonce);
+      // Generate main script tags
+      const scriptTags = this._generateScriptTags(nonce, scriptUris);
+      const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -53,21 +53,26 @@ class WebViewHtmlGenerationService {
     ${scriptTags}
 </body>
 </html>`;
-            (0, logger_1.provider)(`✅ [HtmlGeneration] Main HTML generated successfully (${html.length} chars)`);
-            return html;
-        }
-        catch (error) {
-            (0, logger_1.provider)('❌ [HtmlGeneration] Failed to generate main HTML:', error);
-            throw new Error(`HTML generation failed: ${String(error)}`);
-        }
+      (0, logger_1.provider)(
+        `✅ [HtmlGeneration] Main HTML generated successfully (${html.length} chars)`
+      );
+      return html;
+    } catch (error) {
+      (0, logger_1.provider)('❌ [HtmlGeneration] Failed to generate main HTML:', error);
+      throw new Error(`HTML generation failed: ${String(error)}`);
     }
-    /**
-     * Generate fallback HTML for loading states or initialization failures
-     */
-    generateFallbackHtml(options = {}) {
-        const { title = 'Terminal Loading...', message = 'Please wait while the terminal initializes.', isLoading = true, } = options;
-        const loadingIndicator = isLoading ? '🔄' : '⚠️';
-        return `<!DOCTYPE html>
+  }
+  /**
+   * Generate fallback HTML for loading states or initialization failures
+   */
+  generateFallbackHtml(options = {}) {
+    const {
+      title = 'Terminal Loading...',
+      message = 'Please wait while the terminal initializes.',
+      isLoading = true,
+    } = options;
+    const loadingIndicator = isLoading ? '🔄' : '⚠️';
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -85,15 +90,15 @@ class WebViewHtmlGenerationService {
     </div>
 </body>
 </html>`;
-    }
-    /**
-     * Generate error HTML for critical failures
-     */
-    generateErrorHtml(options) {
-        const { error, allowRetry = false, customMessage } = options;
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        const displayMessage = customMessage || `Terminal initialization failed: ${errorMessage}`;
-        return `<!DOCTYPE html>
+  }
+  /**
+   * Generate error HTML for critical failures
+   */
+  generateErrorHtml(options) {
+    const { error, allowRetry = false, customMessage } = options;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const displayMessage = customMessage || `Terminal initialization failed: ${errorMessage}`;
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -115,67 +120,68 @@ class WebViewHtmlGenerationService {
     </div>
 </body>
 </html>`;
+  }
+  /**
+   * Validate HTML content before setting on WebView
+   */
+  validateHtml(html) {
+    const errors = [];
+    if (!html || html.trim().length === 0) {
+      errors.push('HTML content is empty');
     }
-    /**
-     * Validate HTML content before setting on WebView
-     */
-    validateHtml(html) {
-        const errors = [];
-        if (!html || html.trim().length === 0) {
-            errors.push('HTML content is empty');
-        }
-        if (!html.includes('<!DOCTYPE html>')) {
-            errors.push('Missing DOCTYPE declaration');
-        }
-        if (!html.includes('<meta charset="UTF-8">')) {
-            errors.push('Missing charset declaration');
-        }
-        if (!html.includes('Content-Security-Policy')) {
-            errors.push('Missing Content Security Policy');
-        }
-        if (!html.includes('nonce=')) {
-            errors.push('Missing nonce for CSP');
-        }
-        return {
-            isValid: errors.length === 0,
-            errors,
-        };
+    if (!html.includes('<!DOCTYPE html>')) {
+      errors.push('Missing DOCTYPE declaration');
     }
-    /**
-     * Generate script URI with error handling
-     */
-    _generateScriptUris(webview, extensionUri) {
-        try {
-            return [
-                'vendors.js',
-                'xterm-vendor.js',
-                'webview-services.js',
-                'webview-managers.js',
-                'webview.js',
-            ].map((fileName) => webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'dist', fileName)));
-        }
-        catch (error) {
-            (0, logger_1.provider)('❌ [HtmlGeneration] Failed to generate script URIs:', error);
-            throw new Error(`Script URI generation failed: ${String(error)}`);
-        }
+    if (!html.includes('<meta charset="UTF-8">')) {
+      errors.push('Missing charset declaration');
     }
-    /**
-     * Generate Content Security Policy header
-     */
-    _generateCSPHeader(webview, nonce) {
-        return `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' ${webview.cspSource}; font-src ${webview.cspSource};">`;
+    if (!html.includes('Content-Security-Policy')) {
+      errors.push('Missing Content Security Policy');
     }
-    /**
-     * Generate main CSS styles
-     */
-    _generateMainStyles(options) {
-        const baseStyles = this._getBaseStyles();
-        const terminalStyles = this._getTerminalStyles();
-        const splitStyles = options.includeSplitStyles !== false ? this._getSplitStyles() : '';
-        const cliAgentStyles = options.includeCliAgentStyles !== false ? this._getCliAgentStyles() : '';
-        const customStyles = options.customStyles || '';
-        const initialThemeStyles = this._getInitialThemeStyles(options.initialTheme);
-        return `
+    if (!html.includes('nonce=')) {
+      errors.push('Missing nonce for CSP');
+    }
+    return {
+      isValid: errors.length === 0,
+      errors,
+    };
+  }
+  /**
+   * Generate script URI with error handling
+   */
+  _generateScriptUris(webview, extensionUri) {
+    try {
+      return [
+        'vendors.js',
+        'xterm-vendor.js',
+        'webview-services.js',
+        'webview-managers.js',
+        'webview.js',
+      ].map((fileName) =>
+        webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'dist', fileName))
+      );
+    } catch (error) {
+      (0, logger_1.provider)('❌ [HtmlGeneration] Failed to generate script URIs:', error);
+      throw new Error(`Script URI generation failed: ${String(error)}`);
+    }
+  }
+  /**
+   * Generate Content Security Policy header
+   */
+  _generateCSPHeader(webview, nonce) {
+    return `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' ${webview.cspSource}; font-src ${webview.cspSource};">`;
+  }
+  /**
+   * Generate main CSS styles
+   */
+  _generateMainStyles(options) {
+    const baseStyles = this._getBaseStyles();
+    const terminalStyles = this._getTerminalStyles();
+    const splitStyles = options.includeSplitStyles !== false ? this._getSplitStyles() : '';
+    const cliAgentStyles = options.includeCliAgentStyles !== false ? this._getCliAgentStyles() : '';
+    const customStyles = options.customStyles || '';
+    const initialThemeStyles = this._getInitialThemeStyles(options.initialTheme);
+    return `
         ${baseStyles}
         ${terminalStyles}
         ${splitStyles}
@@ -183,13 +189,13 @@ class WebViewHtmlGenerationService {
         ${initialThemeStyles}
         ${customStyles}
     `;
-    }
-    /**
-     * Generate initial theme CSS to prevent flash of wrong theme
-     */
-    _getInitialThemeStyles(theme) {
-        if (theme === 'light') {
-            return `
+  }
+  /**
+   * Generate initial theme CSS to prevent flash of wrong theme
+   */
+  _getInitialThemeStyles(theme) {
+    if (theme === 'light') {
+      return `
         /* Initial light theme - prevents flash of dark theme */
         body, html {
           background-color: #ffffff !important;
@@ -199,15 +205,15 @@ class WebViewHtmlGenerationService {
           background: #ffffff !important;
         }
       `;
-        }
-        // For 'dark' or 'auto', use default (VS Code CSS variables handle this)
-        return '';
     }
-    /**
-     * Generate base CSS styles
-     */
-    _getBaseStyles() {
-        return `
+    // For 'dark' or 'auto', use default (VS Code CSS variables handle this)
+    return '';
+  }
+  /**
+   * Generate base CSS styles
+   */
+  _getBaseStyles() {
+    return `
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -270,15 +276,15 @@ class WebViewHtmlGenerationService {
             top: 0;
         }
     `;
-    }
-    /**
-     * Generate terminal-specific CSS styles
-     *
-     * 🎯 SIMPLE DESIGN: Minimal base styles only.
-     * All terminal container styles are in display-modes.css
-     */
-    _getTerminalStyles() {
-        return `
+  }
+  /**
+   * Generate terminal-specific CSS styles
+   *
+   * 🎯 SIMPLE DESIGN: Minimal base styles only.
+   * All terminal container styles are in display-modes.css
+   */
+  _getTerminalStyles() {
+    return `
         /* Terminal background color */
         #terminal-body {
             background: var(--vscode-terminal-background, #000);
@@ -306,20 +312,20 @@ class WebViewHtmlGenerationService {
             background: var(--vscode-scrollbarSlider-activeBackground, rgba(191, 191, 191, 0.4));
         }
     `;
-    }
-    /**
-     * Generate split layout CSS styles
-     *
-     * 🎯 SIMPLE DESIGN: All split styles are in display-modes.css
-     */
-    _getSplitStyles() {
-        return `/* Split styles defined in display-modes.css */`;
-    }
-    /**
-     * Generate CLI Agent specific CSS styles
-     */
-    _getCliAgentStyles() {
-        return `
+  }
+  /**
+   * Generate split layout CSS styles
+   *
+   * 🎯 SIMPLE DESIGN: All split styles are in display-modes.css
+   */
+  _getSplitStyles() {
+    return `/* Split styles defined in display-modes.css */`;
+  }
+  /**
+   * Generate CLI Agent specific CSS styles
+   */
+  _getCliAgentStyles() {
+    return `
         /* CLI Agent status indicators */
         .terminal-name {
             /* Color is set by inline style from UIManager/HeaderFactory */
@@ -349,12 +355,12 @@ class WebViewHtmlGenerationService {
             100% { opacity: 1; }
         }
     `;
-    }
-    /**
-     * Generate fallback page styles
-     */
-    _generateFallbackStyles() {
-        return `
+  }
+  /**
+   * Generate fallback page styles
+   */
+  _generateFallbackStyles() {
+    return `
         body {
             font-family: var(--vscode-font-family, monospace);
             background-color: var(--vscode-editor-background, #1e1e1e);
@@ -397,12 +403,12 @@ class WebViewHtmlGenerationService {
             100% { transform: rotate(360deg); }
         }
     `;
-    }
-    /**
-     * Generate error page styles
-     */
-    _generateErrorStyles() {
-        return `
+  }
+  /**
+   * Generate error page styles
+   */
+  _generateErrorStyles() {
+    return `
         body {
             font-family: var(--vscode-font-family, monospace);
             background-color: var(--vscode-editor-background, #1e1e1e);
@@ -465,12 +471,12 @@ class WebViewHtmlGenerationService {
             white-space: pre-wrap;
         }
     `;
-    }
-    /**
-     * Generate body content
-     */
-    _generateBodyContent() {
-        return `
+  }
+  /**
+   * Generate body content
+   */
+  _generateBodyContent() {
+    return `
         <div id="terminal-body" role="main" aria-label="Terminal workspace">
             <!-- Screen reader announcements -->
             <div role="status" aria-live="polite" aria-atomic="true" class="sr-only" id="sr-status"></div>
@@ -478,15 +484,15 @@ class WebViewHtmlGenerationService {
             <!-- Terminal containers will be added here by JavaScript -->
         </div>
     `;
-    }
-    /**
-     * Generate inline scripts for VS Code API initialization
-     *
-     * 🎯 NOTE: acquireVsCodeApi() is called in main.ts (webview.js) at top level
-     * This inline script only monitors script loading - no API acquisition needed here
-     */
-    _generateInlineScripts(nonce) {
-        return `
+  }
+  /**
+   * Generate inline scripts for VS Code API initialization
+   *
+   * 🎯 NOTE: acquireVsCodeApi() is called in main.ts (webview.js) at top level
+   * This inline script only monitors script loading - no API acquisition needed here
+   */
+  _generateInlineScripts(nonce) {
+    return `
         <script nonce="${nonce}">
             // Script loading monitoring
             document.addEventListener('DOMContentLoaded', function() {
@@ -499,25 +505,25 @@ class WebViewHtmlGenerationService {
             });
         </script>
     `;
-    }
-    /**
-     * Generate script tags for main webview script
-     */
-    _generateScriptTags(nonce, scriptUris) {
-        return scriptUris
-            .map((scriptUri, index) => {
-            const id = index === scriptUris.length - 1 ? ' id="webview-main-script"' : '';
-            return `        <script nonce="${nonce}" src="${scriptUri.toString()}"${id}></script>`;
-        })
-            .join('\n');
-    }
-    /**
-     * Dispose of resources (for consistency with other services)
-     */
-    dispose() {
-        // This service doesn't hold resources, but included for interface consistency
-        (0, logger_1.provider)('🧹 [HtmlGeneration] HTML generation service disposed');
-    }
+  }
+  /**
+   * Generate script tags for main webview script
+   */
+  _generateScriptTags(nonce, scriptUris) {
+    return scriptUris
+      .map((scriptUri, index) => {
+        const id = index === scriptUris.length - 1 ? ' id="webview-main-script"' : '';
+        return `        <script nonce="${nonce}" src="${scriptUri.toString()}"${id}></script>`;
+      })
+      .join('\n');
+  }
+  /**
+   * Dispose of resources (for consistency with other services)
+   */
+  dispose() {
+    // This service doesn't hold resources, but included for interface consistency
+    (0, logger_1.provider)('🧹 [HtmlGeneration] HTML generation service disposed');
+  }
 }
 exports.WebViewHtmlGenerationService = WebViewHtmlGenerationService;
 //# sourceMappingURL=WebViewHtmlGenerationService.js.map

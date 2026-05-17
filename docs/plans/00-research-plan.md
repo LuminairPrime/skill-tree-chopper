@@ -10,16 +10,14 @@ To solve this, developers on GitHub and Reddit have recently built dedicated GUI
 Here are the best GUI tools built exactly for this purpose:
 
 1. Skills Desktop (by LinkstartAI)
-This is a native desktop management tool designed specifically to clean up the symlink and multi-copy nightmare3.
+   This is a native desktop management tool designed specifically to clean up the symlink and multi-copy nightmare3.
 
 How it fixes the folder structure: Instead of having copies of .md files scattered everywhere, it establishes a "single source of truth" in one folder (usually ~/.agents/skills/) and uses OS-level symlinks to link them to the expected configuration paths of all your AI tools3.
-The GUI Audit Dashboard: It features a real-time visual dashboard that actively monitors your Windows filesystem. It displays the health status of every symlink (Valid, Broken, or Missing) across 20+ different agents3. If an installer orphaned a file or broke a symlink, you will see it immediately.
-2. Skills Manager (by ZunaLabs)
+The GUI Audit Dashboard: It features a real-time visual dashboard that actively monitors your Windows filesystem. It displays the health status of every symlink (Valid, Broken, or Missing) across 20+ different agents3. If an installer orphaned a file or broke a symlink, you will see it immediately. 2. Skills Manager (by ZunaLabs)
 This is a lightweight desktop app built specifically because "every agent stores skills in a different folder, in a different format, and there's no central place"9.
 
 GUI Scanning & Management: It automatically scans your Windows machine for installations of 15+ coding tools (including Cursor, Claude Code, Copilot, Windsurf, Trae, Goose, and Gemini CLI)9.
-Editing & Context Saving: You can see a unified list of every skill file on your PC9. If you want to free up your context window, you can enable/disable skills with a single click through the GUI79. Instead of deleting the files, the tool handles renaming/disabling them so the AI stops reading them, but you can turn them back on later.
-3. Agent Skills Manager (Open Source Dashboard)
+Editing & Context Saving: You can see a unified list of every skill file on your PC9. If you want to free up your context window, you can enable/disable skills with a single click through the GUI79. Instead of deleting the files, the tool handles renaming/disabling them so the AI stops reading them, but you can turn them back on later. 3. Agent Skills Manager (Open Source Dashboard)
 If you want deep auditing and editing capabilities across projects, this open-source tool provides a unified web-based/local GUI dashboard7.
 
 Deep Scanning: It runs a full system scan across global directories (like ~/.cursor/skills/ or ~/.windsurf/rules/) as well as your local project directories to find where rules are hiding7.
@@ -29,17 +27,17 @@ Community Workarounds (The .ai-rules/ Standard)
 If you want to avoid relying heavily on third-party GUI managers, the prevailing advice on Reddit right now is to fight the installers by adopting a unified folder convention8. Many developers have started deleting the tool-specific folders and creating a single .ai-rules/ folder in their root directory8. They then configure their tools (like Aider, Cline, and Cursor) to strictly read from that one custom directory8. Tools like ZanzyTHEbar/cursor-rules (a CLI tool) are also heavily used to automatically sync and strip away redundant files into one clean package2.
 
 Grounding Sources
-cursor.com 
-github.com 
-linkstartai.com 
-refactoring.fm 
-openai.com 
-agensi.io 
-github.com 
-reddit.com 
-youtube.com 
+cursor.com
+github.com
+linkstartai.com
+refactoring.fm
+openai.com
+agensi.io
+github.com
+reddit.com
+youtube.com
 Google Search Suggestions
-Display of Search Suggestions is required when using Grounding with Google Search. Learn more 
+Display of Search Suggestions is required when using Grounding with Google Search. Learn more
 these probjects have under 100 stars. how can I trust them to not have a virus or api key stealing? find something big and popular enough to have other people auditing the code
 
 Thought for 18 seconds
@@ -52,24 +50,21 @@ Instead of trusting a random new app, the most secure way to scan, audit, and GU
 Here are the safest, high-trust GUI solutions to clean up the agent file mess on Windows:
 
 1. Obsidian (The Best Visual GUI for Markdown Sprawl)
-Obsidian is a wildly popular, trusted, offline-first Markdown knowledge base. It just so happens that almost every AI skill file (SKILL.md, .cursorrules, AGENTS.md) is written in Markdown.
+   Obsidian is a wildly popular, trusted, offline-first Markdown knowledge base. It just so happens that almost every AI skill file (SKILL.md, .cursorrules, AGENTS.md) is written in Markdown.
 
 How to use it for this: Open Obsidian and click "Open folder as Vault". Point it to your root Windows User folder (C:\Users\YourName) or create a master folder containing all your projects.
 Why it solves your problem: Obsidian will instantly map out every .md file on your system. You can use its built-in search to filter for "skill" or "rule", see a visual file tree of where every agent has dropped its files, and edit them natively.
-Trust Level: Millions of users, completely offline, zero risk of API key exfiltration.
-2. VS Code "Multi-Root Workspaces" (The Developer Approach)
+Trust Level: Millions of users, completely offline, zero risk of API key exfiltration. 2. VS Code "Multi-Root Workspaces" (The Developer Approach)
 You don't need a new app; you can configure VS Code (which is audited by Microsoft and millions of devs) to act as your centralized AI Rule GUI dashboard.
 
 How to use it for this: Open VS Code and use File > Add Folder to Workspace. Add ~/.cursor/rules, ~/.claude/skills, ~/.windsurf, and your global .github folders. Save this as an ai-rules.code-workspace file.
 Why it solves your problem: Whenever you want to audit what your AI is reading, open this workspace. You will get a unified, safe GUI file tree of only your AI agent folders. You can use VS Code's global search (Ctrl+Shift+F) to instantly see if three different agents are loading the same redundant instructions and delete the copies.
-Trust Level: Maximum. It's the industry standard editor5.
-3. "Everything" by Voidtools (For the "Where did they hide it?" problem)
+Trust Level: Maximum. It's the industry standard editor5. 3. "Everything" by Voidtools (For the "Where did they hide it?" problem)
 If your primary issue is that installers are placing symlinks and hidden folders in obscure places on your Windows drive and you can't find them, use Everything.
 
 How to use it for this: It is the fastest file-indexing GUI for Windows. Type this into the search bar: ext:md;cursorrules;clinerules;windsurfrules.
 Why it solves your problem: It will instantly populate a list of every single AI configuration file hidden anywhere on your C:\ drive. You can sort by date created (to see what an installer just dropped), view their exact folder paths, and bulk-delete the ones wasting your context window.
-Trust Level: Legendary status in the Windows IT community for over a decade.
-4. The High-Star Community Standard: Nested AGENTS.md
+Trust Level: Legendary status in the Windows IT community for over a decade. 4. The High-Star Community Standard: Nested AGENTS.md
 If you want to look at what the "big, audited" GitHub projects are doing, look at repositories like awesome-agent-skills (20,000+ stars) or Vercel's official agent skills67.
 
 The top engineers aren't using sync tools anymore. They are adopting a unified "Progressive Disclosure" folder system12. Instead of letting Aider, Cursor, and Copilot read 20 different files scattered across the system, they configure their agents to read from a single, unified AGENTS.md file in the project root2. That root file acts as a router—it tells the AI, "If you are working on the backend, go read the rules in backend/AGENTS.md"34.
@@ -77,15 +72,15 @@ The top engineers aren't using sync tools anymore. They are adopting a unified "
 The safest workflow today: Use Voidtools 'Everything' to hunt down and delete the scattered garbage, then use VS Code or Obsidian to manage a single, clean .ai-rules or AGENTS.md folder structure that you control.
 
 Grounding Sources
-github.com 
-aihero.dev 
-medium.com 
-youtube.com 
-github.com 
-github.com 
-github.com 
+github.com
+aihero.dev
+medium.com
+youtube.com
+github.com
+github.com
+github.com
 Google Search Suggestions
-Display of Search Suggestions is required when using Grounding with Google Search. Learn more 
+Display of Search Suggestions is required when using Grounding with Google Search. Learn more
 there are 20+ ai ides that could have folders in an arbitrary number of projects. manually managing this by searching and adding folders is not realistic or necessary. it is very easy to find the folders and contents used and build an app to show all of them. tell me how even if it takes scripting or plugins. can obsidian display a tree of all skill file locations on the left? would there be a plugin for that in the marketplace for vscode? you can make the side bar display anything.
 
 Thought for 14 seconds
@@ -96,7 +91,7 @@ Because you control VS Code and Obsidian, you can force their sidebars to become
 Here is exactly how to do it using scripting, plugins, and native features.
 
 1. The Obsidian Approach (Automated Left-Sidebar Tree)
-Yes, Obsidian can display a dynamic, auto-updating tree of only your AI skill files on the left sidebar. You don't even need a complex plugin to build the tree; you can use Obsidian's powerful native search and the Dataview plugin.
+   Yes, Obsidian can display a dynamic, auto-updating tree of only your AI skill files on the left sidebar. You don't even need a complex plugin to build the tree; you can use Obsidian's powerful native search and the Dataview plugin.
 
 How to set up the Left Sidebar Tree:
 
@@ -130,7 +125,7 @@ import json
 from pathlib import Path
 
 # Where do you keep your projects?
-SEARCH_DIR = Path.home() / "Projects" 
+SEARCH_DIR = Path.home() / "Projects"
 # Target files/folders AI IDEs use
 AI_TARGETS = ['.cursorrules', '.clinerules', '.windsurfrules', '.cursor', '.continue']
 
@@ -141,7 +136,7 @@ for root, dirs, files in os.walk(SEARCH_DIR):
     # Stop it from scanning node_modules to keep it fast
     if 'node_modules' in dirs: dirs.remove('node_modules')
     if '.git' in dirs: dirs.remove('.git')
-    
+
     if any(target in files or target in dirs for target in AI_TARGETS):
         folders_with_ai.add(root)
 
@@ -168,12 +163,12 @@ New-Item -ItemType Directory -Force -Path $auditFolder
 
 # Find all AI rule files in your Projects folder
 Get-ChildItem -Path "C:\Users\YourName\Projects" -Recurse -Include *.cursorrules, *.clinerules, *.windsurfrules -ErrorAction SilentlyContinue | ForEach-Object {
-    
+
     # Create a unique name based on the parent folder (e.g., "MyWebProject_.cursorrules")
     $parentName = $_.Directory.Name
     newName="parentName`_(_.Name)"
     $targetPath = Join-Path -Path $auditFolder -ChildPath $newName
-    
+
     # Create a symlink to the real file
     New-Item -ItemType SymbolicLink -Path $targetPath -Target $_.FullName
 }
@@ -211,7 +206,7 @@ To put a custom button on the left Activity Bar that opens a side panel, you con
         {
           "id": "aiSkillManager",
           "title": "AI Skills",
-          "icon": "$(hubot)" 
+          "icon": "$(hubot)"
         }
       ]
     },
@@ -270,7 +265,7 @@ export class SkillTreeProvider implements vscode.TreeDataProvider<SkillNode> {
 
         // 1. Scan current Workspace for skill.md or rules files
         const workspaceFiles = await vscode.workspace.findFiles(
-            '**/{skill.md,*.cursorrules,*.clinerules}', 
+            '**/{skill.md,*.cursorrules,*.clinerules}',
             '**/node_modules/**'
         );
         filesFound.push(...workspaceFiles.map(uri => uri.fsPath));
@@ -340,7 +335,7 @@ export class SkillTreeProvider implements vscode.TreeDataProvider<SkillNode> {
                     arguments: [vscode.Uri.file(filePath)]
                 }
             ));
-            
+
             // Bubble up newest date modified for parent sorting
             if (mtime > skillNode.mtime) skillNode.mtime = mtime;
             if (mtime > rootNode.mtime) rootNode.mtime = mtime;
@@ -373,7 +368,7 @@ class SkillNode extends vscode.TreeItem {
     ) {
         super(label, collapsibleState);
         this.tooltip = this.resourcePath;
-        
+
         // Add icons based on level
         if (contextValue === 'rootFolder') this.iconPath = new vscode.ThemeIcon('repo');
         if (contextValue === 'skillFolder') this.iconPath = new vscode.ThemeIcon('folder-library');
@@ -388,7 +383,7 @@ import { SkillTreeProvider } from './SkillTreeProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     const skillTreeProvider = new SkillTreeProvider();
-    
+
     // Register the view
     vscode.window.registerTreeDataProvider('skillTree', skillTreeProvider);
 
@@ -481,14 +476,14 @@ import * as os from 'os';
 
 // Constants pulled from `luongnv89/asm` and `AI Rules Manager` schema
 const SKILL_FILES = [
-    'SKILL.md', '.cursorrules', '.clinerules', 
-    '.windsurfrules', 'AGENTS.md', 'CLAUDE.md', 
+    'SKILL.md', '.cursorrules', '.clinerules',
+    '.windsurfrules', 'AGENTS.md', 'CLAUDE.md',
     'copilot-instructions.md', 'CONVENTIONS.md'
 ];
 
 const GLOBAL_DIRS = [
-    '.cursor/skills', '.cursor/rules', '.claude/skills', 
-    '.windsurf/rules', '.roo/rules', '.cline/rules', 
+    '.cursor/skills', '.cursor/rules', '.claude/skills',
+    '.windsurf/rules', '.roo/rules', '.cline/rules',
     '.continue/rules', '.agents/skills', '.codex/skills',
     '.copilot/skills'
 ];
@@ -538,7 +533,7 @@ export class SkillTreeProvider implements vscode.TreeDataProvider<SkillNode> {
         for (const filePath of filesFound) {
             const stats = fs.statSync(filePath);
             const mtime = stats.mtime.getTime();
-            
+
             // Parent is the skill folder (e.g., ~/.cursor/skills/my-skill)
             const parentDir = path.dirname(filePath);
             // Grandparent is the root context (e.g., ~/.cursor/skills or /project-root)
@@ -624,7 +619,7 @@ import { SkillTreeProvider } from './SkillTreeProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     const treeProvider = new SkillTreeProvider();
-    
+
     vscode.window.registerTreeDataProvider('skillTree', treeProvider);
 
     // Refresh command so you can map a button to it
@@ -638,18 +633,18 @@ The Heuristic Map: Because we pull the exact known paths from asm, it catches ev
 Date-Modified Sorting: By bubbling up the mtime (modified time) from the SKILL.md files up to the parent folders, your sidebar will always display the skill folder an installer just dropped at the very top of your list so you can immediately audit it.
 Open directly: Clicking any .md file in the left sidebar tree instantly opens it in VS Code so you can delete unnecessary token-wasting text.
 Grounding Sources
-cline.bot 
-cline.bot 
-visualstudio.com 
-warp.dev 
-visualstudio.com 
-github.com 
-github.com 
-serenitiesai.com 
-chrisreddington.com 
-open-vsx.org 
+cline.bot
+cline.bot
+visualstudio.com
+warp.dev
+visualstudio.com
+github.com
+github.com
+serenitiesai.com
+chrisreddington.com
+open-vsx.org
 Google Search Suggestions
-Display of Search Suggestions is required when using Grounding with Google Search. Learn more 
+Display of Search Suggestions is required when using Grounding with Google Search. Learn more
 for example, the npm skill installer has a long list of ides that it deploys skills to by default, and then another long list of optional less popular ides that it can install to. so find the source
 
 Thought for 13 seconds
@@ -803,7 +798,7 @@ private async buildTree(): Promise<SkillNode[]> {
 
     // Loop through the schema directly
     for (const agent of KNOWN_AGENTS) {
-        
+
         // 1. Scan Global Paths (if they exist for this agent)
         if (agent.globalPath) {
             const paths = Array.isArray(agent.globalPath) ? agent.globalPath : [agent.globalPath];
@@ -824,7 +819,7 @@ private async buildTree(): Promise<SkillNode[]> {
             }
         }
     }
-    
+
     // Now pass the filesFound Set into the Grandparent/Parent logic from before...
     return this.constructNodesFromPaths(Array.from(filesFound));
 }
@@ -834,7 +829,7 @@ By looking at aispm and skilz source logic, we learn two crucial things about ho
 The Fallback Behavior: Notice how .github/instructions is used for Copilot. If an agent doesn't natively support a SKILL.md nested directory structure, the installers write directly to single markdown files (copilot-instructions.md or .windsurfrules). Your VS Code tree algorithm must account for both nested folders and root-level agent files.
 The New Universal Standard: The newest installers have all adopted .agents/skills/ and AGENTS.md as the "Universal Agent Standard". If you are auditing your system, you will likely start seeing this directory appear as NPM skill authors try to target all 15+ agents with a single file drop.
 Google Search Suggestions
-Display of Search Suggestions is required when using Grounding with Google Search. Learn more 
+Display of Search Suggestions is required when using Grounding with Google Search. Learn more
 for example: "npx skills add affaan-m/everything-claude-code" is calling npx skills add ............... and it shows LOTS of folder names to install to. find the repo with npx skills in it, and then find the source file storing their list of skill locations.
 
 Thought for 15 seconds
@@ -885,7 +880,7 @@ export async function discoverAllSkillLocations(): Promise<string[]> {
     // This single glob pattern catches EVERYTHING vercel-labs/skills installs to:
     // .claude/skills, .cursor/rules, .agents/skills, .codebuddy/skills, etc.
     const universalPattern = '**/.*/{skills,rules}/**/{SKILL.md,*.md}';
-    
+
     // We also check the standard /skills/ directories
     const sharedPattern = '**/skills/**/{SKILL.md,*.md}';
 
@@ -896,7 +891,7 @@ export async function discoverAllSkillLocations(): Promise<string[]> {
 
     // Combine them, extract the folder paths, and return the unique locations
     const allPaths = [...agentFiles, ...sharedFiles].map(uri => uri.fsPath);
-    return Array.from(new Set(allPaths)); 
+    return Array.from(new Set(allPaths));
 }
 Why this is the ultimate solution
 By looking at vercel-labs/skills (and other high-star repositories like affaan-m/everything-claude-code1, which uses .claude/skills/3), we can see the industry is standardizing on SKILL.md2.
@@ -941,12 +936,12 @@ class SkillNode extends vscode.TreeItem {
         public readonly isDisabled: boolean
     ) {
         super(label, vscode.TreeItemCollapsibleState.None);
-        
+
         // This natively renders a checkbox next to the item!
-        this.checkboxState = isDisabled 
-            ? vscode.TreeItemCheckboxState.Unchecked 
+        this.checkboxState = isDisabled
+            ? vscode.TreeItemCheckboxState.Unchecked
             : vscode.TreeItemCheckboxState.Checked;
-            
+
         // Optional: Grey out the text if disabled
         if (isDisabled) {
             this.description = "(Disabled)";
@@ -964,7 +959,7 @@ import * as path from 'path';
 
 export function activate(context: vscode.ExtensionContext) {
     const treeProvider = new SkillTreeProvider();
-    
+
     // Create the TreeView explicitly so we can listen to checkbox events
     const treeView = vscode.window.createTreeView('skillTree', {
         treeDataProvider: treeProvider,
@@ -977,7 +972,7 @@ export function activate(context: vscode.ExtensionContext) {
             const isDisabling = (state === vscode.TreeItemCheckboxState.Unchecked);
             await toggleSkillState(node.filePath, isDisabling);
         }
-        
+
         // Refresh the UI tree to reflect the new folder locations
         treeProvider.refresh();
     });
@@ -1037,9 +1032,9 @@ In your package.json, add a menu contribution:
 In your extension.ts, map that trash can click to VS Code's native delete API:
 vscode.commands.registerCommand('aiSkills.deleteSkill', async (node: SkillNode) => {
     const uri = vscode.Uri.file(node.filePath);
-    
+
     // { useTrash: true } moves it to the OS Recycle Bin instead of permanent deletion!
-    await vscode.workspace.fs.delete(uri, { useTrash: true }); 
+    await vscode.workspace.fs.delete(uri, { useTrash: true });
     treeProvider.refresh();
 });
 By relying on vscode.workspace.fs and the native Tree API, you avoid all npm dependency hell, you don't trigger any Windows Defender/antivirus warnings, and you get a completely native, lightning-fast UI that perfectly solves the AI token-bloat problem.
@@ -1052,37 +1047,39 @@ By relying on vscode.workspace.fs and the native Tree API, you avoid all npm dep
 
 another example of where different ides read their skill files from therefore where we need to delete them from if we want to uninstall them):
 ```
+
 Tool Directory Reference
-Tool (ID)	Skills path pattern	Command path pattern
-Amazon Q Developer (amazon-q)	.amazonq/skills/openspec-*/SKILL.md	.amazonq/prompts/opsx-<id>.md
-Antigravity (antigravity)	.agent/skills/openspec-*/SKILL.md	.agent/workflows/opsx-<id>.md
-Auggie (auggie)	.augment/skills/openspec-*/SKILL.md	.augment/commands/opsx-<id>.md
-IBM Bob Shell (bob)	.bob/skills/openspec-*/SKILL.md	.bob/commands/opsx-<id>.md
-Claude Code (claude)	.claude/skills/openspec-*/SKILL.md	.claude/commands/opsx/<id>.md
-Cline (cline)	.cline/skills/openspec-*/SKILL.md	.clinerules/workflows/opsx-<id>.md
-CodeBuddy (codebuddy)	.codebuddy/skills/openspec-*/SKILL.md	.codebuddy/commands/opsx/<id>.md
-Codex (codex)	.codex/skills/openspec-*/SKILL.md	$CODEX_HOME/prompts/opsx-<id>.md*
-ForgeCode (forgecode)	.forge/skills/openspec-*/SKILL.md	Not generated (no command adapter; use skill-based /openspec-* invocations)
-Continue (continue)	.continue/skills/openspec-*/SKILL.md	.continue/prompts/opsx-<id>.prompt
-CoStrict (costrict)	.cospec/skills/openspec-*/SKILL.md	.cospec/openspec/commands/opsx-<id>.md
-Crush (crush)	.crush/skills/openspec-*/SKILL.md	.crush/commands/opsx/<id>.md
-Cursor (cursor)	.cursor/skills/openspec-*/SKILL.md	.cursor/commands/opsx-<id>.md
-Factory Droid (factory)	.factory/skills/openspec-*/SKILL.md	.factory/commands/opsx-<id>.md
-Gemini CLI (gemini)	.gemini/skills/openspec-*/SKILL.md	.gemini/commands/opsx/<id>.toml
-GitHub Copilot (github-copilot)	.github/skills/openspec-*/SKILL.md	.github/prompts/opsx-<id>.prompt.md**
-iFlow (iflow)	.iflow/skills/openspec-*/SKILL.md	.iflow/commands/opsx-<id>.md
-Junie (junie)	.junie/skills/openspec-*/SKILL.md	.junie/commands/opsx-<id>.md
-Kilo Code (kilocode)	.kilocode/skills/openspec-*/SKILL.md	.kilocode/workflows/opsx-<id>.md
-Kimi CLI (kimi)	.kimi/skills/openspec-*/SKILL.md	Not generated (no command adapter; use skill-based /skill:openspec-* invocations)
-Kiro (kiro)	.kiro/skills/openspec-*/SKILL.md	.kiro/prompts/opsx-<id>.prompt.md
-Lingma (lingma)	.lingma/skills/openspec-*/SKILL.md	.lingma/commands/opsx/<id>.md
-OpenCode (opencode)	.opencode/skills/openspec-*/SKILL.md	.opencode/commands/opsx-<id>.md
-Pi (pi)	.pi/skills/openspec-*/SKILL.md	.pi/prompts/opsx-<id>.md
-Qoder (qoder)	.qoder/skills/openspec-*/SKILL.md	.qoder/commands/opsx/<id>.md
-Qwen Code (qwen)	.qwen/skills/openspec-*/SKILL.md	.qwen/commands/opsx-<id>.toml
-RooCode (roocode)	.roo/skills/openspec-*/SKILL.md	.roo/commands/opsx-<id>.md
-Trae (trae)	.trae/skills/openspec-*/SKILL.md	Not generated (no command adapter; use skill-based /openspec-* invocations)
-Windsurf (windsurf)	.windsurf/skills/openspec-*/SKILL.md	.windsurf/workflows/opsx-<id>.md
+Tool (ID) Skills path pattern Command path pattern
+Amazon Q Developer (amazon-q) .amazonq/skills/openspec-_/SKILL.md .amazonq/prompts/opsx-<id>.md
+Antigravity (antigravity) .agent/skills/openspec-_/SKILL.md .agent/workflows/opsx-<id>.md
+Auggie (auggie) .augment/skills/openspec-_/SKILL.md .augment/commands/opsx-<id>.md
+IBM Bob Shell (bob) .bob/skills/openspec-_/SKILL.md .bob/commands/opsx-<id>.md
+Claude Code (claude) .claude/skills/openspec-_/SKILL.md .claude/commands/opsx/<id>.md
+Cline (cline) .cline/skills/openspec-_/SKILL.md .clinerules/workflows/opsx-<id>.md
+CodeBuddy (codebuddy) .codebuddy/skills/openspec-_/SKILL.md .codebuddy/commands/opsx/<id>.md
+Codex (codex) .codex/skills/openspec-_/SKILL.md $CODEX*HOME/prompts/opsx-<id>.md*
+ForgeCode (forgecode) .forge/skills/openspec-_/SKILL.md Not generated (no command adapter; use skill-based /openspec-_ invocations)
+Continue (continue) .continue/skills/openspec-_/SKILL.md .continue/prompts/opsx-<id>.prompt
+CoStrict (costrict) .cospec/skills/openspec-_/SKILL.md .cospec/openspec/commands/opsx-<id>.md
+Crush (crush) .crush/skills/openspec-_/SKILL.md .crush/commands/opsx/<id>.md
+Cursor (cursor) .cursor/skills/openspec-_/SKILL.md .cursor/commands/opsx-<id>.md
+Factory Droid (factory) .factory/skills/openspec-_/SKILL.md .factory/commands/opsx-<id>.md
+Gemini CLI (gemini) .gemini/skills/openspec-_/SKILL.md .gemini/commands/opsx/<id>.toml
+GitHub Copilot (github-copilot) .github/skills/openspec-_/SKILL.md .github/prompts/opsx-<id>.prompt.md\*_
+iFlow (iflow) .iflow/skills/openspec-_/SKILL.md .iflow/commands/opsx-<id>.md
+Junie (junie) .junie/skills/openspec-_/SKILL.md .junie/commands/opsx-<id>.md
+Kilo Code (kilocode) .kilocode/skills/openspec-_/SKILL.md .kilocode/workflows/opsx-<id>.md
+Kimi CLI (kimi) .kimi/skills/openspec-_/SKILL.md Not generated (no command adapter; use skill-based /skill:openspec-_ invocations)
+Kiro (kiro) .kiro/skills/openspec-_/SKILL.md .kiro/prompts/opsx-<id>.prompt.md
+Lingma (lingma) .lingma/skills/openspec-_/SKILL.md .lingma/commands/opsx/<id>.md
+OpenCode (opencode) .opencode/skills/openspec-_/SKILL.md .opencode/commands/opsx-<id>.md
+Pi (pi) .pi/skills/openspec-_/SKILL.md .pi/prompts/opsx-<id>.md
+Qoder (qoder) .qoder/skills/openspec-_/SKILL.md .qoder/commands/opsx/<id>.md
+Qwen Code (qwen) .qwen/skills/openspec-_/SKILL.md .qwen/commands/opsx-<id>.toml
+RooCode (roocode) .roo/skills/openspec-_/SKILL.md .roo/commands/opsx-<id>.md
+Trae (trae) .trae/skills/openspec-_/SKILL.md Not generated (no command adapter; use skill-based /openspec-_ invocations)
+Windsurf (windsurf) .windsurf/skills/openspec-\_/SKILL.md .windsurf/workflows/opsx-<id>.md
+
 ```
 
 
@@ -1109,3 +1106,4 @@ source for where github cli sh skill app installs skills: https://github.com/cli
 
 
 
+```

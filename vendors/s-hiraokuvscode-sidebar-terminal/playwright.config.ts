@@ -36,9 +36,13 @@ export default defineConfig({
 
   // Test sharding for CI (splits tests across multiple machines)
   // Usage: npx playwright test --shard=1/3
-  shard: process.env.CI && process.env.SHARD
-    ? { current: parseInt(process.env.SHARD.split('/')[0]), total: parseInt(process.env.SHARD.split('/')[1]) }
-    : undefined,
+  shard:
+    process.env.CI && process.env.SHARD
+      ? {
+          current: parseInt(process.env.SHARD.split('/')[0]),
+          total: parseInt(process.env.SHARD.split('/')[1]),
+        }
+      : undefined,
 
   // Reporter configuration
   reporter: [
@@ -80,7 +84,8 @@ export default defineConfig({
 
   // Web server to serve test fixtures
   webServer: {
-    command: 'npx http-server src/test/e2e/fixtures -p 3333 -c-1 --silent -o /standalone-webview.html',
+    command:
+      'npx http-server src/test/e2e/fixtures -p 3333 -c-1 --silent -o /standalone-webview.html',
     url: 'http://localhost:3333/standalone-webview.html',
     reuseExistingServer: !process.env.CI,
     timeout: 30 * 1000,

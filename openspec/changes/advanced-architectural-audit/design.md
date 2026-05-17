@@ -5,12 +5,14 @@ The initial MVP of the `ai-skill-auditor` utilized `fs.*Sync` methods for rapid 
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Completely eradicate `fs.*Sync` calls (`fs.readdirSync`, `fs.mkdirSync`, `fs.existsSync`) in favor of `fs.promises`.
 - Enforce strict sequential execution with discrete error boundary `try/catch` blocks inside the `extension.ts` mass-toggle loop.
 - Optimize the `scanForSkillFolders` loop to explicitly `break` out of the file-scanning loop the absolute millisecond a `skill.md` is found to achieve true optimal $O(1)$ constant time validation per folder.
 - Ensure all commands and event listeners are properly pushed to the `context.subscriptions` array for safe memory disposal when the extension deactivates.
 
 **Non-Goals:**
+
 - Changing the visual layout of the tree.
 - Modifying the strict discovery rules established in the previous refactor (dot-folders only, exactly `skills`, exactly `skill.md`).
 

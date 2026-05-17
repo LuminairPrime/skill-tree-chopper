@@ -36,7 +36,7 @@ class TDDTestRunner {
     console.log('1. Write a test that describes the desired behavior');
     console.log('2. Run the test to ensure it fails');
     console.log('3. The test should fail for the right reason\n');
-    
+
     this.runTests((results) => {
       if (results.failing > 0 && results.passing === 0) {
         console.log('\n✅ RED phase successful! You have a failing test.');
@@ -46,7 +46,7 @@ class TDDTestRunner {
       } else {
         console.log('\n⚠️ Some tests are passing. In RED phase, only the new test should exist.');
       }
-      
+
       this.recordMetrics('red', results);
     });
   }
@@ -55,9 +55,9 @@ class TDDTestRunner {
     console.log('🟢 GREEN Phase: Make the test pass\n');
     console.log('Instructions:');
     console.log('1. Write the minimum code to make the test pass');
-    console.log('2. Don\'t worry about code quality yet');
+    console.log("2. Don't worry about code quality yet");
     console.log('3. Focus only on making the test green\n');
-    
+
     this.runTests((results) => {
       if (results.failing === 0 && results.passing > 0) {
         console.log('\n✅ GREEN phase successful! All tests are passing.');
@@ -66,7 +66,7 @@ class TDDTestRunner {
         console.log(`\n⚠️ ${results.failing} tests are still failing.`);
         console.log('   Keep working until all tests pass!');
       }
-      
+
       this.recordMetrics('green', results);
     });
   }
@@ -77,12 +77,12 @@ class TDDTestRunner {
     console.log('1. Improve code quality without changing behavior');
     console.log('2. Remove duplication and improve naming');
     console.log('3. Ensure all tests still pass\n');
-    
+
     // First run tests
     this.runTests((results) => {
       if (results.failing === 0) {
         console.log('✅ Tests are passing. Running code quality checks...\n');
-        
+
         // Run linter
         try {
           console.log('📝 Running ESLint...');
@@ -91,7 +91,7 @@ class TDDTestRunner {
         } catch (error) {
           console.log('⚠️ ESLint found issues. Fix them as part of refactoring.\n');
         }
-        
+
         // Run type check
         try {
           console.log('🔍 Running TypeScript compiler...');
@@ -100,25 +100,25 @@ class TDDTestRunner {
         } catch (error) {
           console.log('⚠️ TypeScript errors found. Fix them as part of refactoring.\n');
         }
-        
+
         console.log('\n✅ REFACTOR phase complete!');
         console.log('   Next: Start a new cycle with `npm run tdd:red`');
       } else {
         console.log('\n❌ Tests are failing! You broke something during refactoring.');
         console.log('   Fix the tests before continuing.');
       }
-      
+
       this.recordMetrics('refactor', results);
     });
   }
 
   runTests(callback) {
     console.log('🧪 Running tests...\n');
-    
+
     let output = '';
     const testProcess = spawn('npm', ['test'], {
       shell: true,
-      stdio: ['inherit', 'pipe', 'pipe']
+      stdio: ['inherit', 'pipe', 'pipe'],
     });
 
     testProcess.stdout.on('data', (data) => {
@@ -143,7 +143,7 @@ class TDDTestRunner {
       failing: 0,
       pending: 0,
       total: 0,
-      duration: 0
+      duration: 0,
     };
 
     // Parse test runner output
@@ -156,15 +156,15 @@ class TDDTestRunner {
     if (failingMatch) results.failing = parseInt(failingMatch[1]);
     if (pendingMatch) results.pending = parseInt(pendingMatch[1]);
     if (durationMatch) results.duration = parseInt(durationMatch[1]);
-    
+
     results.total = results.passing + results.failing + results.pending;
-    
+
     return results;
   }
 
   recordMetrics(phase, results) {
     let metrics = { cycles: [] };
-    
+
     // Load existing metrics
     if (fs.existsSync(this.metricsPath)) {
       try {
@@ -182,7 +182,7 @@ class TDDTestRunner {
         startTime: new Date().toISOString(),
         red: null,
         green: null,
-        refactor: null
+        refactor: null,
       };
       metrics.cycles.push(currentCycle);
     }
@@ -191,12 +191,12 @@ class TDDTestRunner {
     currentCycle[phase] = {
       timestamp: new Date().toISOString(),
       results: results,
-      success: this.validatePhase(phase, results)
+      success: this.validatePhase(phase, results),
     };
 
     // Save metrics
     fs.writeFileSync(this.metricsPath, JSON.stringify(metrics, null, 2));
-    
+
     // Calculate and display statistics
     this.displayStatistics(metrics);
   }
@@ -217,18 +217,18 @@ class TDDTestRunner {
   displayStatistics(metrics) {
     console.log('\n📊 TDD Statistics:');
     console.log('-'.repeat(30));
-    
-    const completeCycles = metrics.cycles.filter(c => 
-      c.red && c.green && c.refactor
-    ).length;
-    
+
+    const completeCycles = metrics.cycles.filter((c) => c.red && c.green && c.refactor).length;
+
     const totalCycles = metrics.cycles.length;
     const currentCycle = metrics.cycles[metrics.cycles.length - 1];
-    
+
     console.log(`Total cycles started: ${totalCycles}`);
     console.log(`Complete cycles: ${completeCycles}`);
-    console.log(`Compliance rate: ${totalCycles > 0 ? Math.round((completeCycles / totalCycles) * 100) : 0}%`);
-    
+    console.log(
+      `Compliance rate: ${totalCycles > 0 ? Math.round((completeCycles / totalCycles) * 100) : 0}%`
+    );
+
     // Current cycle status
     console.log('\nCurrent cycle status:');
     console.log(`- RED: ${currentCycle.red ? '✅' : '⏳'}`);

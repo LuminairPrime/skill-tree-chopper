@@ -48,6 +48,7 @@ npm run release:major   # for major
 ```
 
 This runs `npx standard-version --release-as <type>` which:
+
 - Bumps version in `package.json` and `package-lock.json`
 - Generates CHANGELOG.md entries from conventional commit messages
 - Creates a commit with the changes
@@ -56,6 +57,7 @@ This runs `npx standard-version --release-as <type>` which:
 ### Step 4: Report Results
 
 Display:
+
 - Old version → New version
 - CHANGELOG.md diff (new entries)
 - Reminder: "Push with `git push`, then create tag after CI passes"

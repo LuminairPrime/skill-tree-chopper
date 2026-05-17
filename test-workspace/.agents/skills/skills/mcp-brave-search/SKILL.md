@@ -26,11 +26,13 @@ Perform a general web search.
 **Tool:** `mcp__brave-search__brave_web_search`
 
 **Parameters:**
+
 - `query` (required): Search query (max 400 chars, 50 words)
 - `count` (optional): Number of results (1-20, default 10)
 - `offset` (optional): Pagination offset (max 9, default 0)
 
 **Example:**
+
 ```
 mcp__brave-search__brave_web_search({
   query: "xterm.js WebGL addon tutorial",
@@ -45,10 +47,12 @@ Search for local businesses and places.
 **Tool:** `mcp__brave-search__brave_local_search`
 
 **Parameters:**
+
 - `query` (required): Local search query (e.g., "pizza near Central Park")
 - `count` (optional): Number of results (1-20, default 5)
 
 **Example:**
+
 ```
 mcp__brave-search__brave_local_search({
   query: "coffee shops near Shibuya Tokyo",

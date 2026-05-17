@@ -63,12 +63,12 @@ export default defineConfig({
         branches: 80,
         functions: 80,
         lines: 80,
-        statements: 80
-      }
+        statements: 80,
+      },
     },
     testTimeout: 20000,
-    retry: process.env.CI ? 2 : 0
-  }
+    retry: process.env.CI ? 2 : 0,
+  },
 });
 ```
 
@@ -84,9 +84,7 @@ export default defineConfig({
     "rootDir": "./src",
     "types": ["vitest/globals", "node"]
   },
-  "include": [
-    "src/test/**/*.ts"
-  ]
+  "include": ["src/test/**/*.ts"]
 }
 ```
 
@@ -162,12 +160,12 @@ export default defineConfig({
         branches: 80,
         functions: 80,
         lines: 80,
-        statements: 80
-      }
+        statements: 80,
+      },
     },
     testTimeout: 20000,
-    retry: process.env.CI ? 2 : 0
-  }
+    retry: process.env.CI ? 2 : 0,
+  },
 });
 ```
 
@@ -196,7 +194,7 @@ export async function run(): Promise<void> {
     ui: 'bdd',
     color: true,
     timeout: 20000,
-    retries: process.env.CI ? 2 : 0
+    retries: process.env.CI ? 2 : 0,
   });
 
   const testsRoot = path.resolve(__dirname, '.');
@@ -228,11 +226,7 @@ module.exports = {
   roots: ['<rootDir>/src/test/unit'],
   testMatch: ['**/*.test.ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],
-  collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/test/**',
-    '!**/*.d.ts'
-  ],
+  collectCoverageFrom: ['src/**/*.ts', '!src/test/**', '!**/*.d.ts'],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
@@ -240,13 +234,13 @@ module.exports = {
       branches: 80,
       functions: 80,
       lines: 80,
-      statements: 80
-    }
+      statements: 80,
+    },
   },
   setupFilesAfterEnv: ['<rootDir>/src/test/unit/setup.ts'],
   moduleNameMapper: {
-    '^vscode$': '<rootDir>/src/test/helpers/vscode-mock.ts'
-  }
+    '^vscode$': '<rootDir>/src/test/helpers/vscode-mock.ts',
+  },
 };
 ```
 
@@ -260,11 +254,7 @@ module.exports = {
 {
   "c8": {
     "include": ["src/**/*.ts"],
-    "exclude": [
-      "src/test/**",
-      "**/*.d.ts",
-      "**/node_modules/**"
-    ],
+    "exclude": ["src/test/**", "**/*.d.ts", "**/node_modules/**"],
     "reporter": ["text", "html", "lcov"],
     "all": true,
     "clean": true,
@@ -431,9 +421,7 @@ jobs:
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}"
-      ],
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/out/**/*.js"],
       "preLaunchTask": "npm: compile"
     },
@@ -462,10 +450,7 @@ jobs:
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
-      "args": [
-        "run",
-        "${relativeFile}"
-      ],
+      "args": ["run", "${relativeFile}"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     }
@@ -541,7 +526,7 @@ export class TestDataFactory {
       name: 'Test Terminal',
       cwd: '/tmp',
       env: { TEST_ENV: 'true' },
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -559,7 +544,7 @@ export class TestDataFactory {
       name: 'Terminal 1',
       processState: 'running',
       scrollback: 'mock scrollback content',
-      cwd: '/home/user'
+      cwd: '/home/user',
     };
   }
 
@@ -567,7 +552,7 @@ export class TestDataFactory {
     return {
       version: 1,
       terminals: [this.createMockTerminalState()],
-      savedAt: Date.now()
+      savedAt: Date.now(),
     };
   }
 }
@@ -580,6 +565,7 @@ export class TestDataFactory {
 **Symptoms**: Tests pass locally but timeout in GitHub Actions
 
 **Solutions**:
+
 1. Use `xvfb-run` for Linux headless testing
 2. Increase timeout in vitest config (`testTimeout` in `vitest.config.ts`)
 3. Add retries for flaky tests (`retry` in vitest config)
@@ -598,6 +584,7 @@ export class TestDataFactory {
 **Solutions**:
 Vitest handles ESM natively, so most ESM issues do not apply. If you encounter
 module resolution problems:
+
 1. Ensure `vitest.config.ts` uses `environment: 'node'`
 2. Check that `tsconfig.test.json` has `"module": "ESNext"` and `"moduleResolution": "bundler"`
 3. For stubbing ESM modules, use `vi.mock()` which supports ESM out of the box
@@ -607,6 +594,7 @@ module resolution problems:
 **Symptoms**: `Cannot find module 'vscode'`
 
 **Solutions**:
+
 1. Separate unit tests from integration tests
 2. Use VS Code API mocks for unit tests
 
@@ -615,9 +603,9 @@ module resolution problems:
 export default defineConfig({
   test: {
     alias: {
-      vscode: path.resolve(__dirname, 'src/test/helpers/vscode-mock.ts')
-    }
-  }
+      vscode: path.resolve(__dirname, 'src/test/helpers/vscode-mock.ts'),
+    },
+  },
 });
 ```
 
@@ -626,6 +614,7 @@ export default defineConfig({
 **Symptoms**: Coverage shows 0% or missing files
 
 **Solutions**:
+
 1. Configure source maps correctly
 2. Use proper include/exclude patterns
 
@@ -643,6 +632,7 @@ export default defineConfig({
 **Symptoms**: Tests fail intermittently
 
 **Solutions**:
+
 1. Use proper async/await
 2. Add explicit waits for async operations
 3. Avoid time-dependent assertions
@@ -659,6 +649,7 @@ expect(value).toBe(1);
 ## Resources
 
 For detailed reference documentation, see:
+
 - `references/framework-comparison.md` - Framework comparison (Vitest, Mocha, Jest)
 - `references/ci-templates.md` - CI/CD pipeline templates
 - `scripts/setup-test-env.py` - Automated environment setup

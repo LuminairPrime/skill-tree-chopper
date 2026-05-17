@@ -9,8 +9,8 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
       new JsonEditorProvider(context),
       {
         webviewOptions: { retainContextWhenHidden: true },
-        supportsMultipleEditorsPerDocument: false
-      }
+        supportsMultipleEditorsPerDocument: false,
+      },
     );
   }
 
@@ -19,11 +19,11 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
   async resolveCustomTextEditor(
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<void> {
     webviewPanel.webview.options = {
       enableScripts: true,
-      localResourceRoots: [this.context.extensionUri]
+      localResourceRoots: [this.context.extensionUri],
     };
 
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
@@ -34,25 +34,25 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         const data = JSON.parse(document.getText());
         webviewPanel.webview.postMessage({
           type: 'update',
-          data
+          data,
         });
       } catch {
         webviewPanel.webview.postMessage({
           type: 'error',
-          message: 'Invalid JSON'
+          message: 'Invalid JSON',
         });
       }
     };
 
     // Listen for document changes
-    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
+    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
       if (e.document.uri.toString() === document.uri.toString()) {
         updateWebview();
       }
     });
 
     // Listen for webview messages
-    webviewPanel.webview.onDidReceiveMessage(message => {
+    webviewPanel.webview.onDidReceiveMessage((message) => {
       switch (message.type) {
         case 'edit':
           this.applyEdit(document, message.data);
@@ -73,11 +73,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
     const edit = new vscode.WorkspaceEdit();
     const newContent = JSON.stringify(data, null, 2);
 
-    edit.replace(
-      document.uri,
-      new vscode.Range(0, 0, document.lineCount, 0),
-      newContent
-    );
+    edit.replace(document.uri, new vscode.Range(0, 0, document.lineCount, 0), newContent);
 
     vscode.workspace.applyEdit(edit);
   }

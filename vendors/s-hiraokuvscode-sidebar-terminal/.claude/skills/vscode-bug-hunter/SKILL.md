@@ -21,13 +21,13 @@ This skill enables systematic discovery and detection of bugs in VS Code extensi
 
 ## Bug Hunting vs Debugging
 
-| Bug Hunting (This Skill) | Debugging (vscode-extension-debugger) |
-|--------------------------|--------------------------------------|
-| Proactive discovery | Reactive fixing |
-| Find bugs before they manifest | Fix bugs after they occur |
-| Static and dynamic analysis | Error investigation |
-| Code auditing | Stack trace analysis |
-| Pattern-based detection | Reproduction-based fixing |
+| Bug Hunting (This Skill)       | Debugging (vscode-extension-debugger) |
+| ------------------------------ | ------------------------------------- |
+| Proactive discovery            | Reactive fixing                       |
+| Find bugs before they manifest | Fix bugs after they occur             |
+| Static and dynamic analysis    | Error investigation                   |
+| Code auditing                  | Stack trace analysis                  |
+| Pattern-based detection        | Reproduction-based fixing             |
 
 ## Bug Detection Workflow
 
@@ -52,15 +52,15 @@ grep -r "activate\|deactivate" src/ --include="*.ts"
 
 High-risk areas are more likely to contain bugs:
 
-| Area | Risk Level | Reason |
-|------|------------|--------|
-| Async operations | High | Race conditions, unhandled rejections |
-| Event handlers | High | Memory leaks, missing dispose |
-| WebView communication | High | Message timing, state sync |
-| File I/O | Medium | Error handling, permissions |
-| User input processing | Medium | Validation, injection |
-| Configuration handling | Medium | Type mismatches, defaults |
-| UI rendering | Low | Visual issues, layout |
+| Area                   | Risk Level | Reason                                |
+| ---------------------- | ---------- | ------------------------------------- |
+| Async operations       | High       | Race conditions, unhandled rejections |
+| Event handlers         | High       | Memory leaks, missing dispose         |
+| WebView communication  | High       | Message timing, state sync            |
+| File I/O               | Medium     | Error handling, permissions           |
+| User input processing  | Medium     | Validation, injection                 |
+| Configuration handling | Medium     | Type mismatches, defaults             |
+| UI rendering           | Low        | Visual issues, layout                 |
 
 #### 1.3 Review Recent Changes
 
@@ -84,6 +84,7 @@ Analyze code without executing it.
 Search for known bug patterns:
 
 **Memory Leak Patterns**
+
 ```typescript
 // Pattern: Event listener without dispose
 // Search: addEventListener|on\w+\s*\(
@@ -99,6 +100,7 @@ Search for known bug patterns:
 ```
 
 **Race Condition Patterns**
+
 ```typescript
 // Pattern: Shared mutable state without lock
 // Search: private \w+ = (?!readonly)
@@ -114,6 +116,7 @@ Search for known bug patterns:
 ```
 
 **Null/Undefined Patterns**
+
 ```typescript
 // Pattern: Optional chaining missing
 // Search: \.\w+\.\w+\.\w+(?!\?)
@@ -217,7 +220,7 @@ Add temporary instrumentation:
 ```typescript
 // Wrap suspicious function to monitor calls
 const original = object.suspiciousMethod;
-object.suspiciousMethod = function(...args) {
+object.suspiciousMethod = function (...args) {
   console.log('[MONITOR] suspiciousMethod called with:', args);
   const result = original.apply(this, args);
   console.log('[MONITOR] suspiciousMethod returned:', result);
@@ -280,11 +283,11 @@ describe('Bug Hypothesis: Rapid terminal creation causes duplicates', () => {
     const results = await Promise.all([
       manager.createTerminal(),
       manager.createTerminal(),
-      manager.createTerminal()
+      manager.createTerminal(),
     ]);
 
     // Verify expected behavior
-    const uniqueIds = new Set(results.map(t => t.id));
+    const uniqueIds = new Set(results.map((t) => t.id));
     expect(uniqueIds.size).toBe(results.length);
   });
 });
@@ -295,12 +298,14 @@ describe('Bug Hypothesis: Rapid terminal creation causes duplicates', () => {
 ### Category 1: Resource Leaks
 
 **Memory Leaks**
+
 - Event listeners not removed
 - Timers not cleared
 - References not nullified
 - Closures capturing large objects
 
 **Handle Leaks**
+
 - File handles not closed
 - WebView panels not disposed
 - Terminal processes not killed
@@ -309,12 +314,14 @@ describe('Bug Hypothesis: Rapid terminal creation causes duplicates', () => {
 ### Category 2: Concurrency Issues
 
 **Race Conditions**
+
 - Check-then-act patterns
 - Shared mutable state
 - Non-atomic operations
 - Missing synchronization
 
 **Deadlocks**
+
 - Circular dependencies
 - Nested locks
 - Resource contention
@@ -322,12 +329,14 @@ describe('Bug Hypothesis: Rapid terminal creation causes duplicates', () => {
 ### Category 3: State Issues
 
 **Invalid State**
+
 - Uninitialized variables
 - Stale state references
 - Inconsistent state transitions
 - Missing state validation
 
 **State Corruption**
+
 - Concurrent modification
 - Partial updates
 - Missing rollback on failure
@@ -335,12 +344,14 @@ describe('Bug Hypothesis: Rapid terminal creation causes duplicates', () => {
 ### Category 4: Error Handling Issues
 
 **Missing Error Handling**
+
 - Uncaught exceptions
 - Unhandled promise rejections
 - Silent failures
 - Missing validation
 
 **Incorrect Error Handling**
+
 - Swallowed errors
 - Wrong error type caught
 - Incomplete cleanup on error
@@ -348,11 +359,13 @@ describe('Bug Hypothesis: Rapid terminal creation causes duplicates', () => {
 ### Category 5: Security Issues
 
 **Injection Vulnerabilities**
+
 - Command injection
 - Path traversal
 - XSS in WebView
 
 **Information Disclosure**
+
 - Sensitive data in logs
 - Error messages revealing internals
 - Debug information in production
@@ -360,26 +373,31 @@ describe('Bug Hypothesis: Rapid terminal creation causes duplicates', () => {
 ## Quick Reference Commands
 
 ### Find Memory Leaks
+
 ```bash
 grep -rn "addEventListener\|on.*=.*function" src/ --include="*.ts" | grep -v "dispose\|remove"
 ```
 
 ### Find Missing Error Handling
+
 ```bash
 grep -rn "\.then\(" src/ --include="*.ts" | grep -v "\.catch\("
 ```
 
 ### Find Potential Race Conditions
+
 ```bash
 grep -rn "async.*{" src/ --include="*.ts" -A 5 | grep -E "if.*\{|while.*\{"
 ```
 
 ### Find Security Issues
+
 ```bash
 grep -rn "eval\|innerHTML\|child_process\|exec\(" src/ --include="*.ts"
 ```
 
 ### Find Code Smells
+
 ```bash
 grep -rn "any\|@ts-ignore\|@ts-nocheck" src/ --include="*.ts"
 ```
@@ -396,6 +414,7 @@ grep -rn "any\|@ts-ignore\|@ts-nocheck" src/ --include="*.ts"
 ## Resources
 
 For detailed reference documentation:
+
 - `references/detection-patterns.md` - Comprehensive bug pattern catalog
 - `references/analysis-tools.md` - Static and dynamic analysis tool guide
 - `references/investigation-checklist.md` - Systematic investigation procedures

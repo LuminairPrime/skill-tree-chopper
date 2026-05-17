@@ -17,6 +17,7 @@ The `/terminal-research` command is designed to be executed by Claude Code, not 
 ```
 
 Claude will automatically:
+
 - Launch vscode-terminal-resolver agent
 - Launch serena-semantic-search agent
 - Launch xterm-info-analyzer agent
@@ -26,15 +27,18 @@ Claude will automatically:
 ## Agent Responsibilities
 
 ### 1. vscode-terminal-resolver
+
 **Purpose**: Fetch authoritative implementation patterns from VS Code source
 
 **What it does**:
+
 - Searches microsoft/vscode GitHub repository
 - Finds terminal-related source files
 - Extracts relevant code patterns
 - Provides official implementation examples
 
 **Example output**:
+
 ```
 Found VS Code's IME handling in src/vs/workbench/contrib/terminal/browser/xterm/xtermTerminal.ts:
 - Uses compositionstart/compositionupdate/compositionend events
@@ -43,15 +47,18 @@ Found VS Code's IME handling in src/vs/workbench/contrib/terminal/browser/xterm/
 ```
 
 ### 2. serena-semantic-search
+
 **Purpose**: Find similar patterns in current codebase using semantic analysis
 
 **What it does**:
+
 - Uses Serena MCP for semantic code search
 - Identifies related implementations
 - Maps current architectural patterns
 - Highlights existing solutions
 
 **Example output**:
+
 ```
 Found similar IME handling in current codebase:
 - src/webview/managers/InputManager.ts:156 - composition event handlers
@@ -60,15 +67,18 @@ Found similar IME handling in current codebase:
 ```
 
 ### 3. xterm-info-analyzer
+
 **Purpose**: Provide official xterm.js documentation and API guidance
 
 **What it does**:
+
 - Retrieves xterm.js API documentation
 - Explains configuration options
 - Provides usage examples
 - Recommends best practices
 
 **Example output**:
+
 ```
 Xterm.js Composition Events:
 - Terminal.onCompositionStart: Fired when IME composition begins
@@ -80,11 +90,13 @@ Xterm.js Composition Events:
 ## Expected Workflow Example
 
 ### User Query
+
 ```
 /terminal-research How should I optimize terminal output buffering for AI CLI agents?
 ```
 
 ### Claude's Execution Plan
+
 ```markdown
 I'll research terminal output buffering by invoking three specialized agents in parallel:
 
@@ -96,6 +108,7 @@ I'll research terminal output buffering by invoking three specialized agents in 
 ### Agent Results (Parallel Execution)
 
 **vscode-terminal-resolver**:
+
 ```
 VS Code uses a write buffer with requestAnimationFrame for batching:
 - Buffers writes for 16ms (60fps) by default
@@ -105,6 +118,7 @@ Reference: src/vs/workbench/contrib/terminal/browser/terminalInstance.ts
 ```
 
 **serena-semantic-search**:
+
 ```
 Current implementation in PerformanceManager:
 - BUFFER_FLUSH_INTERVAL = 16ms (normal output)
@@ -114,6 +128,7 @@ File: src/webview/managers/PerformanceManager.ts:45-67
 ```
 
 **xterm-info-analyzer**:
+
 ```
 Xterm.js Performance Best Practices:
 - Batch writes using Terminal.write() instead of writeln()
@@ -123,29 +138,35 @@ Xterm.js Performance Best Practices:
 ```
 
 ### Synthesized Output
-```markdown
+
+````markdown
 ## Terminal Research Results: Output Buffering for AI CLI Agents
 
 ### VS Code Implementation
+
 VS Code uses 16ms buffering with requestAnimationFrame, which provides 60fps
 output rendering. For high-frequency output, they implement adaptive buffering.
 
 ### Current Codebase Patterns
+
 Your PerformanceManager already follows VS Code patterns with 16ms normal
 buffering. Good optimization: 4ms flush interval for CLI agents (250fps).
 
 File reference: src/webview/managers/PerformanceManager.ts:45-67
 
 ### Xterm.js Best Practices
+
 Xterm.js recommends batching writes and using Terminal.write() over writeln().
 Current implementation correctly batches output before writing.
 
 ### Synthesis & Recommendations
+
 ✅ Current implementation aligns with VS Code and xterm.js best practices
 ✅ CLI agent optimization (4ms) is appropriate for real-time AI output
 ⚠️ Consider: Adding adaptive buffering like VS Code for extreme scenarios
 
 Suggested enhancement:
+
 ```typescript
 // src/webview/managers/PerformanceManager.ts
 private adaptiveFlushInterval(): number {
@@ -155,7 +176,9 @@ private adaptiveFlushInterval(): number {
   return 16; // Standard 60fps
 }
 ```
-```
+````
+
+````
 
 ## Usage Patterns
 
@@ -165,9 +188,10 @@ private adaptiveFlushInterval(): number {
 /terminal-research How does VS Code handle terminal tab completion?
 
 # Claude will gather comprehensive guidance before coding
-```
+````
 
 ### Debug Performance Issues
+
 ```bash
 # When facing performance problems
 /terminal-research What are xterm.js performance optimization techniques?
@@ -176,6 +200,7 @@ private adaptiveFlushInterval(): number {
 ```
 
 ### Validate Current Implementation
+
 ```bash
 # To verify existing code follows best practices
 /terminal-research How should terminal process lifecycle be managed?
@@ -186,16 +211,19 @@ private adaptiveFlushInterval(): number {
 ## Tips for Effective Queries
 
 ### Good Queries (Specific)
+
 - "How does VS Code handle terminal IME composition events?"
 - "What are xterm.js best practices for scrollback buffer management?"
 - "How should I implement terminal session persistence?"
 
 ### Less Effective Queries (Too Broad)
+
 - "How do terminals work?" (Too general)
 - "Fix my terminal" (Not research-oriented)
 - "What is xterm.js?" (Use docs directly)
 
 ### Query Structure
+
 ```
 /terminal-research [Specific terminal feature/problem] + [Implementation context]
 
@@ -208,30 +236,37 @@ Examples:
 ## Integration with Development Workflow
 
 ### 1. Planning Phase
+
 Use `/terminal-research` to gather requirements and best practices before coding.
 
 ### 2. Implementation Phase
+
 Reference the synthesized recommendations and code examples from the research.
 
 ### 3. Validation Phase
+
 Use research results to verify implementation aligns with VS Code and xterm.js standards.
 
 ### 4. Optimization Phase
+
 Consult research findings when optimizing performance or fixing issues.
 
 ## Troubleshooting
 
 ### If vscode-terminal-resolver Returns No Results
+
 - Query might be too specific to VS Code internals
 - Try broader feature names (e.g., "terminal rendering" vs "xtermTerminal.ts")
 - Agent will still provide other perspectives
 
 ### If serena-semantic-search Finds Nothing
+
 - Feature might not exist in current codebase yet
 - Focus on VS Code and xterm.js guidance for new implementation
 - Agent helps identify what's missing
 
 ### If xterm-info-analyzer Lacks Information
+
 - Feature might be VS Code-specific, not xterm.js
 - Rely on VS Code patterns and current implementation
 - Agent clarifies what's available in xterm.js API
@@ -239,6 +274,7 @@ Consult research findings when optimizing performance or fixing issues.
 ## Advanced Usage
 
 ### Chaining Research with Implementation
+
 ```bash
 # Step 1: Research
 /terminal-research How does VS Code implement terminal link detection?
@@ -251,6 +287,7 @@ Consult research findings when optimizing performance or fixing issues.
 ```
 
 ### Comparative Analysis
+
 ```bash
 /terminal-research Compare VS Code terminal scrollback vs our implementation
 
@@ -260,24 +297,29 @@ Consult research findings when optimizing performance or fixing issues.
 ## Command Maintenance
 
 ### Updating Agent Configurations
+
 If agent behaviors change, update the command file:
 
 ```markdown
 # .claude/commands/terminal-research.md
 
 ### Agent 2: Serena Semantic Search
+
 - Updated to use new Serena MCP query syntax
 - Improved semantic matching for terminal components
 ```
 
 ### Adding New Agents
+
 To integrate additional agents, extend the parallel execution section:
 
 ```markdown
 ### Step 2: Parallel Agent Investigation
+
 Execute all FOUR agents concurrently:
 
 **Agent 4: Terminal-Benchmark-Analyzer**
+
 - Compare performance metrics
 - Analyze benchmark results
 ```
