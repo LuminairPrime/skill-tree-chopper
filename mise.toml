@@ -37,17 +37,17 @@ run = "node -e \"if (require('child_process').execSync('git status --porcelain')
 [tasks."publish:patch"]
 alias = "publish"
 description = "Publish a patch update to VS Code Marketplace (e.g., 1.0.0 -> 1.0.1)"
-depends = ["check-clean", "build"]
+depends = ["check-clean", "lint", "test", "build"]
 run = "npx @vscode/vsce publish patch"
 
 [tasks."publish:minor"]
 description = "Publish a minor update to VS Code Marketplace (e.g., 1.0.0 -> 1.1.0)"
-depends = ["check-clean", "build"]
+depends = ["check-clean", "lint", "test", "build"]
 run = "npx @vscode/vsce publish minor"
 
 [tasks."publish:major"]
 description = "Publish a major update to VS Code Marketplace (e.g., 1.0.0 -> 2.0.0)"
-depends = ["check-clean", "build"]
+depends = ["check-clean", "lint", "test", "build"]
 run = "npx @vscode/vsce publish major"
 
 [tasks.clean]

@@ -64,9 +64,18 @@ This project uses [mise](https://mise.jdx.dev/) as a task runner to manage build
 
 1. Install dependencies: `npm install`
 2. Build the extension: `mise run build`
-3. Run unit tests: `mise run test`
-4. Package the extension: `mise run package` (The `.vsix` will be generated in the `releases/` directory)
-5. Clean up build artifacts: `mise run clean`
+3. Check code quality: `mise run lint`
+4. Format the code: `mise run format`
+5. Run unit tests: `mise run test`
+6. Package the extension: `mise run package` (The `.vsix` will be generated in the `releases/` directory)
+7. Clean up build artifacts: `mise run clean`
+
+### Code Quality & CI
+
+This repository is protected by automated quality gates to ensure high standards:
+
+- **Husky & lint-staged:** Before every commit, Prettier is automatically run on your staged files to guarantee consistent formatting.
+- **GitHub Actions:** Every push to `main` and Pull Request triggers a CI workflow that verifies formatting, runs the linter, executes unit tests, and confirms the extension builds successfully.
 
 ### Publishing to the VS Code Marketplace
 
@@ -84,8 +93,8 @@ This extension is published under the `LuminairPrime` namespace.
    - **`mise run publish:major`** — Auto-bumps the **major** version (e.g., `1.1.0` -> `2.0.0`) for breaking changes.
 
    **What happens under the hood when you run these?**
-   1. **Version Bump & Git Tag:** The underlying `vsce` tool automatically increments the version in `package.json`, creates a Git commit, and tags the commit.
-   2. **Rebuild:** `mise` guarantees the latest code is compiled by running the `build` task as a dependency.
+   1. **Quality Gates:** `mise` strictly enforces quality by verifying a clean Git working directory, running the linter (`mise run lint`), executing all tests (`mise run test`), and finally compiling the source (`mise run build`). If any step fails, the publish is aborted.
+   2. **Version Bump & Git Tag:** The underlying `vsce` tool automatically increments the version in `package.json`, creates a Git commit, and tags the commit.
    3. **Package & Push:** It packages the clean `.vsix` payload (ignoring our development and archive files) and uploads it to the Marketplace.
 
 The unit tests live under `test/unit` and currently focus on archive-state logic and skill discovery rules. See [docs/testing.md](docs/testing.md) for details.
