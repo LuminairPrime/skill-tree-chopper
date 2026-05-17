@@ -11,6 +11,7 @@ export default tseslint.config(
       'node_modules/**',
       'archive/**',
       'test-workspace/**',
+      'test/fixtures/**',
       'vendors/**',
       '.agent/**',
       '.agents/**',
