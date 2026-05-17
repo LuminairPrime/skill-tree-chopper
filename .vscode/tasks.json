@@ -15,6 +15,15 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "Prepare Test Workspace",
+      "type": "shell",
+      "command": "node scripts/prepare-test-workspace.js",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      }
     }
   ]
 }
