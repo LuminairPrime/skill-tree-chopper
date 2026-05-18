@@ -28,6 +28,7 @@ run = [
 
 [tasks.check-clean]
 hide = true
+quiet = true
 description = "Verify that the git working directory is clean before publishing"
 run = "node scripts/check-clean.js"
 
@@ -38,8 +39,8 @@ depends = ["lint", "test", "build"]
 [tasks."release:patch"]
 alias = "release"
 description = "Bump patch version, push tag to trigger CI publishing (Open VSX + MS)"
+depends = ["check-clean"]
 run = [
-  "node scripts/check-clean.js",
   "mise run release-checks",
   "npm version patch",
   "git push --follow-tags",
@@ -48,8 +49,8 @@ run = [
 
 [tasks."release:minor"]
 description = "Bump minor version, push tag to trigger CI publishing (Open VSX + MS)"
+depends = ["check-clean"]
 run = [
-  "node scripts/check-clean.js",
   "mise run release-checks",
   "npm version minor",
   "git push --follow-tags",
@@ -58,8 +59,8 @@ run = [
 
 [tasks."release:major"]
 description = "Bump major version, push tag to trigger CI publishing (Open VSX + MS)"
+depends = ["check-clean"]
 run = [
-  "node scripts/check-clean.js",
   "mise run release-checks",
   "npm version major",
   "git push --follow-tags",
