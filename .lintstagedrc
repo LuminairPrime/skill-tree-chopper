@@ -1,8 +1,4 @@
 {
-  "*.ts": [
-    "prettier --write --ignore-unknown"
-  ],
-  "*.{json,md,yml}": [
-    "prettier --write --ignore-unknown"
-  ]
+  "*.ts": ["prettier --write --ignore-unknown"],
+  "*.{json,md,yml}": ["prettier --write --ignore-unknown"]
 }

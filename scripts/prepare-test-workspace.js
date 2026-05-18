@@ -10,19 +10,19 @@ console.log(`Target: ${targetDir}`);
 
 // Ensure the source directory exists
 if (!fs.existsSync(sourceDir)) {
-    console.error(`Error: Source directory does not exist: ${sourceDir}`);
-    process.exit(1);
+  console.error(`Error: Source directory does not exist: ${sourceDir}`);
+  process.exit(1);
 }
 
 // Remove the target directory if it already exists
 if (fs.existsSync(targetDir)) {
-    console.log(`Cleaning existing target directory...`);
-    fs.rmSync(targetDir, { recursive: true, force: true });
+  console.log(`Cleaning existing target directory...`);
+  fs.rmSync(targetDir, { recursive: true, force: true });
 }
 
 // Create the parent out/ directory if needed
 if (!fs.existsSync(path.dirname(targetDir))) {
-    fs.mkdirSync(path.dirname(targetDir), { recursive: true });
+  fs.mkdirSync(path.dirname(targetDir), { recursive: true });
 }
 
 // Copy the directory
