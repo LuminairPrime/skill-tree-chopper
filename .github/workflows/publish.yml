@@ -33,6 +33,6 @@ jobs:
         # continue-on-error: true # uncomment if you don't want MS publishing failure to stop Open VSX
 
       - name: Publish to Open VSX
-        uses: EclipseFdn/publish-extensions@v1
-        with:
+        run: npx ovsx publish --pat ${{ secrets.OVSX_PAT }}
+        env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
