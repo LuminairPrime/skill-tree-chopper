@@ -18,7 +18,7 @@ When you disable a skill by unchecking its box, the extension validates that the
 
 ## Installation
 
-After publication, install from the VS Code Marketplace by searching for **Skill Tree Chopper**!!!
+After publication, install from the VS Code Marketplace by searching for **Skill Tree Chopper**.
 
 For local or pre-release installs:
 

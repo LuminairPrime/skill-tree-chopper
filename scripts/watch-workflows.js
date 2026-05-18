@@ -20,8 +20,9 @@ async function watchRuns() {
 
   let completedRuns = new Set();
   let firstCheck = true;
-  let seenAnyRuns = false;
   let retryCount = 0;
+  let inProgressTicks = 0;
+  const MAX_IN_PROGRESS_TICKS = 60; // 10 min max once workflows start
 
   while (true) {
     let output;
@@ -59,15 +60,12 @@ async function watchRuns() {
       continue;
     }
 
-    seenAnyRuns = true;
     firstCheck = false;
     let allDone = true;
 
     for (const run of runs) {
       if (run.status !== 'completed') {
         allDone = false;
-        // Optionally print progress, but avoid spamming
-        // console.log(`- [In Progress] ${run.name} (${run.url})`);
       } else {
         if (!completedRuns.has(run.databaseId)) {
           completedRuns.add(run.databaseId);
@@ -96,6 +94,14 @@ async function watchRuns() {
       console.log('\nAll workflows completed.');
       const anyFailed = runs.some((r) => r.conclusion !== 'success');
       process.exit(anyFailed ? 1 : 0);
+    }
+
+    inProgressTicks++;
+    if (inProgressTicks > MAX_IN_PROGRESS_TICKS) {
+      console.error(
+        '\n\x1b[31m❌ Timed out waiting for workflows to complete after 10 minutes.\x1b[0m',
+      );
+      process.exit(1);
     }
 
     // Check every 10 seconds to avoid API rate limits
