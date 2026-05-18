@@ -37,7 +37,8 @@ description = "Bump patch version, push tag to trigger CI publishing (Open VSX +
 depends = ["check-clean", "lint", "test", "build"]
 run = [
   "npm version patch",
-  "git push --follow-tags"
+  "git push --follow-tags",
+  "node scripts/watch-workflows.js"
 ]
 
 [tasks."release:minor"]
@@ -45,7 +46,8 @@ description = "Bump minor version, push tag to trigger CI publishing (Open VSX +
 depends = ["check-clean", "lint", "test", "build"]
 run = [
   "npm version minor",
-  "git push --follow-tags"
+  "git push --follow-tags",
+  "node scripts/watch-workflows.js"
 ]
 
 [tasks."release:major"]
@@ -53,7 +55,8 @@ description = "Bump major version, push tag to trigger CI publishing (Open VSX +
 depends = ["check-clean", "lint", "test", "build"]
 run = [
   "npm version major",
-  "git push --follow-tags"
+  "git push --follow-tags",
+  "node scripts/watch-workflows.js"
 ]
 
 [tasks.clean]
