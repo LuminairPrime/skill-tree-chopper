@@ -8,6 +8,10 @@ async function watchRuns() {
   let sha;
   try {
     sha = execSync('git rev-parse HEAD', { stdio: 'pipe' }).toString().trim();
+    if (!/^[0-9a-f]{40}$/.test(sha)) {
+      console.error('Unexpected SHA format from git rev-parse.');
+      process.exit(1);
+    }
   } catch (e) {
     console.error('Failed to get HEAD commit SHA.');
     process.exit(1);

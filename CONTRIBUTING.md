@@ -33,12 +33,14 @@ This extension is published under the `LuminairPrime` namespace.
 3. **Publish an Update:**
    The VS Code Marketplace **does not allow overwriting existing versions**. If you try to publish a version number that is already live, the Marketplace will reject it. You must bump the version for every new release.
 
-   To automatically handle versioning, building, and publishing, run one of the following commands:
-   - **`mise run publish`** (or `publish:patch`) — Auto-bumps the **patch** version (e.g., `1.0.0` -> `1.0.1`) for bug fixes. This is the safest and most common default.
-   - **`mise run publish:minor`** — Auto-bumps the **minor** version (e.g., `1.0.1` -> `1.1.0`) for new features.
-   - **`mise run publish:major`** — Auto-bumps the **major** version (e.g., `1.1.0` -> `2.0.0`) for breaking changes.
+   To automatically handle versioning, building, tagging, and pushing, run one of the following commands:
+   - **`mise run release:patch`** — Auto-bumps the **patch** version (e.g., `1.0.0` -> `1.0.1`) for bug fixes.
+   - **`mise run release:minor`** — Auto-bumps the **minor** version (e.g., `1.0.1` -> `1.1.0`) for new features.
+   - **`mise run release:major`** — Auto-bumps the **major** version (e.g., `1.1.0` -> `2.0.0`) for breaking changes.
 
    **What happens under the hood when you run these?**
-   1. **Quality Gates:** `mise` strictly enforces quality by verifying a clean Git working directory, running the linter (`mise run lint`), executing all tests (`mise run test`), and finally compiling the source (`mise run build`). If any step fails, the publish is aborted.
-   2. **Version Bump & Git Tag:** The underlying `vsce` tool automatically increments the version in `package.json`, creates a Git commit, and tags the commit.
-   3. **Package & Push:** It packages the clean `.vsix` payload (ignoring our development and archive files) and uploads it to the Marketplace.
+   1. **Quality Gates:** `mise` strictly enforces quality by verifying a clean Git working directory, running the linter (`mise run lint`), executing all tests (`mise run test`), and finally compiling the source (`mise run build`). If any step fails, the release is aborted.
+   2. **Version Bump & Git Tag:** The scripts bump the version in `package.json`, generate a commit, and tag it.
+   3. **Push & Watch CI:** It automatically pushes the new tag to GitHub. This triggers the GitHub Actions workflow `publish.yml`, which packages the extension using `vsce` and publishes it securely. The CLI will then watch the CI run progress.
+
+   For more details on the process and required secrets, see [docs/publishing-guide.md](docs/publishing-guide.md).
