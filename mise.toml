@@ -26,12 +26,6 @@ run = [
   "npx @vscode/vsce package --out releases/skill-tree-chopper.vsix"
 ]
 
-[tasks.check-clean]
-hide = true
-quiet = true
-description = "Verify that the git working directory is clean before publishing"
-run = "node scripts/check-clean.js"
-
 [tasks.release-checks]
 hide = true
 depends = ["lint", "test", "build"]
@@ -39,33 +33,18 @@ depends = ["lint", "test", "build"]
 [tasks."release:patch"]
 alias = "release"
 description = "Bump patch version, push tag to trigger CI publishing (Open VSX + MS)"
-depends = ["check-clean"]
-run = [
-  "mise run release-checks",
-  "npm version patch",
-  "git push --follow-tags",
-  "node scripts/watch-workflows.js"
-]
+quiet = true
+run = "node scripts/release.js patch"
 
 [tasks."release:minor"]
 description = "Bump minor version, push tag to trigger CI publishing (Open VSX + MS)"
-depends = ["check-clean"]
-run = [
-  "mise run release-checks",
-  "npm version minor",
-  "git push --follow-tags",
-  "node scripts/watch-workflows.js"
-]
+quiet = true
+run = "node scripts/release.js minor"
 
 [tasks."release:major"]
 description = "Bump major version, push tag to trigger CI publishing (Open VSX + MS)"
-depends = ["check-clean"]
-run = [
-  "mise run release-checks",
-  "npm version major",
-  "git push --follow-tags",
-  "node scripts/watch-workflows.js"
-]
+quiet = true
+run = "node scripts/release.js major"
 
 [tasks.clean]
 description = "Clean up built files and releases"
